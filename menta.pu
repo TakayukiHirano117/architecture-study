@@ -1,0 +1,151 @@
+@startuml ユーザー集約
+skinparam packageStyle rectangle
+left to right direction
+
+package ユーザー集約 {
+    object ユーザー {
+        ID
+        名前
+        メールアドレス
+        パスワード
+        スキル
+        自己紹介
+        経歴
+    }
+
+    object タグ {
+        ID
+        タグ名
+    }
+
+    object スキル {
+        ID
+        タグ名
+        評価
+        年数
+    }
+
+    object 経歴 {
+        ID
+        詳細
+        西暦from
+        西暦to
+    }
+
+    ユーザー --> 経歴 : "1:N 経歴"
+    ユーザー --> スキル : "N:N スキル"
+    スキル --> タグ : "1:N タグ"
+
+    タグ -[hidden]-> ユーザー
+    タグ -[hidden]-> スキル
+}
+@enduml
+
+@startuml プラン作成集約
+skinparam packageStyle rectangle
+
+package プラン作成 {
+    object プラン {
+        ID
+        タイトル
+        カテゴリ
+        タグ
+        内容
+        ステータス
+        相談形式
+        金額
+        相談方式
+    }
+
+    object ユーザー {
+        
+    }
+
+    object タグ {
+
+    }
+}
+
+プラン --> ユーザー : "1:N プラン"
+プラン --> タグ : "1:N タグ"
+@enduml
+
+
+@startuml メンター募集集約
+skinparam packageStyle rectangle
+left to right direction
+
+package メンター募集集約 {
+    object メンター募集 {
+        ID
+        タイトル
+        カテゴリ
+        相談形式
+        相談方式
+        ディスクリプション
+        予算
+        応募期間
+        ステータス
+        タグ
+    }
+
+    object ユーザー {
+
+    }
+    
+    object タグ {
+
+    }
+}
+
+メンター募集 --> ユーザー : "1:1 メンター募集"
+メンター募集 --> タグ : "1:N タグ"
+
+@enduml
+
+@startuml メンター募集提案集約
+skinparam packageStyle rectangle
+left to right direction
+
+package メンター募集提案集約 {
+    object メンター募集提案 {
+        ID
+        提案内容
+    }
+
+    object ユーザー {
+
+    }
+
+    object メンター募集 {
+
+    }
+
+    メンター募集提案 --> ユーザー : "1:1 メンター募集提案"
+    メンター募集提案 --> メンター募集 : "1:1 メンター募集"
+}
+@enduml
+
+@startuml 契約集約
+skinparam packageStyle rectangle
+left to right direction
+
+package 契約集約 {
+    object 契約 {
+        ID
+        契約内容
+    }
+
+    object ユーザー {
+
+    }
+
+    object メンター募集 {
+        
+    }
+}
+
+契約 --> ユーザー : "1:1 契約"
+契約 --> メンター募集 : "1:1 契約"
+
+@enduml
