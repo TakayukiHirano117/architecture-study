@@ -13,11 +13,6 @@ package ユーザー集約 {
         経歴
     }
 
-    object タグ {
-        ID
-        タグ名
-    }
-
     object スキル {
         ID
         タグ名
@@ -32,50 +27,12 @@ package ユーザー集約 {
         西暦to
     }
 
-    note left of ユーザー
-    - 必須項目
-    - 名前: 255文字以内(ユニーク)
-    - メールアドレス: 255文字以内
-    - パスワード: 12文字以上,英数字それぞれ最低1文字以上
-    - スキル(複数)
-        - タグ名(選択式、記入どちらもOK)
-        - 評価: 1~5
-        - 1つ以上
-        - 年数: ０以上のint型(5年まで)
-    - 任意項目
-        - 自己紹介: 2000字以内
-        - 経歴(複数)
-            - 詳細: 1000字以内
-            - 西暦from: 1970年以上のint型
-            - 西暦to: 1970年以上のint型、西暦fromよりも大きい数字
-    end note
-
-    note right of 経歴
-    - 詳細: 1000字以内
-    - 西暦from: 1970年以上のint型
-    - 西暦to: 1970年以上のint型、西暦fromよりも大きい数字
-    end note
-
-    note as N1
-    - スキル(複数)
-    - タグ名(選択式、記入どちらもOK)
-    - 評価: 1~5
-    - 1つ以上
-    - 年数: ０以上のint型(5年まで)
-    end note
-
-    スキル .. N1
-
     ユーザー "1" --> "0..*" 経歴
     ユーザー "1" --> "1..*" スキル
-    スキル "1" --> "1" タグ
+    スキル "1" --> "1" タグ集約.タグ
 }
-@enduml
 
-@startuml プラン作成集約
-skinparam packageStyle rectangle
-
-package プラン作成 {
+package プラン集約 {
     object プラン {
         ID
         タイトル
@@ -86,25 +43,15 @@ package プラン作成 {
         相談形式
         金額
         相談方式
+        メンターID
     }
 
     object ユーザー {
-        
-    }
-
-    object タグ {
 
     }
 }
 
-プラン --> ユーザー : "1:N プラン"
-プラン --> タグ : "1:N タグ"
-@enduml
-
-
-@startuml メンター募集集約
-skinparam packageStyle rectangle
-left to right direction
+プラン "1" --> "0..*" ユーザー
 
 package メンター募集集約 {
     object メンター募集 {
@@ -119,24 +66,10 @@ package メンター募集集約 {
         ステータス
         タグ
     }
-
-    object ユーザー {
-
-    }
-    
-    object タグ {
-
-    }
 }
 
-メンター募集 --> ユーザー : "1:1 メンター募集"
-メンター募集 --> タグ : "1:N タグ"
-
-@enduml
-
-@startuml メンター募集提案集約
-skinparam packageStyle rectangle
-left to right direction
+ユーザー "1" --> "0..*" メンター募集
+メンター募集 "1" --> "0..*" タグ集約.タグ
 
 package メンター募集提案集約 {
     object メンター募集提案 {
@@ -152,31 +85,48 @@ package メンター募集提案集約 {
 
     }
 
-    メンター募集提案 --> ユーザー : "1:1 メンター募集提案"
-    メンター募集提案 --> メンター募集 : "1:1 メンター募集"
+    ユーザー "1" --> "0..*" メンター募集提案
+    メンター募集 "1" --> "0..*" メンター募集提案
 }
-@enduml
-
-@startuml 契約集約
-skinparam packageStyle rectangle
-left to right direction
 
 package 契約集約 {
     object 契約 {
         ID
         契約内容
+        メンターID
+        プランID
     }
 
     object ユーザー {
 
     }
 
-    object メンター募集 {
-        
+    object プラン {
+
     }
 }
 
-契約 --> ユーザー : "1:1 契約"
-契約 --> メンター募集 : "1:1 契約"
+ユーザー "1" --> "0..*" 契約
+プラン "0..*" --> "0..*" 契約
+
+package タグ集約 {
+    object タグ {
+        ID
+        タグ名
+    }
+    タグ "1" --> "0..*" プラン集約
+}
+
+package 契約リクエスト集約 {
+    object 契約リクエスト {
+        ID
+        メッセージ
+        ユーザーID
+        プランID
+    }
+
+}
+プラン "1" --> "0..*" 契約リクエスト
+ユーザー "1" --> "0..*" 契約リクエスト
 
 @enduml
