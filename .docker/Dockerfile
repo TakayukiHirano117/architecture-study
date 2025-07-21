@@ -14,5 +14,6 @@ RUN go mod download
 
 RUN go mod download
 RUN go install github.com/air-verse/air@latest
+RUN go get github.com/jmoiron/sqlx
 
 CMD ["air"]
