@@ -9,13 +9,19 @@ services:
       - ../:/app
     working_dir: /app
 <<<<<<< HEAD
+<<<<<<< HEAD
     command: air
+=======
+>>>>>>> ff4b5a8 (db構築)
   db:
     image: postgres:17.1-alpine
     ports:
       - 5432:5432
     environment:
+<<<<<<< HEAD
       POSTGRES_HOST: localhost
+=======
+>>>>>>> ff4b5a8 (db構築)
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: menta-db
@@ -24,5 +30,8 @@ services:
 
 volumes:
   postgres_data:
+<<<<<<< HEAD
 =======
 >>>>>>> 0556e6b (commandを削除)
+=======
+>>>>>>> ff4b5a8 (db構築)
