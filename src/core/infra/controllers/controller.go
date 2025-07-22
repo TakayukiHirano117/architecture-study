@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type Controller struct {
@@ -16,6 +16,6 @@ func NewController() *Controller {
 	}
 }
 
-func (c *Controller) SetupRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/health", c.healthController.HealthCheck)
+func (c *Controller) SetupRoutes(router *gin.Engine) {
+	router.GET("/health", c.healthController.HealthCheck)
 }
