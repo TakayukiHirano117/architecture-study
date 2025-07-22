@@ -53,6 +53,8 @@ require (
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/goccy/go-json v0.10.5
+	github.com/google/uuid v1.6.0
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/cpuid/v2 v2.3.0
 	github.com/leodido/go-urn v1.4.0
@@ -69,7 +71,22 @@ require (
 	golang.org/x/text v0.27.0
 	google.golang.org/protobuf v1.36.6
 	gopkg.in/yaml.v3 v3.0.1
+<<<<<<< HEAD
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 >>>>>>> d99dc49 (fix conflicts)
+=======
+)
+
+require (
+	github.com/cockroachdb/errors v1.12.0 // indirect
+	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
+	github.com/cockroachdb/redact v1.1.5 // indirect
+	github.com/getsentry/sentry-go v0.27.0 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/rogpeppe/go-internal v1.9.0 // indirect
+>>>>>>> dfd255d (バリューオブジェクト実装途中、一旦コミット)
 )

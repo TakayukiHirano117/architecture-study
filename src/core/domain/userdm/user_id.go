@@ -1,6 +1,9 @@
 package userdm
 
-import "github.com/google/uuid"
+import (
+	"github.com/cockroachdb/errors"
+	"github.com/google/uuid"
+)
 
 type UserId string
 
@@ -10,8 +13,9 @@ func NewUserId() UserId {
 
 func NewUserIdByVal(val string) (UserId, error) {
 	if val == "" {
-		
+		return "", errors.New("UserId is empty")
 	}
+
 	return UserId(val), nil
 }
 
