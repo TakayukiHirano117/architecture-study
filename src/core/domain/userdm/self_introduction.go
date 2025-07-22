@@ -9,6 +9,10 @@ func NewSelfIntroduction(value string) (*SelfIntroduction, error) {
 		return nil, errors.New("SelfIntroduction is empty")
 	}
 
+	if len(value) > 2000 {
+		return nil, errors.New("SelfIntroduction is too long")
+	}
+
 	selfIntroduction := SelfIntroduction(value)
 
 	return &selfIntroduction, nil

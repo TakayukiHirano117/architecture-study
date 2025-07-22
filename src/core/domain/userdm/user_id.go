@@ -16,6 +16,10 @@ func NewUserIdByVal(val string) (UserId, error) {
 		return "", errors.New("UserId is empty")
 	}
 
+	if _, err := uuid.Parse(val); err != nil {
+		return "", errors.New("UserId is invalid")
+	}
+
 	return UserId(val), nil
 }
 

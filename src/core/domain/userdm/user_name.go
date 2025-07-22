@@ -9,6 +9,10 @@ func NewUserName(value string) (*UserName, error) {
 		return nil, errors.New("UserName is empty")
 	}
 
+	if len(value) > 255 {
+		return nil, errors.New("UserName is too long")
+	}
+
 	userName := UserName(value)
 
 	return &userName, nil

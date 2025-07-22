@@ -1,17 +1,17 @@
 package userdm
 
 type Career struct {
-	careerId  CareerId
-	detail    string
-	startYear int
-	endYear   int
+	id                CareerId
+	career_detail     CareerDetail
+	career_start_year CareerStartYear
+	career_end_year   CareerEndYear
 }
 
-func NewCareer(careerId CareerId, detail string, startYear int, endYear int) (*Career, error) {
+func NewCareer(id CareerId, career_detail CareerDetail, career_start_year CareerStartYear, career_end_year CareerEndYear) (*Career, error) {
 	return &Career{
-		careerId:  careerId,
-		detail:    detail,
-		startYear: startYear,
-		endYear:   endYear,
+		id:                id,
+		career_detail:     career_detail,
+		career_start_year: career_start_year,
+		career_end_year:   career_end_year,
 	}, nil
 }

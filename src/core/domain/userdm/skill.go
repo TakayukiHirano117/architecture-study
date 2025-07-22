@@ -1,5 +1,19 @@
 package userdm
 
+import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+
 type Skill struct {
-	skillId SkillId
+	id                SkillId
+	tagId             tagdm.TagId
+	evaluation        int
+	yearsOfExperience int
+}
+
+func NewSkill(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience int) (*Skill, error) {
+	return &Skill{
+		id:                id,
+		tagId:             tagId,
+		evaluation:        evaluation,
+		yearsOfExperience: yearsOfExperience,
+	}, nil
 }

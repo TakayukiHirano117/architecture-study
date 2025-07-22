@@ -16,6 +16,10 @@ func NewSkillIdByVal(val string) (SkillId, error) {
 		return "", errors.New("SkillId is empty")
 	}
 
+	if _, err := uuid.Parse(val); err != nil {
+		return "", errors.New("SkillId is invalid")
+	}
+
 	return SkillId(val), nil
 }
 
