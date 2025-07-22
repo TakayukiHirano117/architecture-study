@@ -8,7 +8,12 @@ func NewUserId() UserId {
 	return UserId(uuid.New().String())
 }
 
-func NewUserIdByVal()
+func NewUserIdByVal(val string) (UserId, error) {
+	if val == "" {
+		
+	}
+	return UserId(val), nil
+}
 
 func (userId UserId) String() string {
 	return string(userId)
