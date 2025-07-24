@@ -36,7 +36,6 @@ func NewUser(id UserId, name UserName, password Password, skills []Skill, career
 	}, nil
 }
 
-// Getter methods
 func (u *User) Id() UserId {
 	return u.id
 }
