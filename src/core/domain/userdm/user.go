@@ -35,3 +35,40 @@ func NewUser(id UserId, name UserName, password Password, skills []Skill, career
 		updatedAt:        time.Now(),
 	}, nil
 }
+
+// Getter methods
+func (u *User) Id() UserId {
+	return u.id
+}
+
+func (u *User) Name() UserName {
+	return u.name
+}
+
+func (u *User) Password() Password {
+	return u.password
+}
+
+func (u *User) Skills() []Skill {
+	return u.skills
+}
+
+func (u *User) Careers() []*Career {
+	return u.careers
+}
+
+func (u *User) Email() Email {
+	return u.email
+}
+
+func (u *User) SelfIntroduction() SelfIntroduction {
+	return u.selfIntroduction
+}
+
+func (u *User) CreatedAt() time.Time {
+	return u.createdAt
+}
+
+func (u *User) UpdatedAt() time.Time {
+	return u.updatedAt
+}
