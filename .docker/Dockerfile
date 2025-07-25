@@ -1,4 +1,4 @@
-FROM golang:1.23
+FROM golang:1.24
 
 WORKDIR /app
 
@@ -7,4 +7,9 @@ COPY go.sum ./
 
 RUN go mod download
 
-CMD ["go", "run", "./src/core/cmd/main.go"]
+COPY src ./src
+COPY .air.toml ./
+
+RUN go install github.com/air-verse/air@latest
+
+CMD ["air"]
