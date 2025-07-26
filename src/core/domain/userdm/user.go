@@ -10,15 +10,15 @@ type User struct {
 	id               UserId
 	name             UserName
 	password         Password
+	email            Email
 	skills           []Skill
 	careers          []*Career
-	email            Email
 	selfIntroduction SelfIntroduction
 	createdAt        time.Time
 	updatedAt        time.Time
 }
 
-func NewUser(id UserId, name UserName, password Password, skills []Skill, careers []*Career, email Email, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUser(id UserId, name UserName, password Password, email Email, skills []Skill, careers []*Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	if len(skills) <= 0 {
 		return nil, errors.New("skills must be at least 1")
 	}

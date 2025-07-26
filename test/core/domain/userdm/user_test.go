@@ -28,7 +28,7 @@ func TestUser_NewUser_Success(t *testing.T) {
 	)
 	careers := []*userdm.Career{career}
 
-	user, err := userdm.NewUser(userId, *userName, *password, skills, careers, *email, selfIntroduction)
+	user, err := userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
 	if err != nil {
 		t.Errorf("NewUser() with valid parameters should not return error, got: %v", err)
 	}
@@ -76,7 +76,7 @@ func TestUser_NewUser_EmptySkills(t *testing.T) {
 	skills := []userdm.Skill{}
 	careers := []*userdm.Career{}
 
-	_, err := userdm.NewUser(userId, *userName, *password, skills, careers, *email, selfIntroduction)
+	_, err := userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
 	if err == nil {
 		t.Error("NewUser() with empty skills should return error")
 	}
