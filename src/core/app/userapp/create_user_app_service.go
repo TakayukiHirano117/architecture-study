@@ -21,7 +21,7 @@ type CreateUserRequest struct {
 	email            string
 	password         string
 	skills           []CreateSkillRequest
-	careers          *[]CreateCareerRequest
+	careers          []CreateCareerRequest
 	selfIntroduction *string
 }
 
@@ -65,9 +65,9 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		}
 	}
 
-	careers := make([]*userdm.CareerParamIfCreate, len(*req.careers))
-	for i, reqCareer := range *req.careers {
-		careers[i] = &userdm.CareerParamIfCreate{
+	careers := make([]userdm.CareerParamIfCreate, len(req.careers))
+	for i, reqCareer := range req.careers {
+		careers[i] = userdm.CareerParamIfCreate{
 			Detail:          reqCareer.Detail,
 			CareerStartYear: reqCareer.StartYear,
 			CareerEndYear:   reqCareer.EndYear,

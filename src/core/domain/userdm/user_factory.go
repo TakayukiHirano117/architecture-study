@@ -18,11 +18,11 @@ func GenIfCreate(
 	userName UserName,
 	email Email,
 	password Password,
-	reqCareers []*CareerParamIfCreate,
+	reqCareers []CareerParamIfCreate,
 	reqSkills []SkillParamIfCreate,
 	selfIntroduction *SelfIntroduction,
 ) (*User, error) {
-	careers := make([]*Career, len(reqCareers))
+	careers := make([]Career, len(reqCareers))
 	for i, rc := range reqCareers {
 		cd, err := NewCareerDetail(rc.Detail)
 		if err != nil {
@@ -44,7 +44,7 @@ func GenIfCreate(
 		if err != nil {
 			return nil, err
 		}
-		careers[i] = c
+		careers[i] = *c
 	}
 
 	skills := make([]Skill, len(reqSkills))
@@ -67,6 +67,6 @@ func GenIfCreate(
 	return NewUser(NewUserId(), userName, password, email, skills, careers, selfIntroduction)
 }
 
-func GenForTest(id UserId, name UserName, email Email, password Password, skills []Skill, careers []*Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func GenForTest(id UserId, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return NewUser(id, name, password, email, skills, careers, selfIntroduction)
 }

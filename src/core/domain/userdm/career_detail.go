@@ -1,6 +1,8 @@
 package userdm
 
-import "github.com/cockroachdb/errors"
+import (
+	"github.com/cockroachdb/errors"
+)
 
 type CareerDetail string
 
