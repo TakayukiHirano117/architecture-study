@@ -17,6 +17,8 @@ func main() {
 	controller := controllers.NewController()
 
 	controller.SetupRoutes(router)
+	controllers.NewUserController(router)
+
 
 	port := ":8080"
 	fmt.Printf("Server starting on port %s\n", port)
