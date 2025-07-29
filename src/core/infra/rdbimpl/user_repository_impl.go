@@ -3,6 +3,7 @@ package rdbimpl
 import (
 	"context"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/cockroachdb/errors"
 )
@@ -39,14 +40,21 @@ func init() {
 		panic(err)
 	}
 
+	// テスト用のスキルを作成（スキルは最低1つ必要）
+	tagId := tagdm.NewTagId()
+	skill, err := userdm.NewSkill(userdm.NewSkillId(), tagId, 3, 2) // 評価3、経験年数2年
+	if err != nil {
+		panic(err)
+	}
+
 	// GenForTestに値型（デリファレンス）で渡す
 	u1, err := userdm.GenForTest(
 		userdm.NewUserId(),
-		*userName, // ポインタを値にデリファレンス
-		*email,    // ポインタを値にデリファレンス
-		*password, // ポインタを値にデリファレンス
-		[]userdm.Skill{},
-		[]*userdm.Career{},
+		*userName,              // ポインタを値にデリファレンス
+		*email,                 // ポインタを値にデリファレンス
+		*password,              // ポインタを値にデリファレンス
+		[]userdm.Skill{*skill}, // 作成したスキルを含める
+		[]userdm.Career{},
 		selfIntroduction, // これはすでにポインタなのでそのまま
 	)
 	if err != nil {
