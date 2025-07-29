@@ -53,9 +53,9 @@ drop table if exists careers;
 create table careers (
     id uuid primary key not null,
     user_id uuid not null references users(id),
-    detail text not null check (char_length(detail) <= 1000),
-    start_year int check (start_year >= 1970),
-    end_year int check (end_year >= 1970 and end_year > start_year),
+    detail text not null,
+    start_year int,
+    end_year int,
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
 );
@@ -71,9 +71,9 @@ create table mentor_recruitments (
     title varchar(255) not null,
     consultation_type varchar(255) not null,
     consultation_method varchar(255) not null,
-    description text not null check (char_length(description) <= 2000),
-    budget_from int not null check (budget_from >= 1000),
-    budget_to int not null check (budget_to >= 1000 and budget_to >= budget_from),
+    description text not null,
+    budget_from int not null,
+    budget_to int not null,
     application_period date not null,
     status varchar(255) not null,
     category_id uuid not null references categories(id),
@@ -100,7 +100,7 @@ create table mentor_recruitment_proposals (
     id uuid primary key not null,
     user_id uuid not null references users(id),
     mentor_recruitment_id uuid not null references mentor_recruitments(id),
-    description text not null check (char_length(description) <= 2000),
+    description text not null,
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
 );
@@ -110,9 +110,9 @@ drop table if exists contract_requests;
 
 create table contract_requests (
     id uuid primary key not null,
-    message text not null check (char_length(message) <= 500),
+    message text not null,
     user_id uuid not null references users(id),
-    price_at_request int not null check (price_at_request >= 1000),
+    price_at_request int not null,
     plan_id uuid not null references plans(id),
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
@@ -127,7 +127,7 @@ create table contracts (
     id uuid primary key not null,
     user_id uuid not null references users(id),
     plan_id uuid not null references plans(id),
-    message text not null check (char_length(message) <= 500),
+    message text not null,
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
 )
@@ -139,7 +139,7 @@ create table plans (
     id uuid primary key not null,
     title varchar(255) not null,
     category_id uuid not null references categories(id),
-    description text not null check (char_length(description) <= 2000),
+    description text not null,
     status varchar(255) not null,
     consultation_type varchar(255) not null,
     price int not null,

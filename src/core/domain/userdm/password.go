@@ -1,7 +1,7 @@
 package userdm
 
 import (
-	"strings"
+	"regexp"
 
 	"github.com/cockroachdb/errors"
 )
@@ -17,11 +17,11 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password is too short")
 	}
 
-	if !strings.ContainsAny(value, "a-zA-Z") {
+	if matched, _ := regexp.MatchString(`[a-zA-Z]`, value); !matched {
 		return nil, errors.New("Password must contain at least one letter")
 	}
 
-	if !strings.ContainsAny(value, "0-9") {
+	if matched, _ := regexp.MatchString(`[0-9]`, value); !matched {
 		return nil, errors.New("Password must contain at least one number")
 	}
 
