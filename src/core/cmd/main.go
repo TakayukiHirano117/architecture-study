@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 
+	// "github.com/TakayukiHirano117/architecture-study/config"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// dbConfig := config.NewDBConfig()
+	// fmt.Println(dbConfig)
+
 	router := gin.Default()
 
 	controller := controllers.NewController()

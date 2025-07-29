@@ -17,3 +17,11 @@ func NewUserName(value string) (*UserName, error) {
 
 	return &userName, nil
 }
+
+func NewUserNameByVal(val string) (UserName, error) {
+	if val == "" {
+		return "", errors.New("UserName is empty")
+	}
+
+	return UserName(val), nil
+}

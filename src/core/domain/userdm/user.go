@@ -36,6 +36,20 @@ func NewUser(id UserId, name UserName, password Password, email Email, skills []
 	}, nil
 }
 
+func Reconstruct(id UserId, name UserName, password Password, email Email, skills []Skill, careers []*Career, selfIntroduction *SelfIntroduction) (*User, error) {
+	return &User{
+		id:               id,
+		name:             name,
+		password:         password,
+		skills:           skills,
+		careers:          careers,
+		email:            email,
+		selfIntroduction: *selfIntroduction,
+		createdAt:        time.Now(),
+		updatedAt:        time.Now(),
+	}, nil
+}
+
 func (u *User) Id() UserId {
 	return u.id
 }

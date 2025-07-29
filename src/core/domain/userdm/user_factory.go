@@ -66,3 +66,7 @@ func GenIfCreate(
 
 	return NewUser(NewUserId(), userName, password, email, skills, careers, selfIntroduction)
 }
+
+func GenForTest(id UserId, name UserName, email Email, password Password, skills []Skill, careers []*Career, selfIntroduction *SelfIntroduction) (*User, error) {
+	return NewUser(id, name, password, email, skills, careers, selfIntroduction)
+}
