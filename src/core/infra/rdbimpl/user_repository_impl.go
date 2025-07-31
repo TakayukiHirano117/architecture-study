@@ -60,6 +60,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
+	// users = append(users, user)
 	dto := &userDTO{}
 	dto.fromDomain(user)
 	query := `
