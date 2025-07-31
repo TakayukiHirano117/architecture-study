@@ -17,3 +17,11 @@ func NewSelfIntroduction(value string) (*SelfIntroduction, error) {
 
 	return &selfIntroduction, nil
 }
+
+func (si SelfIntroduction) String() string {
+	return string(si)
+}
+
+func (si SelfIntroduction) Equal(si2 SelfIntroduction) bool {
+	return si == si2
+}

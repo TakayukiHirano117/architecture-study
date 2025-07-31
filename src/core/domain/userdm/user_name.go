@@ -25,3 +25,11 @@ func NewUserNameByVal(val string) (UserName, error) {
 
 	return UserName(val), nil
 }
+
+func (u UserName) String() string {
+	return string(u)
+}
+
+func (u UserName) Equal(u2 UserName) bool {
+	return u == u2
+}

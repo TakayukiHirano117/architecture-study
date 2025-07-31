@@ -8,9 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CreateUserController struct {
-	userAppService userapp.CreateUserAppService
-}
+type CreateUserController struct{}
 
 func NewCreateUserController() *CreateUserController {
 	return &CreateUserController{}

@@ -61,11 +61,11 @@ func TestCareerEndYear_Equal(t *testing.T) {
 	careerEndYear2, _ := userdm.NewCareerEndYear(year)
 	careerEndYear3, _ := userdm.NewCareerEndYear(2021)
 
-	if !careerEndYear1.Equal(careerEndYear2) {
+	if !careerEndYear1.Equal(*careerEndYear2) {
 		t.Error("Equal() should return true for same year values")
 	}
 
-	if careerEndYear1.Equal(careerEndYear3) {
+	if careerEndYear1.Equal(*careerEndYear3) {
 		t.Error("Equal() should return false for different year values")
 	}
 }

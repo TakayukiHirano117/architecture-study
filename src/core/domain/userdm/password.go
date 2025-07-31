@@ -29,3 +29,11 @@ func NewPassword(value string) (*Password, error) {
 
 	return &password, nil
 }
+
+func (p Password) String() string {
+	return string(p)
+}
+
+func (p Password) Equal(p2 Password) bool {
+	return p == p2
+}

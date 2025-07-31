@@ -30,3 +30,4 @@ func (skillId SkillId) String() string {
 func (skillId SkillId) Equal(skillId2 SkillId) bool {
 	return skillId == skillId2
 }
+

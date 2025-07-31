@@ -31,3 +31,11 @@ func NewEmail(value string) (*Email, error) {
 
 	return &email, nil
 }
+
+func (e Email) String() string {
+	return string(e)
+}
+
+func (e Email) Equal(e2 Email) bool {
+	return e == e2
+}

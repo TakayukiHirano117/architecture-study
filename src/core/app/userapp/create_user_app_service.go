@@ -17,12 +17,12 @@ func NewCreateUserAppService(userRepo userdm.UserRepository) *CreateUserAppServi
 }
 
 type CreateUserRequest struct {
-	name             string
-	email            string
-	password         string
-	skills           []CreateSkillRequest
-	careers          []CreateCareerRequest
-	selfIntroduction *string
+	Name             string
+	Email            string
+	Password         string
+	Skills           []CreateSkillRequest
+	Careers          []CreateCareerRequest
+	SelfIntroduction string
 }
 
 type CreateSkillRequest struct {
@@ -41,23 +41,23 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	// ユーザドメイン作成
 	// ユーザ名重複チェック
 	// ユーザ作成
-	userName, err := userdm.NewUserName(req.name)
+	userName, err := userdm.NewUserName(req.Name)
 	if err != nil {
 		return err
 	}
 
-	email, err := userdm.NewEmail(req.email)
+	email, err := userdm.NewEmail(req.Email)
 	if err != nil {
 		return err
 	}
 
-	password, err := userdm.NewPassword(req.password)
+	password, err := userdm.NewPassword(req.Password)
 	if err != nil {
 		return err
 	}
 
-	skills := make([]userdm.SkillParamIfCreate, len(req.skills))
-	for i, reqSkill := range req.skills {
+	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
+	for i, reqSkill := range req.Skills {
 		skills[i] = userdm.SkillParamIfCreate{
 			TagId:             reqSkill.TagId,
 			Evaluation:        reqSkill.Evaluation,
@@ -65,8 +65,8 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		}
 	}
 
-	careers := make([]userdm.CareerParamIfCreate, len(req.careers))
-	for i, reqCareer := range req.careers {
+	careers := make([]userdm.CareerParamIfCreate, len(req.Careers))
+	for i, reqCareer := range req.Careers {
 		careers[i] = userdm.CareerParamIfCreate{
 			Detail:          reqCareer.Detail,
 			CareerStartYear: reqCareer.StartYear,
@@ -74,7 +74,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		}
 	}
 
-	selfIntroduction, err := userdm.NewSelfIntroduction(*req.selfIntroduction)
+	selfIntroduction, err := userdm.NewSelfIntroduction(req.SelfIntroduction)
 	if err != nil {
 		return err
 	}

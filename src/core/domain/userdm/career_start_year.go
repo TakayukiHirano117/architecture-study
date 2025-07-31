@@ -18,10 +18,10 @@ func NewCareerStartYear(value int) (*CareerStartYear, error) {
 	return &careerStartYear, nil
 }
 
-func (c *CareerStartYear) String() string {
-	return strconv.Itoa(int(*c))
+func (c CareerStartYear) String() string {
+	return strconv.Itoa(int(c))
 }
 
-func (c *CareerStartYear) Equal(c2 *CareerStartYear) bool {
-	return *c == *c2
+func (c CareerStartYear) Equal(c2 CareerStartYear) bool {
+	return c == c2
 }

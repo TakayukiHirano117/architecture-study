@@ -19,3 +19,11 @@ func NewCareerDetail(value string) (*CareerDetail, error) {
 
 	return &careerDetail, nil
 }
+
+func (cd CareerDetail) String() string {
+	return string(cd)
+}
+
+func (cd CareerDetail) Equal(cd2 CareerDetail) bool {
+	return cd == cd2
+}
