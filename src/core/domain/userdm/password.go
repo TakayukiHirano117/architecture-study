@@ -25,6 +25,7 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password must contain at least one number")
 	}
 
+	// ここでハッシュ化する
 	password := Password(value)
 
 	return &password, nil

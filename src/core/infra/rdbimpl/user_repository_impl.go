@@ -26,7 +26,6 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{Connect: db}
 }
 
-// データベース用のDTO
 type userDTO struct {
 	ID               string    `db:"id"`
 	Name             string    `db:"name"`
@@ -37,7 +36,6 @@ type userDTO struct {
 	UpdatedAt        time.Time `db:"updated_at"`
 }
 
-// User ドメインオブジェクトをDTOに変換
 func (dto *userDTO) fromDomain(user *userdm.User) {
 	dto.ID = user.Id().String()
 	dto.Name = string(user.Name())
@@ -52,56 +50,6 @@ var (
 	users []*userdm.User
 )
 
-// func init() {
-// 	// エラーハンドリングを適切に行う
-// 	userName, err := userdm.NewUserName("user1")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	email, err := userdm.NewEmail("user1@example.com")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	password, err := userdm.NewPassword("password123456") // 12文字以上必要
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	selfIntroduction, err := userdm.NewSelfIntroduction("self introduction 1")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	// ダミーのスキルを作成（最低1つ必要）
-// 	dummySkill, err := userdm.NewSkill(
-// 		userdm.NewSkillId(),
-// 		tagdm.NewTagId(),
-// 		5, // 評価（例：5段階評価）
-// 		2, // 経験年数（例：2年）
-// 	)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	// GenForTestに値型（デリファレンス）で渡す
-// 	u1, err := userdm.GenForTest(
-// 		userdm.NewUserId(),
-// 		*userName, // ポインタを値にデリファレンス
-// 		*email,    // ポインタを値にデリファレンス
-// 		*password, // ポインタを値にデリファレンス
-// 		[]userdm.Skill{*dummySkill},
-// 		[]userdm.Career{},
-// 		selfIntroduction, // これはすでにポインタなのでそのまま
-// 	)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	users = []*userdm.User{u1}
-// }
-
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
 	for _, user := range users {
 		if user.Name() == name {
@@ -112,7 +60,6 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
-	// users = append(users, user)
 	dto := &userDTO{}
 	dto.fromDomain(user)
 	query := `

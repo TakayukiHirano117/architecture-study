@@ -38,9 +38,6 @@ type CreateCareerRequest struct {
 }
 
 func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserRequest) error {
-	// ユーザドメイン作成
-	// ユーザ名重複チェック
-	// ユーザ作成
 	userName, err := userdm.NewUserName(req.Name)
 	if err != nil {
 		return err
