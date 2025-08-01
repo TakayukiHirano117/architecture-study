@@ -18,6 +18,10 @@ func NewSelfIntroduction(value string) (*SelfIntroduction, error) {
 	return &selfIntroduction, nil
 }
 
+func NewSelfIntroductionByVal(value string) SelfIntroduction {
+	return SelfIntroduction(value)
+}
+
 func (si SelfIntroduction) String() string {
 	return string(si)
 }

@@ -36,7 +36,7 @@ func NewUser(id UserId, name UserName, password Password, email Email, skills []
 	}, nil
 }
 
-func Reconstruct(id UserId, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUserByVal(id UserId, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return &User{
 		id:               id,
 		name:             name,

@@ -10,6 +10,16 @@ type Skill struct {
 }
 
 func NewSkill(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience int) (*Skill, error) {
+	// 必要なバリデーションかける
+	return &Skill{
+		id:                id,
+		tagId:             tagId,
+		evaluation:        evaluation,
+		yearsOfExperience: yearsOfExperience,
+	}, nil
+}
+
+func NewSkillByVal(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience int) (*Skill, error) {
 	return &Skill{
 		id:                id,
 		tagId:             tagId,

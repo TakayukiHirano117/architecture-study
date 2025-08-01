@@ -18,6 +18,10 @@ func NewCareerEndYear(value int) (*CareerEndYear, error) {
 	return &careerEndYear, nil
 }
 
+func NewCareerEndYearByVal(value int) CareerEndYear {
+	return CareerEndYear(value)
+}
+
 func (c CareerEndYear) String() string {
 	return strconv.Itoa(int(c))
 }

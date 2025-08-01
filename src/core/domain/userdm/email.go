@@ -32,6 +32,10 @@ func NewEmail(value string) (*Email, error) {
 	return &email, nil
 }
 
+func NewEmailByVal(value string) Email {
+	return Email(value)
+}
+
 func (e Email) String() string {
 	return string(e)
 }

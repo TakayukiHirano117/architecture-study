@@ -4,6 +4,7 @@ import (
 	"regexp"
 
 	"github.com/cockroachdb/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Password string
@@ -25,10 +26,18 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password must contain at least one number")
 	}
 
-	// ここでハッシュ化する
-	password := Password(value)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to hash password")
+	}
+
+	password := Password(string(hashedPassword))
 
 	return &password, nil
+}
+
+func NewPasswordByVal(value string) Password {
+	return Password(value)
 }
 
 func (p Password) String() string {

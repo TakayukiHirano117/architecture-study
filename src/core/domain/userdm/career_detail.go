@@ -20,6 +20,10 @@ func NewCareerDetail(value string) (*CareerDetail, error) {
 	return &careerDetail, nil
 }
 
+func NewCareerDetailByVal(value string) CareerDetail {
+	return CareerDetail(value)
+}
+
 func (cd CareerDetail) String() string {
 	return string(cd)
 }
