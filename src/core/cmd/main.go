@@ -15,8 +15,6 @@ func main() {
 
 	port := ":8080"
 	fmt.Printf("Server starting on port %s\n", port)
-	fmt.Println("Health check available at: http://localhost:8080/health")
-	fmt.Println("User creation available at: http://localhost:8080/users")
 
 	router.Run(port)
 }

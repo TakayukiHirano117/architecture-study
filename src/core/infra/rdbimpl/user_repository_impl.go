@@ -51,6 +51,15 @@ var (
 )
 
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
+	query := `
+		SELECT * FROM users WHERE name = :name
+	`
+	rows, err := r.Connect.NamedQueryContext(ctx, query, map[string]interface{}{"name": name})
+	if err != nil {
+		return nil, err
+	}
+	// DBからとってきた値でreconstruct
+
 	for _, user := range users {
 		if user.Name().Equal(name) {
 			return user, nil
