@@ -52,10 +52,11 @@ var (
 
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
 	for _, user := range users {
-		if user.Name() == name {
+		if user.Name().Equal(name) {
 			return user, nil
 		}
 	}
+
 	return nil, errors.New("user not found")
 }
 

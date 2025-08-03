@@ -76,6 +76,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		return err
 	}
 
+	// TODO: factoryメソッド使ってるのでリポジトリ使う
 	user, err := userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
 
 	if err != nil {
