@@ -2,6 +2,7 @@ package userapp
 
 import (
 	"context"
+	"errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -38,6 +39,15 @@ type CreateCareerRequest struct {
 }
 
 func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserRequest) error {
+	// ユーザー名が重複しているかどうかをチェックする
+	user, err := app.userRepo.FindByName(ctx, userdm.UserName(req.Name))
+	if err != nil {
+		return err
+	}
+	if user != nil {
+		return errors.New("user name already exists")
+	}
+
 	userName, err := userdm.NewUserName(req.Name)
 	if err != nil {
 		return err
@@ -76,8 +86,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		return err
 	}
 
-	// TODO: factoryメソッド使ってるのでリポジトリ使う
-	user, err := userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
+	user, err = userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
 
 	if err != nil {
 		return err

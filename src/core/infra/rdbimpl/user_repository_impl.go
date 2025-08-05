@@ -46,10 +46,6 @@ func (dto *userDTO) fromDomain(user *userdm.User) {
 	dto.UpdatedAt = user.UpdatedAt()
 }
 
-var (
-	users []*userdm.User
-)
-
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
 	query := `
 		SELECT * FROM users WHERE name = :name
@@ -58,19 +54,15 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	if err != nil {
 		return nil, err
 	}
-	// DBからとってきた値でreconstruct
 
-	for _, user := range users {
-		if user.Name().Equal(name) {
-			return user, nil
-		}
+	if rows.Next() {
+		return nil, errors.New("user name already exists")
 	}
 
-	return nil, errors.New("user not found")
+	return nil, nil
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
-	// users = append(users, user)
 	dto := &userDTO{}
 	dto.fromDomain(user)
 	query := `
