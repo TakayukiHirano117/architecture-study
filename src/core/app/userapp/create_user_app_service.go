@@ -44,6 +44,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	if err != nil {
 		return err
 	}
+
 	if user != nil {
 		return errors.New("user name already exists")
 	}
@@ -65,6 +66,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 
 	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
 	for i, reqSkill := range req.Skills {
+		// ここでtagIdの存在チェック
 		skills[i] = userdm.SkillParamIfCreate{
 			TagId:             reqSkill.TagId,
 			Evaluation:        reqSkill.Evaluation,

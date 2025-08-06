@@ -27,13 +27,27 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 }
 
 type userDTO struct {
-	ID               string    `db:"id"`
-	Name             string    `db:"name"`
-	Email            string    `db:"email"`
-	Password         string    `db:"password"`
-	SelfIntroduction string    `db:"self_introduction"`
-	CreatedAt        time.Time `db:"created_at"`
-	UpdatedAt        time.Time `db:"updated_at"`
+	ID               string      `db:"id"`
+	Name             string      `db:"name"`
+	Password         string      `db:"password"`
+	Email            string      `db:"email"`
+	Skills           []skillDTO  `db:"skills"`
+	Careers          []careerDTO `db:"careers"`
+	SelfIntroduction string      `db:"self_introduction"`
+	CreatedAt        time.Time   `db:"created_at"`
+	UpdatedAt        time.Time   `db:"updated_at"`
+}
+
+type skillDTO struct {
+	TagId             string `db:"tag_id"`
+	Evaluation        int    `db:"evaluation"`
+	YearsOfExperience int    `db:"years_of_experience"`
+}
+
+type careerDTO struct {
+	Detail    string `db:"detail"`
+	StartYear int    `db:"start_year"`
+	EndYear   int    `db:"end_year"`
 }
 
 func (dto *userDTO) fromDomain(user *userdm.User) {
