@@ -27,3 +27,19 @@ func NewSkillByVal(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperie
 		yearsOfExperience: yearsOfExperience,
 	}, nil
 }
+
+func (s *Skill) Id() SkillId {
+	return s.id
+}
+
+func (s *Skill) TagId() tagdm.TagId {
+	return s.tagId
+}
+
+func (s *Skill) Evaluation() int {
+	return s.evaluation
+}
+
+func (s *Skill) YearsOfExperience() int {
+	return s.yearsOfExperience
+}

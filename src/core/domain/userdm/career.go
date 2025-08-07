@@ -25,3 +25,19 @@ func NewCareerByVal(id CareerId, detail CareerDetail, startYear CareerStartYear,
 		endYear:   endYear,
 	}, nil
 }
+
+func (c *Career) Id() CareerId {
+	return c.id
+}
+
+func (c *Career) Detail() CareerDetail {
+	return c.detail
+}
+
+func (c *Career) StartYear() CareerStartYear {
+	return c.startYear
+}
+
+func (c *Career) EndYear() CareerEndYear {
+	return c.endYear
+}

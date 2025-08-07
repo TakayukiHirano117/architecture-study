@@ -1,8 +1,6 @@
 package userdm
 
 import (
-	"strconv"
-
 	"github.com/cockroachdb/errors"
 )
 
@@ -22,8 +20,8 @@ func NewCareerStartYearByVal(value int) CareerStartYear {
 	return CareerStartYear(value)
 }
 
-func (c CareerStartYear) String() string {
-	return strconv.Itoa(int(c))
+func (c CareerStartYear) Int() int {
+	return int(c)
 }
 
 func (c CareerStartYear) Equal(c2 CareerStartYear) bool {
