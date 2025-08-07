@@ -77,6 +77,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		INSERT INTO users (id, name, email, password, self_introduction, created_at, updated_at)
 		VALUES (:id, :name, :email, :password, :self_introduction, NOW(), NOW())
 	`
+	// TODO: skillsとcareersをinsertする
 	_, err := r.Connect.NamedExecContext(ctx, query, userModel)
 	if err != nil {
 		return err
