@@ -26,41 +26,6 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{Connect: db}
 }
 
-// TODO: これをデータモデルに置き換える
-// type userDTO struct {
-// 	ID               string      `db:"id"`
-// 	Name             string      `db:"name"`
-// 	Password         string      `db:"password"`
-// 	Email            string      `db:"email"`
-// 	Skills           []skillDTO  `db:"skills"`
-// 	Careers          []careerDTO `db:"careers"`
-// 	SelfIntroduction string      `db:"self_introduction"`
-// 	CreatedAt        time.Time   `db:"created_at"`
-// 	UpdatedAt        time.Time   `db:"updated_at"`
-// }
-
-// type skillDTO struct {
-// 	TagId             string `db:"tag_id"`
-// 	Evaluation        int    `db:"evaluation"`
-// 	YearsOfExperience int    `db:"years_of_experience"`
-// }
-
-// type careerDTO struct {
-// 	Detail    string `db:"detail"`
-// 	StartYear int    `db:"start_year"`
-// 	EndYear   int    `db:"end_year"`
-// }
-
-// func (dto *userDTO) fromDomain(user *userdm.User) {
-// 	dto.ID = user.Id().String()
-// 	dto.Name = string(user.Name())
-// 	dto.Email = string(user.Email())
-// 	dto.Password = string(user.Password())
-// 	dto.SelfIntroduction = string(user.SelfIntroduction())
-// 	dto.CreatedAt = user.CreatedAt()
-// 	dto.UpdatedAt = user.UpdatedAt()
-// }
-
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
 	query := `
 		SELECT * FROM users WHERE name = :name
