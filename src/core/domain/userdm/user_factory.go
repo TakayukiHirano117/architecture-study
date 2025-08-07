@@ -48,6 +48,10 @@ func GenIfCreate(
 	}
 
 	skills := make([]Skill, len(reqSkills))
+	// TODO: tagIdではなくてtag_nameが送られてくる
+	// TODO: tag_nameでfindByNameして、tagIdが取得できればskillを保存。
+	// TODO: できなれけば次のループにスキップ
+	// 実際のMENTAのスキルのフォームがそうだった。
 	for i, rs := range reqSkills {
 		tagID, err := tagdm.NewTagIdByVal(rs.TagId)
 

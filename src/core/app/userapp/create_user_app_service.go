@@ -3,17 +3,19 @@ package userapp
 import (
 	"context"
 	"errors"
-
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/domain_service"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type CreateUserAppService struct {
-	userRepo userdm.UserRepository
+	userRepo          userdm.UserRepository
+	userDomainService domain_service.UserDomainService
 }
 
-func NewCreateUserAppService(userRepo userdm.UserRepository) *CreateUserAppService {
+func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService domain_service.UserDomainService) *CreateUserAppService {
 	return &CreateUserAppService{
-		userRepo: userRepo,
+		userRepo:          userRepo,
+		userDomainService: userDomainService,
 	}
 }
 
@@ -39,19 +41,16 @@ type CreateCareerRequest struct {
 }
 
 func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserRequest) error {
-	// ユーザー名が重複しているかどうかをチェックする
-	user, err := app.userRepo.FindByName(ctx, userdm.UserName(req.Name))
-	if err != nil {
-		return err
-	}
-
-	if user != nil {
-		return errors.New("user name already exists")
-	}
-
 	userName, err := userdm.NewUserName(req.Name)
 	if err != nil {
 		return err
+	}
+	b, err := app.userDomainService.IsExistByUserName(ctx, *userName)
+	if err != nil {
+		return err
+	}
+	if b {
+		return errors.New("user name already exists")
 	}
 
 	email, err := userdm.NewEmail(req.Email)
@@ -88,7 +87,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		return err
 	}
 
-	user, err = userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
+	user, err := userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
 
 	if err != nil {
 		return err

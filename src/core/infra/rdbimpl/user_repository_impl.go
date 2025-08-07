@@ -26,6 +26,7 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{Connect: db}
 }
 
+// TODO: これをデータモデルに置き換える
 type userDTO struct {
 	ID               string      `db:"id"`
 	Name             string      `db:"name"`
