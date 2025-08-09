@@ -8,7 +8,7 @@ import (
 
 type TagDomainService interface {
 	IsExistByTagId(ctx context.Context, tagId tagdm.TagId) (bool, error)
-	IsExistByTagName(ctx context.Context, tagName string) (bool, error)
+	IsExistByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error)
 }
 
 type tagDomainService struct {
@@ -21,14 +21,14 @@ func NewTagDomainService(tr tagdm.TagRepository) TagDomainService {
 	}
 }
 
-func (tds *tagDomainService) IsExistByTagName(ctx context.Context, tagName string) (bool, error) {
+func (tds *tagDomainService) IsExistByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
 	tag, err := tds.tagRepo.FindByTagName(ctx, tagName)
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return tag != nil, nil
+	return tag, nil
 }
 
 func (tds *tagDomainService) IsExistByTagId(ctx context.Context, tagId tagdm.TagId) (bool, error) {

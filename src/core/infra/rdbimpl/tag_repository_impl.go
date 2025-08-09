@@ -58,7 +58,7 @@ func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagd
 	return tagdm.NewTagByVal(tagId, tagName)
 }
 
-func (r *TagRepositoryImpl) FindByTagName(ctx context.Context, tagName string) (*tagdm.TagId, error) {
+func (r *TagRepositoryImpl) FindByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
 	query := `
 		SELECT id FROM tags WHERE name = :name
 	`

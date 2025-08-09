@@ -33,7 +33,7 @@ type CreateUserRequest struct {
 }
 
 type CreateSkillRequest struct {
-	TagId             string
+	TagName           string
 	Evaluation        int
 	YearsOfExperience int
 }
@@ -69,22 +69,23 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 
 	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
 	for i, reqSkill := range req.Skills {
-		// ここでtagIdの存在チェック
-		tagId, err := tagdm.NewTagId(reqSkill.TagId)
+		// ここでtagNameの存在チェック
+		tagName, err := tagdm.NewTagName(reqSkill.TagName)
 		if err != nil {
 			return err
 		}
 
-		b, err := app.tagDomainService.IsExistByTagId(ctx, tagId)
+		// tagNameがあったらtagIdを取得、DBに保存するのはtagIdなので
+		tagId, err := app.tagDomainService.IsExistByTagName(ctx, *tagName)
 		if err != nil {
 			return err
 		}
-		if !b {
-			return errors.New("tag id not found")
+		if tagId == nil {
+			return errors.New("tag name not found")
 		}
 
 		skills[i] = userdm.SkillParamIfCreate{
-			TagId:             reqSkill.TagId,
+			TagId:             tagId.String(),
 			Evaluation:        reqSkill.Evaluation,
 			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
