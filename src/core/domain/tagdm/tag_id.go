@@ -7,8 +7,16 @@ import (
 
 type TagId string
 
-func NewTagId() TagId {
-	return TagId(uuid.New().String())
+func NewTagId(value string) (TagId, error) {
+	if value == "" {
+		return "", errors.New("TagId is empty")
+	}
+
+	if _, err := uuid.Parse(value); err != nil {
+		return "", errors.New("TagId is invalid")
+	}
+
+	return TagId(value), nil
 }
 
 func NewTagIdByVal(val string) (TagId, error) {

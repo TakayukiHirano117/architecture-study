@@ -13,7 +13,6 @@ func NewTag(id TagId, name TagName) (*Tag, error) {
 	return &Tag{id: id, name: name, createdAt: time.Now(), updatedAt: time.Now()}, nil
 }
 
-func NewTagByVal(id TagId, name TagName) *Tag {
-	return &Tag{id: id, name: name, createdAt: time.Now(), updatedAt: time.Now()}
+func NewTagByVal(id TagId, name TagName) (*Tag, error) {
+	return &Tag{id: id, name: name, createdAt: time.Now(), updatedAt: time.Now()}, nil
 }
-

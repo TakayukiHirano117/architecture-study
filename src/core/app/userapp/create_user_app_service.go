@@ -3,19 +3,23 @@ package userapp
 import (
 	"context"
 	"errors"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/domain_service"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type CreateUserAppService struct {
 	userRepo          userdm.UserRepository
 	userDomainService domain_service.UserDomainService
+	tagDomainService  domain_service.TagDomainService
 }
 
-func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService domain_service.UserDomainService) *CreateUserAppService {
+func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService domain_service.UserDomainService, tagDomainService domain_service.TagDomainService) *CreateUserAppService {
 	return &CreateUserAppService{
 		userRepo:          userRepo,
 		userDomainService: userDomainService,
+		tagDomainService:  tagDomainService,
 	}
 }
 
@@ -66,6 +70,19 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
 	for i, reqSkill := range req.Skills {
 		// ここでtagIdの存在チェック
+		tagId, err := tagdm.NewTagId(reqSkill.TagId)
+		if err != nil {
+			return err
+		}
+
+		b, err := app.tagDomainService.IsExistByTagId(ctx, tagId)
+		if err != nil {
+			return err
+		}
+		if !b {
+			return errors.New("tag id not found")
+		}
+
 		skills[i] = userdm.SkillParamIfCreate{
 			TagId:             reqSkill.TagId,
 			Evaluation:        reqSkill.Evaluation,

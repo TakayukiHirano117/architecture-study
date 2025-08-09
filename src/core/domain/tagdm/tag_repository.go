@@ -3,5 +3,6 @@ package tagdm
 import "context"
 
 type TagRepository interface {
-	FindById(ctx context.Context, id string) (*Tag, error)
+	FindById(ctx context.Context, id TagId) (*Tag, error)
+	FindByTagName(ctx context.Context, tagName string) (*Tag, error)
 }
