@@ -22,13 +22,13 @@ func NewTagDomainService(tr tagdm.TagRepository) TagDomainService {
 }
 
 func (tds *tagDomainService) IsExistByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
-	tag, err := tds.tagRepo.FindByTagName(ctx, tagName)
+	tagID, err := tds.tagRepo.FindByTagName(ctx, tagName)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return tag, nil
+	return tagID, nil
 }
 
 func (tds *tagDomainService) IsExistByTagId(ctx context.Context, tagId tagdm.TagId) (bool, error) {

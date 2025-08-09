@@ -50,6 +50,8 @@ func NewUserByVal(id UserId, name UserName, password Password, email Email, skil
 	}, nil
 }
 
+// TODO: ユーザーのドメインルールを表したメソッドを書く
+
 func (u *User) Id() UserId {
 	return u.id
 }
