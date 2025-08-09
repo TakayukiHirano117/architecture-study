@@ -27,17 +27,21 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
 	query := `
-		SELECT * FROM users WHERE name = :name
+		SELECT id FROM users WHERE name = $1
 	`
-	rows, err := r.Connect.NamedQueryContext(ctx, query, map[string]interface{}{"name": name})
+	rows, err := r.Connect.QueryContext(ctx, query, name.String())
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	if rows.Next() {
-		return nil, errors.New("user name already exists")
+		// ユーザーが存在する場合、空のUserオブジェクトを返す
+		// 重複チェックのみに使用されるため、詳細な情報は不要
+		return &userdm.User{}, nil
 	}
 
+	// ユーザーが存在しない場合はnilを返す（エラーではない）
 	return nil, nil
 }
 

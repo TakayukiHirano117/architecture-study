@@ -26,12 +26,13 @@ func NewTagRepositoryImpl() *TagRepositoryImpl {
 
 func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagdm.Tag, error) {
 	query := `
-		SELECT * FROM tags WHERE id = :id
+		SELECT id, name, created_at, updated_at FROM tags WHERE id = $1
 	`
-	rows, err := r.Connect.NamedQueryContext(ctx, query, map[string]interface{}{"id": id})
+	rows, err := r.Connect.QueryContext(ctx, query, id.String())
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	if !rows.Next() {
 		return nil, errors.New("tag id not found")
@@ -39,8 +40,9 @@ func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagd
 
 	var tagIdStr string
 	var tagNameStr string
+	var createdAt, updatedAt interface{} // タイムスタンプは使わないので interface{} で受ける
 
-	err = rows.Scan(&tagIdStr, &tagNameStr)
+	err = rows.Scan(&tagIdStr, &tagNameStr, &createdAt, &updatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -60,9 +62,9 @@ func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagd
 
 func (r *TagRepositoryImpl) FindByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
 	query := `
-		SELECT id FROM tags WHERE name = :name
+		SELECT id FROM tags WHERE name = $1
 	`
-	rows, err := r.Connect.NamedQueryContext(ctx, query, map[string]interface{}{"name": tagName})
+	rows, err := r.Connect.QueryContext(ctx, query, tagName.String())
 	if err != nil {
 		return nil, err
 	}
