@@ -1,11 +1,8 @@
--- 拡張機能
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- 依存関係に注意して DROP 順序を調整
 DROP TABLE IF EXISTS mentor_recruitment_proposals;
 DROP TABLE IF EXISTS contract_requests;
 DROP TABLE IF EXISTS contracts;
-DROP TABLE IF EXISTS user_skills;
 DROP TABLE IF EXISTS mentor_recruitment_tags;
 DROP TABLE IF EXISTS plan_tags;
 DROP TABLE IF EXISTS skills;
@@ -51,16 +48,8 @@ CREATE TABLE tags (
 -- スキルテーブル
 CREATE TABLE skills (
     id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
-    tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
--- ユーザーとスキルの中間テーブル
-CREATE TABLE user_skills (
-    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id),
-    skill_id UUID NOT NULL REFERENCES skills(id),
+    tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -169,3 +158,7 @@ INSERT INTO categories (id, name) VALUES
     (gen_random_uuid(), 'ビジネス'),
     (gen_random_uuid(), '語学'),
     (gen_random_uuid(), 'ライフスタイル');
+
+-- 初期タグデータ挿入
+insert into tags (name) values ('PHP'), ('TS'), ('Go'), ('Java'), ('AWS');
+
