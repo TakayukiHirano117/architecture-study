@@ -4,18 +4,17 @@ import (
 	"context"
 	"errors"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/domain_service"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type CreateUserAppService struct {
 	userRepo          userdm.UserRepository
-	userDomainService domain_service.UserDomainService
-	tagDomainService  domain_service.TagDomainService
+	userDomainService userdm.UserDomainService
+	tagDomainService  tagdm.TagDomainService
 }
 
-func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService domain_service.UserDomainService, tagDomainService domain_service.TagDomainService) *CreateUserAppService {
+func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService userdm.UserDomainService, tagDomainService tagdm.TagDomainService) *CreateUserAppService {
 	return &CreateUserAppService{
 		userRepo:          userRepo,
 		userDomainService: userDomainService,
@@ -76,7 +75,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		}
 
 		// tagNameがあったらtagIdを取得、DBに保存するのはtagIdなので
-		tagId, err := app.tagDomainService.IsExistByTagName(ctx, *tagName)
+		tagId, err := app.tagDomainService.FindIdByTagName(ctx, *tagName)
 		if err != nil {
 			return err
 		}

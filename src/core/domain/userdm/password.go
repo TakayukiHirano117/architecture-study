@@ -14,6 +14,7 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password is empty")
 	}
 
+	// TODO: 英数字以外許容しない感じが一般的だと思うのでutf8は使わない。逆に英数字以外が入っているかの検査も必要かも
 	if len(value) < 12 {
 		return nil, errors.New("Password is too short")
 	}

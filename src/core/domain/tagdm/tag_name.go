@@ -1,6 +1,10 @@
 package tagdm
 
-import "github.com/cockroachdb/errors"
+import (
+	"unicode/utf8"
+
+	"github.com/cockroachdb/errors"
+)
 
 type TagName string
 
@@ -9,7 +13,7 @@ func NewTagName(value string) (*TagName, error) {
 		return nil, errors.New("tag name is empty")
 	}
 
-	if len(value) > 255 {
+	if utf8.RuneCountInString(value) > 255 {
 		return nil, errors.New("tag name is too long")
 	}
 

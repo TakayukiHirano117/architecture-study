@@ -1,6 +1,8 @@
 package userdm
 
 import (
+	"unicode/utf8"
+
 	"github.com/cockroachdb/errors"
 )
 
@@ -11,7 +13,7 @@ func NewCareerDetail(value string) (*CareerDetail, error) {
 		return nil, errors.New("CareerDetail is empty")
 	}
 
-	if len(value) > 2000 {
+	if utf8.RuneCountInString(value) > 2000 {
 		return nil, errors.New("CareerDetail is too long")
 	}
 
