@@ -24,7 +24,7 @@ func NewTagRepositoryImpl() *TagRepositoryImpl {
 	return &TagRepositoryImpl{Connect: db}
 }
 
-func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagdm.Tag, error) {
+func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagdm.Tag, error) {
 	query := `
 		SELECT id, name, created_at, updated_at FROM tags WHERE id = $1
 	`
@@ -47,7 +47,7 @@ func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagd
 		return nil, err
 	}
 
-	tagId, err := tagdm.NewTagIdByVal(tagIdStr)
+	tagID, err := tagdm.NewTagIDByVal(tagIdStr)
 	if err != nil {
 		return nil, err
 	}
@@ -57,10 +57,10 @@ func (r *TagRepositoryImpl) FindById(ctx context.Context, id tagdm.TagId) (*tagd
 		return nil, err
 	}
 
-	return tagdm.NewTagByVal(tagId, tagName)
+	return tagdm.NewTagByVal(tagID, tagName)
 }
 
-func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
+func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
 	query := `
 		SELECT id FROM tags WHERE name = $1
 	`
@@ -80,10 +80,10 @@ func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.T
 		return nil, err
 	}
 
-	tagId, err := tagdm.NewTagIdByVal(idStr)
+	tagID, err := tagdm.NewTagIDByVal(idStr)
 	if err != nil {
 		return nil, err
 	}
 
-	return &tagId, nil
+	return &tagID, nil
 }

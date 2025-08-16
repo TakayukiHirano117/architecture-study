@@ -2,8 +2,8 @@ package userdm
 
 import (
 	"regexp"
-	"unicode/utf8"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/cockroachdb/errors"
 )

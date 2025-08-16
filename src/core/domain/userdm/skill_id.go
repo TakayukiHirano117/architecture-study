@@ -5,29 +5,28 @@ import (
 	"github.com/google/uuid"
 )
 
-type SkillId string
+type SkillID string
 
-func NewSkillId() SkillId {
-	return SkillId(uuid.New().String())
+func NewSkillID() SkillID {
+	return SkillID(uuid.New().String())
 }
 
-func NewSkillIdByVal(val string) (SkillId, error) {
+func NewSkillIDByVal(val string) (SkillID, error) {
 	if val == "" {
-		return "", errors.New("SkillId is empty")
+		return "", errors.New("SkillID is empty")
 	}
 
 	if _, err := uuid.Parse(val); err != nil {
-		return "", errors.New("SkillId is invalid")
+		return "", errors.New("SkillID is invalid")
 	}
 
-	return SkillId(val), nil
+	return SkillID(val), nil
 }
 
-func (skillId SkillId) String() string {
+func (skillId SkillID) String() string {
 	return string(skillId)
 }
 
-func (skillId SkillId) Equal(skillId2 SkillId) bool {
+func (skillId SkillID) Equal(skillId2 SkillID) bool {
 	return skillId == skillId2
 }
-

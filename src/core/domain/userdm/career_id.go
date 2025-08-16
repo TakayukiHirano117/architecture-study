@@ -5,24 +5,24 @@ import (
 	"github.com/google/uuid"
 )
 
-type CareerId string
+type CareerID string
 
-func NewCareerId() CareerId {
-	return CareerId(uuid.New().String())
+func NewCareerID() CareerID {
+	return CareerID(uuid.New().String())
 }
 
-func NewCareerIdByVal(val string) (CareerId, error) {
+func NewCareerIDByVal(val string) (CareerID, error) {
 	if val == "" {
-		return "", errors.New("CareerId is empty")
+		return "", errors.New("CareerID is empty")
 	}
 
-	return CareerId(val), nil
+	return CareerID(val), nil
 }
 
-func (careerId CareerId) String() string {
+func (careerId CareerID) String() string {
 	return string(careerId)
 }
 
-func (careerId CareerId) Equal(careerId2 CareerId) bool {
+func (careerId CareerID) Equal(careerId2 CareerID) bool {
 	return careerId == careerId2
 }

@@ -12,15 +12,17 @@ import (
 
 type CreateUserController struct {
 	userRepo          userdm.UserRepository
-	userDomainService userdm.UserDomainService
-	tagDomainService  tagdm.TagDomainService
+	IsExistByUserName userdm.IsExistByUserNameDomainService
+	IsExistByTagID    tagdm.IsExistByTagIDDomainService
+	FindIDByTagName   tagdm.FindIDByTagNameDomainService
 }
 
 func NewCreateUserController() *CreateUserController {
 	return &CreateUserController{
 		userRepo:          rdbimpl.NewUserRepositoryImpl(),
-		userDomainService: userdm.NewUserDomainService(rdbimpl.NewUserRepositoryImpl()),
-		tagDomainService:  tagdm.NewTagDomainService(rdbimpl.NewTagRepositoryImpl()),
+		IsExistByUserName: userdm.NewIsExistByUserNameDomainService(rdbimpl.NewUserRepositoryImpl()),
+		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(rdbimpl.NewTagRepositoryImpl()),
+		FindIDByTagName:   tagdm.NewFindIDByTagNameDomainService(rdbimpl.NewTagRepositoryImpl()),
 	}
 }
 
@@ -32,7 +34,7 @@ func (c *CreateUserController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	if err := userapp.NewCreateUserAppService(c.userRepo, c.userDomainService, c.tagDomainService).Exec(ctx, &in); err != nil {
+	if err := userapp.NewCreateUserAppService(c.userRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx, &in); err != nil {
 		ctx.Error(err)
 		return
 	}

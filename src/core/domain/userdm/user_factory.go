@@ -39,7 +39,7 @@ func GenIfCreate(
 			return nil, err
 		}
 
-		c, err := NewCareer(NewCareerId(), *cd, *csy, *cey)
+		c, err := NewCareer(NewCareerID(), *cd, *csy, *cey)
 
 		if err != nil {
 			return nil, err
@@ -53,13 +53,13 @@ func GenIfCreate(
 	// TODO: できなれけば次のループにスキップ
 	// 実際のMENTAのスキルのフォームがそうだった。
 	for i, rs := range reqSkills {
-		tagID, err := tagdm.NewTagIdByVal(rs.TagId)
+		tagID, err := tagdm.NewTagIDByVal(rs.TagId)
 
 		if err != nil {
 			return nil, err
 		}
 
-		s, err := NewSkill(NewSkillId(), tagID, rs.Evaluation, rs.YearsOfExperience)
+		s, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
 
 		if err != nil {
 			return nil, err
@@ -71,6 +71,6 @@ func GenIfCreate(
 	return NewUser(NewUserId(), userName, password, email, skills, careers, selfIntroduction)
 }
 
-func GenForTest(id UserId, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func GenForTest(id UserID, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return NewUser(id, name, password, email, skills, careers, selfIntroduction)
 }

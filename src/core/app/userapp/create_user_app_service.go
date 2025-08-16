@@ -10,15 +10,17 @@ import (
 
 type CreateUserAppService struct {
 	userRepo          userdm.UserRepository
-	userDomainService userdm.UserDomainService
-	tagDomainService  tagdm.TagDomainService
+	IsExistByUserName userdm.IsExistByUserNameDomainService
+	IsExistByTagID    tagdm.IsExistByTagIDDomainService
+	FindIDByTagName   tagdm.FindIDByTagNameDomainService
 }
 
-func NewCreateUserAppService(userRepo userdm.UserRepository, userDomainService userdm.UserDomainService, tagDomainService tagdm.TagDomainService) *CreateUserAppService {
+func NewCreateUserAppService(userRepo userdm.UserRepository, isExistByUserNameDomainService userdm.IsExistByUserNameDomainService, isExistByTagIDDomainService tagdm.IsExistByTagIDDomainService, findIDByTagNameDomainService tagdm.FindIDByTagNameDomainService) *CreateUserAppService {
 	return &CreateUserAppService{
 		userRepo:          userRepo,
-		userDomainService: userDomainService,
-		tagDomainService:  tagDomainService,
+		IsExistByUserName: isExistByUserNameDomainService,
+		IsExistByTagID:    isExistByTagIDDomainService,
+		FindIDByTagName:   findIDByTagNameDomainService,
 	}
 }
 
@@ -48,7 +50,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	if err != nil {
 		return err
 	}
-	b, err := app.userDomainService.IsExistByUserName(ctx, *userName)
+	b, err := app.IsExistByUserName.Exec(ctx, *userName)
 	if err != nil {
 		return err
 	}
@@ -75,7 +77,7 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		}
 
 		// tagNameがあったらtagIdを取得、DBに保存するのはtagIdなので
-		tagId, err := app.tagDomainService.FindIdByTagName(ctx, *tagName)
+		tagId, err := app.FindIDByTagName.Exec(ctx, *tagName)
 		if err != nil {
 			return err
 		}

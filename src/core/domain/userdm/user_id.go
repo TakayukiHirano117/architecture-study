@@ -5,28 +5,28 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserId string
+type UserID string
 
-func NewUserId() UserId {
-	return UserId(uuid.New().String())
+func NewUserId() UserID {
+	return UserID(uuid.New().String())
 }
 
-func NewUserIdByVal(val string) (UserId, error) {
+func NewUserIdByVal(val string) (UserID, error) {
 	if val == "" {
-		return "", errors.New("UserId is empty")
+		return "", errors.New("UserID is empty")
 	}
 
 	if _, err := uuid.Parse(val); err != nil {
-		return "", errors.New("UserId is invalid")
+		return "", errors.New("UserID is invalid")
 	}
 
-	return UserId(val), nil
+	return UserID(val), nil
 }
 
-func (userId UserId) String() string {
+func (userId UserID) String() string {
 	return string(userId)
 }
 
-func (userId UserId) Equal(userId2 UserId) bool {
+func (userId UserID) Equal(userId2 UserID) bool {
 	return userId == userId2
 }

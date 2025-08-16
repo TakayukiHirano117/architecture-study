@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	id               UserId
+	id               UserID
 	name             UserName
 	password         Password
 	email            Email
@@ -18,7 +18,7 @@ type User struct {
 	updatedAt        time.Time
 }
 
-func NewUser(id UserId, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUser(id UserID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	if len(skills) <= 0 {
 		return nil, errors.New("skills must be at least 1")
 	}
@@ -36,7 +36,7 @@ func NewUser(id UserId, name UserName, password Password, email Email, skills []
 	}, nil
 }
 
-func NewUserByVal(id UserId, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUserByVal(id UserID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return &User{
 		id:               id,
 		name:             name,
@@ -52,7 +52,7 @@ func NewUserByVal(id UserId, name UserName, password Password, email Email, skil
 
 // TODO: ユーザーのドメインルールを表したメソッドを書く
 
-func (u *User) Id() UserId {
+func (u *User) ID() UserID {
 	return u.id
 }
 

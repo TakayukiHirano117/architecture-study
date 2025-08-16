@@ -3,13 +3,13 @@ package userdm
 import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 
 type Skill struct {
-	id                SkillId
-	tagId             tagdm.TagId
+	id                SkillID
+	tagId             tagdm.TagID
 	evaluation        int
 	yearsOfExperience int
 }
 
-func NewSkill(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience int) (*Skill, error) {
+func NewSkill(id SkillID, tagId tagdm.TagID, evaluation int, yearsOfExperience int) (*Skill, error) {
 	// 必要なバリデーションかける
 	return &Skill{
 		id:                id,
@@ -19,7 +19,7 @@ func NewSkill(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience i
 	}, nil
 }
 
-func NewSkillByVal(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperience int) (*Skill, error) {
+func NewSkillByVal(id SkillID, tagId tagdm.TagID, evaluation int, yearsOfExperience int) (*Skill, error) {
 	return &Skill{
 		id:                id,
 		tagId:             tagId,
@@ -28,11 +28,11 @@ func NewSkillByVal(id SkillId, tagId tagdm.TagId, evaluation int, yearsOfExperie
 	}, nil
 }
 
-func (s *Skill) Id() SkillId {
+func (s *Skill) ID() SkillID {
 	return s.id
 }
 
-func (s *Skill) TagId() tagdm.TagId {
+func (s *Skill) TagID() tagdm.TagID {
 	return s.tagId
 }
 

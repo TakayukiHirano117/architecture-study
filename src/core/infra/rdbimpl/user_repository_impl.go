@@ -36,17 +36,13 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	defer rows.Close()
 
 	if rows.Next() {
-		// ユーザーが存在する場合、空のUserオブジェクトを返す
-		// 重複チェックのみに使用されるため、詳細な情報は不要
 		return &userdm.User{}, nil
 	}
 
-	// ユーザーが存在しない場合はnilを返す（エラーではない）
 	return nil, nil
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
-	// トランザクション開始
 	tx, err := r.Connect.BeginTxx(ctx, nil)
 	if err != nil {
 		return err
@@ -59,13 +55,12 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		}
 	}()
 
-	// ユーザー情報をusersテーブルに挿入
 	userQuery := `
 		INSERT INTO users (id, name, email, password, self_introduction, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 	`
 	_, err = tx.ExecContext(ctx, userQuery,
-		user.Id().String(),
+		user.ID().String(),
 		user.Name().String(),
 		user.Email().String(),
 		user.Password().String(),
@@ -75,7 +70,6 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		return err
 	}
 
-	// careersテーブルに経歴情報を挿入
 	if len(user.Careers()) > 0 {
 		careerQuery := `
 			INSERT INTO careers (id, user_id, detail, start_year, end_year, created_at, updated_at)
@@ -83,7 +77,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		`
 		for _, career := range user.Careers() {
 			_, err = tx.ExecContext(ctx, careerQuery,
-				user.Id().String(),
+				user.ID().String(),
 				career.Detail().String(),
 				career.StartYear().Int(),
 				career.EndYear().Int(),
@@ -94,7 +88,6 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		}
 	}
 
-	// skillsテーブルにスキル情報を挿入
 	if len(user.Skills()) > 0 {
 		skillQuery := `
 			INSERT INTO skills (id, user_id, tag_id, created_at, updated_at)
@@ -102,7 +95,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		`
 		for _, skill := range user.Skills() {
 			_, err = tx.ExecContext(ctx, skillQuery,
-				user.Id().String(),
+				user.ID().String(),
 				skill.TagId().String(),
 			)
 			if err != nil {
