@@ -36,7 +36,7 @@ func (m *MockTagDomainService) EXPECT() *MockTagDomainServiceMockRecorder {
 }
 
 // IsExistByTagId mocks base method.
-func (m *MockTagDomainService) IsExistByTagId(ctx context.Context, tagId tagdm.TagId) (bool, error) {
+func (m *MockTagDomainService) IsExistByTagId(ctx context.Context, tagId tagdm.TagID) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsExistByTagId", ctx, tagId)
 	ret0, _ := ret[0].(bool)
@@ -51,10 +51,10 @@ func (mr *MockTagDomainServiceMockRecorder) IsExistByTagId(ctx, tagId interface{
 }
 
 // IsExistByTagName mocks base method.
-func (m *MockTagDomainService) IsExistByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagId, error) {
+func (m *MockTagDomainService) IsExistByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsExistByTagName", ctx, tagName)
-	ret0, _ := ret[0].(*tagdm.TagId)
+	ret0, _ := ret[0].(*tagdm.TagID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

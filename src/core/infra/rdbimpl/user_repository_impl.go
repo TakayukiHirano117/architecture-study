@@ -96,7 +96,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		for _, skill := range user.Skills() {
 			_, err = tx.ExecContext(ctx, skillQuery,
 				user.ID().String(),
-				skill.TagId().String(),
+				skill.TagID().String(),
 			)
 			if err != nil {
 				return err
