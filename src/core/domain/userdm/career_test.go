@@ -7,7 +7,7 @@ import (
 )
 
 func TestCareer_NewCareer_Success(t *testing.T) {
-	careerId := userdm.NewCareerId()
+	careerId := userdm.NewCareerID()
 	careerDetail, _ := userdm.NewCareerDetail("Web開発に従事")
 	careerStartYear, _ := userdm.NewCareerStartYear(2020)
 	careerEndYear, _ := userdm.NewCareerEndYear(2022)

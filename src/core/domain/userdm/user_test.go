@@ -14,14 +14,15 @@ func TestUser_NewUser_Success(t *testing.T) {
 	email, _ := userdm.NewEmail("test@example.com")
 	selfIntroduction, _ := userdm.NewSelfIntroduction("よろしくお願いします")
 
-	skill, _ := userdm.NewSkill(userdm.NewSkillId(), tagdm.NewTagId(), 5, 3)
+	tagId, _ := tagdm.NewTagID("test-tag-id")
+	skill, _ := userdm.NewSkill(userdm.NewSkillID(), tagId, 5, 3)
 	skills := []userdm.Skill{*skill}
 
 	careerDetail, _ := userdm.NewCareerDetail("Web開発に従事")
 	careerStartYear, _ := userdm.NewCareerStartYear(2020)
 	careerEndYear, _ := userdm.NewCareerEndYear(2022)
 	career, _ := userdm.NewCareer(
-		userdm.NewCareerId(),
+		userdm.NewCareerID(),
 		*careerDetail,
 		*careerStartYear,
 		*careerEndYear,
@@ -37,7 +38,7 @@ func TestUser_NewUser_Success(t *testing.T) {
 		t.Error("NewUser() should not return nil")
 	}
 
-	if user.Id() != userId {
+	if user.ID() != userId {
 		t.Error("Id() should return correct userId")
 	}
 

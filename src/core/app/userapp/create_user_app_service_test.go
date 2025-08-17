@@ -6,21 +6,23 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/mocks"
-	"github.com/golang/mock/gomock"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 )
 
 func TestCreateUserAppService_Exec(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockUserRepo := mocks.NewMockUserRepository(ctrl)
-	mockUserDomainService := mocks.NewMockUserDomainService(ctrl)
-	mockTagDomainService := mocks.NewMockTagDomainService(ctrl)
+	mockUserRepo := userdm.NewMockUserRepository(ctrl)
+	mockIsExistByUserNameDomainService := userdm.NewMockIsExistByUserNameDomainService(ctrl)
+	mockIsExistByTagIDDomainService := tagdm.NewMockIsExistByTagIDDomainService(ctrl)
+	mockFindIDByTagNameDomainService := tagdm.NewMockFindIDByTagNameDomainService(ctrl)
 
-	service := NewCreateUserAppService(mockUserRepo, mockUserDomainService, mockTagDomainService)
+	service := NewCreateUserAppService(mockUserRepo, mockIsExistByUserNameDomainService, mockIsExistByTagIDDomainService, mockFindIDByTagNameDomainService)
 
 	t.Run("正常系: ユーザーが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
@@ -51,20 +53,20 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		}
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグの存在チェック（Go）
-		goTagId, _ := tagdm.NewTagId(uuid.New().String())
-		mockTagDomainService.EXPECT().
-			IsExistByTagName(ctx, gomock.Any()).
+		// Mock設定: タグIDの取得（Go）
+		goTagId, _ := tagdm.NewTagID(uuid.New().String())
+		mockFindIDByTagNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(&goTagId, nil)
 
-		// Mock設定: タグの存在チェック（Python）
-		pythonTagId, _ := tagdm.NewTagId(uuid.New().String())
-		mockTagDomainService.EXPECT().
-			IsExistByTagName(ctx, gomock.Any()).
+		// Mock設定: タグIDの取得（Python）
+		pythonTagId, _ := tagdm.NewTagID(uuid.New().String())
+		mockFindIDByTagNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(&pythonTagId, nil)
 
 		// Mock設定: ユーザーの保存
@@ -91,8 +93,8 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		}
 
 		// Mock設定: ユーザー名の重複チェック（存在する）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(true, nil)
 
 		// 実行
@@ -121,13 +123,13 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		}
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグの存在チェック（存在しない）
-		mockTagDomainService.EXPECT().
-			IsExistByTagName(ctx, gomock.Any()).
+		// Mock設定: タグIDの取得（存在しない）
+		mockFindIDByTagNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(nil, nil)
 
 		// 実行
@@ -152,8 +154,8 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		expectedError := errors.New("database connection error")
 
 		// Mock設定: ユーザー名の重複チェックでエラー
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, expectedError)
 
 		// 実行
@@ -164,7 +166,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		assert.Equal(t, expectedError, err)
 	})
 
-	t.Run("異常系: タグ存在チェックでエラーが発生", func(t *testing.T) {
+	t.Run("異常系: タグ取得でエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
 		req := &CreateUserRequest{
 			Name:     "test_user",
@@ -184,13 +186,13 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		expectedError := errors.New("tag service error")
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグの存在チェックでエラー
-		mockTagDomainService.EXPECT().
-			IsExistByTagName(ctx, gomock.Any()).
+		// Mock設定: タグIDの取得でエラー
+		mockFindIDByTagNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(nil, expectedError)
 
 		// 実行
@@ -221,14 +223,14 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		expectedError := errors.New("repository save error")
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグの存在チェック（Go）
-		goTagId, _ := tagdm.NewTagId(uuid.New().String())
-		mockTagDomainService.EXPECT().
-			IsExistByTagName(ctx, gomock.Any()).
+		// Mock設定: タグIDの取得（Go）
+		goTagId, _ := tagdm.NewTagID(uuid.New().String())
+		mockFindIDByTagNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(&goTagId, nil)
 
 		// Mock設定: ユーザーの保存でエラー
@@ -249,11 +251,12 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockUserRepo := mocks.NewMockUserRepository(ctrl)
-	mockUserDomainService := mocks.NewMockUserDomainService(ctrl)
-	mockTagDomainService := mocks.NewMockTagDomainService(ctrl)
+	mockUserRepo := userdm.NewMockUserRepository(ctrl)
+	mockIsExistByUserNameDomainService := userdm.NewMockIsExistByUserNameDomainService(ctrl)
+	mockIsExistByTagIDDomainService := tagdm.NewMockIsExistByTagIDDomainService(ctrl)
+	mockFindIDByTagNameDomainService := tagdm.NewMockFindIDByTagNameDomainService(ctrl)
 
-	service := NewCreateUserAppService(mockUserRepo, mockUserDomainService, mockTagDomainService)
+	service := NewCreateUserAppService(mockUserRepo, mockIsExistByUserNameDomainService, mockIsExistByTagIDDomainService, mockFindIDByTagNameDomainService)
 
 	t.Run("異常系: 無効なユーザー名", func(t *testing.T) {
 		ctx := context.Background()
@@ -285,8 +288,8 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 		}
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
 		// 実行
@@ -308,8 +311,8 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 		}
 
 		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockUserDomainService.EXPECT().
-			IsExistByUserName(ctx, gomock.Any()).
+		mockIsExistByUserNameDomainService.EXPECT().
+			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
 		// 実行

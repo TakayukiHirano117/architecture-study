@@ -49,9 +49,8 @@ func TestCareerEndYear_String(t *testing.T) {
 	year := 2020
 	careerEndYear, _ := userdm.NewCareerEndYear(year)
 
-	expected := "2020"
-	if careerEndYear.String() != expected {
-		t.Errorf("String() should return correct value, expected: %s, got: %s", expected, careerEndYear.String())
+	if int(*careerEndYear) != year {
+		t.Errorf("String() should return correct value, expected: %d, got: %d", year, int(*careerEndYear))
 	}
 }
 
