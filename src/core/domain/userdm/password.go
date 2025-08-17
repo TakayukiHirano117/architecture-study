@@ -4,6 +4,7 @@ import (
 	"regexp"
 
 	"github.com/cockroachdb/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Password string
@@ -13,6 +14,7 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password is empty")
 	}
 
+	// TODO: 英数字以外許容しない感じが一般的だと思うのでutf8は使わない。逆に英数字以外が入っているかの検査も必要かも
 	if len(value) < 12 {
 		return nil, errors.New("Password is too short")
 	}
@@ -25,7 +27,24 @@ func NewPassword(value string) (*Password, error) {
 		return nil, errors.New("Password must contain at least one number")
 	}
 
-	password := Password(value)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to hash password")
+	}
+
+	password := Password(string(hashedPassword))
 
 	return &password, nil
+}
+
+func NewPasswordByVal(value string) Password {
+	return Password(value)
+}
+
+func (p Password) String() string {
+	return string(p)
+}
+
+func (p Password) Equal(p2 Password) bool {
+	return p == p2
 }

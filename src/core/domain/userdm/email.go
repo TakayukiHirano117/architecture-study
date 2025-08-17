@@ -3,6 +3,7 @@ package userdm
 import (
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/cockroachdb/errors"
 )
@@ -14,7 +15,7 @@ func NewEmail(value string) (*Email, error) {
 		return nil, errors.New("Email is empty")
 	}
 
-	if len(value) > 255 {
+	if utf8.RuneCountInString(value) > 255 {
 		return nil, errors.New("Email is too long")
 	}
 
@@ -30,4 +31,16 @@ func NewEmail(value string) (*Email, error) {
 	email := Email(value)
 
 	return &email, nil
+}
+
+func NewEmailByVal(value string) Email {
+	return Email(value)
+}
+
+func (e Email) String() string {
+	return string(e)
+}
+
+func (e Email) Equal(e2 Email) bool {
+	return e == e2
 }

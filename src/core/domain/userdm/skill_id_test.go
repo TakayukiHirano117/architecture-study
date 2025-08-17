@@ -8,7 +8,7 @@ import (
 )
 
 func TestSkillId_NewSkillId(t *testing.T) {
-	skillId := userdm.NewSkillId()
+	skillId := userdm.NewSkillID()
 
 	if skillId.String() == "" {
 		t.Error("NewSkillId() should not return empty string")
@@ -23,7 +23,7 @@ func TestSkillId_NewSkillId(t *testing.T) {
 func TestSkillId_NewSkillIdByVal_Success(t *testing.T) {
 	validUUID := uuid.New().String()
 
-	skillId, err := userdm.NewSkillIdByVal(validUUID)
+	skillId, err := userdm.NewSkillIDByVal(validUUID)
 	if err != nil {
 		t.Errorf("NewSkillIdByVal() with valid UUID should not return error, got: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestSkillId_NewSkillIdByVal_Success(t *testing.T) {
 }
 
 func TestSkillId_NewSkillIdByVal_EmptyString(t *testing.T) {
-	_, err := userdm.NewSkillIdByVal("")
+	_, err := userdm.NewSkillIDByVal("")
 	if err == nil {
 		t.Error("NewSkillIdByVal() with empty string should return error")
 	}
@@ -43,7 +43,7 @@ func TestSkillId_NewSkillIdByVal_EmptyString(t *testing.T) {
 func TestSkillId_NewSkillIdByVal_InvalidUUID(t *testing.T) {
 	invalidUUID := "invalid-uuid-string"
 
-	_, err := userdm.NewSkillIdByVal(invalidUUID)
+	_, err := userdm.NewSkillIDByVal(invalidUUID)
 	if err == nil {
 		t.Error("NewSkillIdByVal() with invalid UUID should return error")
 	}
@@ -51,7 +51,7 @@ func TestSkillId_NewSkillIdByVal_InvalidUUID(t *testing.T) {
 
 func TestSkillId_String(t *testing.T) {
 	validUUID := uuid.New().String()
-	skillId, _ := userdm.NewSkillIdByVal(validUUID)
+	skillId, _ := userdm.NewSkillIDByVal(validUUID)
 
 	if skillId.String() != validUUID {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, skillId.String())
@@ -60,9 +60,9 @@ func TestSkillId_String(t *testing.T) {
 
 func TestSkillId_Equal(t *testing.T) {
 	validUUID := uuid.New().String()
-	skillId1, _ := userdm.NewSkillIdByVal(validUUID)
-	skillId2, _ := userdm.NewSkillIdByVal(validUUID)
-	skillId3 := userdm.NewSkillId()
+	skillId1, _ := userdm.NewSkillIDByVal(validUUID)
+	skillId2, _ := userdm.NewSkillIDByVal(validUUID)
+	skillId3 := userdm.NewSkillID()
 
 	if !skillId1.Equal(skillId2) {
 		t.Error("Equal() should return true for same UUID values")

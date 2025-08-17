@@ -8,7 +8,7 @@ import (
 )
 
 func TestCareerId_NewCareerId(t *testing.T) {
-	careerId := userdm.NewCareerId()
+	careerId := userdm.NewCareerID()
 
 	if careerId.String() == "" {
 		t.Error("NewCareerId() should not return empty string")
@@ -23,7 +23,7 @@ func TestCareerId_NewCareerId(t *testing.T) {
 func TestCareerId_NewCareerIdByVal_Success(t *testing.T) {
 	validValue := "test-career-id"
 
-	careerId, err := userdm.NewCareerIdByVal(validValue)
+	careerId, err := userdm.NewCareerIDByVal(validValue)
 	if err != nil {
 		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestCareerId_NewCareerIdByVal_Success(t *testing.T) {
 }
 
 func TestCareerId_NewCareerIdByVal_EmptyString(t *testing.T) {
-	_, err := userdm.NewCareerIdByVal("")
+	_, err := userdm.NewCareerIDByVal("")
 	if err == nil {
 		t.Error("NewCareerIdByVal() with empty string should return error")
 	}
@@ -42,7 +42,7 @@ func TestCareerId_NewCareerIdByVal_EmptyString(t *testing.T) {
 
 func TestCareerId_String(t *testing.T) {
 	validValue := "test-career-id"
-	careerId, _ := userdm.NewCareerIdByVal(validValue)
+	careerId, _ := userdm.NewCareerIDByVal(validValue)
 
 	if careerId.String() != validValue {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validValue, careerId.String())
@@ -51,9 +51,9 @@ func TestCareerId_String(t *testing.T) {
 
 func TestCareerId_Equal(t *testing.T) {
 	validValue := "test-career-id"
-	careerId1, _ := userdm.NewCareerIdByVal(validValue)
-	careerId2, _ := userdm.NewCareerIdByVal(validValue)
-	careerId3 := userdm.NewCareerId()
+	careerId1, _ := userdm.NewCareerIDByVal(validValue)
+	careerId2, _ := userdm.NewCareerIDByVal(validValue)
+	careerId3 := userdm.NewCareerID()
 
 	if !careerId1.Equal(careerId2) {
 		t.Error("Equal() should return true for same values")

@@ -49,9 +49,8 @@ func TestCareerEndYear_String(t *testing.T) {
 	year := 2020
 	careerEndYear, _ := userdm.NewCareerEndYear(year)
 
-	expected := "2020"
-	if careerEndYear.String() != expected {
-		t.Errorf("String() should return correct value, expected: %s, got: %s", expected, careerEndYear.String())
+	if int(*careerEndYear) != year {
+		t.Errorf("String() should return correct value, expected: %d, got: %d", year, int(*careerEndYear))
 	}
 }
 
@@ -61,11 +60,11 @@ func TestCareerEndYear_Equal(t *testing.T) {
 	careerEndYear2, _ := userdm.NewCareerEndYear(year)
 	careerEndYear3, _ := userdm.NewCareerEndYear(2021)
 
-	if !careerEndYear1.Equal(careerEndYear2) {
+	if !careerEndYear1.Equal(*careerEndYear2) {
 		t.Error("Equal() should return true for same year values")
 	}
 
-	if careerEndYear1.Equal(careerEndYear3) {
+	if careerEndYear1.Equal(*careerEndYear3) {
 		t.Error("Equal() should return false for different year values")
 	}
 }

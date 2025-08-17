@@ -1,183 +1,164 @@
--- ユーザーテーブル
-drop table if exists users;
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-create table users (
-    id uuid primary key not null,
-    name varchar(255) not null unique,
-    email varchar(255) not null,
-    password varchar(255) not null check (
+DROP TABLE IF EXISTS mentor_recruitment_proposals;
+DROP TABLE IF EXISTS contract_requests;
+DROP TABLE IF EXISTS contracts;
+DROP TABLE IF EXISTS mentor_recruitment_tags;
+DROP TABLE IF EXISTS plan_tags;
+DROP TABLE IF EXISTS skills;
+DROP TABLE IF EXISTS mentor_recruitments;
+DROP TABLE IF EXISTS plans;
+DROP TABLE IF EXISTS careers;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;
+
+-- カテゴリーテーブル
+CREATE TABLE categories (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- ユーザーテーブル
+CREATE TABLE users (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL CHECK (
         char_length(password) >= 12 AND
         password ~ '[a-zA-Z]' AND
         password ~ '[0-9]'
     ),
-    self_introduction text check (char_length(self_introduction) <= 2000),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+    self_introduction TEXT CHECK (char_length(self_introduction) <= 2000),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
-
-create index idx_users_name on users (name);
-
--- スキルテーブル
-drop table if exists skills;
-
-create table skills (
-    id uuid primary key not null,
-    tag_id uuid not null references tags(id) on delete cascade,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
-
--- ユーザーとスキルの中間テーブル
-drop table if exists user_skills;
-create table user_skills (
-    id uuid primary key not null,
-    user_id uuid not null references users(id),
-    skill_id uuid not null references skills(id),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
+CREATE INDEX idx_users_name ON users (name);
 
 -- タグテーブル
-drop table if exists tags;
+CREATE TABLE tags (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP DEFAULT now()
+);
 
-create table tags (
-    id uuid primary key not null,
-    name varchar(255) not null unique,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
-)
+-- スキルテーブル
+CREATE TABLE skills (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
 -- 経歴テーブル
-drop table if exists careers;
-
-create table careers (
-    id uuid primary key not null,
-    user_id uuid not null references users(id),
-    detail text not null,
-    start_year int,
-    end_year int,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+CREATE TABLE careers (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    detail TEXT NOT NULL,
+    start_year INT,
+    end_year INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
-
-create index idx_careers_user_id on careers (user_id);
-
--- メンター募集テーブル
-drop table if exists mentor_recruitments;
-
-create table mentor_recruitments (
-    id uuid primary key not null,
-    user_id uuid not null references users(id),
-    title varchar(255) not null,
-    consultation_type varchar(255) not null,
-    consultation_method varchar(255) not null,
-    description text not null,
-    budget_from int not null,
-    budget_to int not null,
-    application_period date not null,
-    status varchar(255) not null,
-    category_id uuid not null references categories(id),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
-
--- メンター募集とタグの中間テーブル
-drop table if exists mentor_recruitment_tags;
-
-create table mentor_recruitment_tags (
-    id uuid primary key not null,
-    mentor_recruitment_id uuid not null references mentor_recruitments(id),
-    tag_id uuid references tags(id),
-    tag_text varchar(255),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
-
--- メンター募集提案テーブル
-drop table if exists mentor_recruitment_proposals;
-
-create table mentor_recruitment_proposals (
-    id uuid primary key not null,
-    user_id uuid not null references users(id),
-    mentor_recruitment_id uuid not null references mentor_recruitments(id),
-    description text not null,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
-
--- 契約リクエストテーブル
-drop table if exists contract_requests;
-
-create table contract_requests (
-    id uuid primary key not null,
-    message text not null,
-    user_id uuid not null references users(id),
-    price_at_request int not null,
-    plan_id uuid not null references plans(id),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
-
-create index idx_contract_requests_user_id on contract_requests (user_id);
-
--- 契約テーブル
-drop table if exists contracts;
-
-create table contracts (
-    id uuid primary key not null,
-    user_id uuid not null references users(id),
-    plan_id uuid not null references plans(id),
-    message text not null,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-)
+CREATE INDEX idx_careers_user_id ON careers (user_id);
 
 -- メンタープランテーブル
-drop table if exists plans;
-
-create table plans (
-    id uuid primary key not null,
-    title varchar(255) not null,
-    category_id uuid not null references categories(id),
-    description text not null,
-    status varchar(255) not null,
-    consultation_type varchar(255) not null,
-    price int not null,
-    consultation_method varchar(255),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+CREATE TABLE plans (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    category_id UUID NOT NULL REFERENCES categories(id),
+    description TEXT NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    consultation_type VARCHAR(255) NOT NULL,
+    price INT NOT NULL,
+    consultation_method VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 -- メンタープランとタグの中間テーブル
-drop table if exists plan_tags;
-
-create table plan_tags (
-    id uuid primary key not null,
-    plan_id uuid not null references plans(id),
-    tag_id uuid not null references tags(id),
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+CREATE TABLE plan_tags (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    plan_id UUID NOT NULL REFERENCES plans(id),
+    tag_id UUID NOT NULL REFERENCES tags(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
--- メンター募集カテゴリテーブル
-drop table if exists categories;
-
-create table categories (
-    id uuid primary key not null,
-    name varchar(255) not null unique,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
+-- メンター募集テーブル
+CREATE TABLE mentor_recruitments (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    title VARCHAR(255) NOT NULL,
+    consultation_type VARCHAR(255) NOT NULL,
+    consultation_method VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    budget_from INT NOT NULL,
+    budget_to INT NOT NULL,
+    application_period DATE NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    category_id UUID NOT NULL REFERENCES categories(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-insert into categories (id, name) values (uuid_generate_v4(), 'プログラミング');
-insert into categories (id, name) values (uuid_generate_v4(), 'マーケティング');
-insert into categories (id, name) values (uuid_generate_v4(), 'デザイン');
-insert into categories (id, name) values (uuid_generate_v4(), 'ライティング');
-insert into categories (id, name) values (uuid_generate_v4(), '動画・映像');
-insert into categories (id, name) values (uuid_generate_v4(), 'ビジネス');
-insert into categories (id, name) values (uuid_generate_v4(), '語学');
-insert into categories (id, name) values (uuid_generate_v4(), 'ライフスタイル');
+-- メンター募集とタグの中間テーブル
+CREATE TABLE mentor_recruitment_tags (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    mentor_recruitment_id UUID NOT NULL REFERENCES mentor_recruitments(id),
+    tag_id UUID REFERENCES tags(id),
+    tag_text VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
--- 相談形式・相談方式のマスターを作ってもいいかも
--- タグは選択と記入両方いけるので、マスターのidを参照させるのではなくてテキストを直で中間テーブルに入れる。
--- 公開・中止の型どうするか
+-- メンター募集提案テーブル
+CREATE TABLE mentor_recruitment_proposals (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    mentor_recruitment_id UUID NOT NULL REFERENCES mentor_recruitments(id),
+    description TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 契約リクエストテーブル
+CREATE TABLE contract_requests (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    message TEXT NOT NULL,
+    user_id UUID NOT NULL REFERENCES users(id),
+    price_at_request INT NOT NULL,
+    plan_id UUID NOT NULL REFERENCES plans(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+CREATE INDEX idx_contract_requests_user_id ON contract_requests (user_id);
+
+-- 契約テーブル
+CREATE TABLE contracts (
+    id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    plan_id UUID NOT NULL REFERENCES plans(id),
+    message TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 初期カテゴリーデータ挿入
+INSERT INTO categories (id, name) VALUES
+    (gen_random_uuid(), 'プログラミング'),
+    (gen_random_uuid(), 'マーケティング'),
+    (gen_random_uuid(), 'デザイン'),
+    (gen_random_uuid(), 'ライティング'),
+    (gen_random_uuid(), '動画・映像'),
+    (gen_random_uuid(), 'ビジネス'),
+    (gen_random_uuid(), '語学'),
+    (gen_random_uuid(), 'ライフスタイル');
+
+-- 初期タグデータ挿入
+insert into tags (name) values ('PHP'), ('TS'), ('Go'), ('Java'), ('AWS');
+

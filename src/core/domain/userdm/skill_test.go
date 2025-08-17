@@ -8,8 +8,8 @@ import (
 )
 
 func TestSkill_NewSkill_Success(t *testing.T) {
-	skillId := userdm.NewSkillId()
-	tagId := tagdm.NewTagId()
+	skillId := userdm.NewSkillID()
+	tagId, _ := tagdm.NewTagID("test-tag-id")
 	evaluation := 5
 	yearsOfExperience := 3
 

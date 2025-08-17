@@ -5,28 +5,37 @@ import (
 	"github.com/google/uuid"
 )
 
-type TagId string
+type TagID string
 
-func NewTagId() TagId {
-	return TagId(uuid.New().String())
+// TODO: これvalue受け取らないかも
+func NewTagID(value string) (TagID, error) {
+	if value == "" {
+		return "", errors.New("TagID is empty")
+	}
+
+	if _, err := uuid.Parse(value); err != nil {
+		return "", errors.New("TagID is invalid")
+	}
+
+	return TagID(value), nil
 }
 
-func NewTagIdByVal(val string) (TagId, error) {
+func NewTagIDByVal(val string) (TagID, error) {
 	if val == "" {
-		return "", errors.New("TagId is empty")
+		return "", errors.New("TagID is empty")
 	}
 
 	if _, err := uuid.Parse(val); err != nil {
-		return "", errors.New("TagId is invalid")
+		return "", errors.New("TagID is invalid")
 	}
 
-	return TagId(val), nil
+	return TagID(val), nil
 }
 
-func (tagId TagId) String() string {
-	return string(tagId)
+func (tagID TagID) String() string {
+	return string(tagID)
 }
 
-func (tagId TagId) Equal(tagId2 TagId) bool {
-	return tagId == tagId2
+func (tagID TagID) Equal(tagID2 TagID) bool {
+	return tagID == tagID2
 }

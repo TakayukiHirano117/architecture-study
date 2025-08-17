@@ -1,6 +1,10 @@
 package userdm
 
-import "github.com/cockroachdb/errors"
+import (
+	"unicode/utf8"
+
+	"github.com/cockroachdb/errors"
+)
 
 type UserName string
 
@@ -9,7 +13,7 @@ func NewUserName(value string) (*UserName, error) {
 		return nil, errors.New("UserName is empty")
 	}
 
-	if len(value) > 255 {
+	if utf8.RuneCountInString(value) > 255 {
 		return nil, errors.New("UserName is too long")
 	}
 
@@ -24,4 +28,12 @@ func NewUserNameByVal(val string) (UserName, error) {
 	}
 
 	return UserName(val), nil
+}
+
+func (u UserName) String() string {
+	return string(u)
+}
+
+func (u UserName) Equal(u2 UserName) bool {
+	return u == u2
 }
