@@ -4,11 +4,14 @@ import (
 	"fmt"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
+	router.Use(middlewares.RecoveryMiddleware())
+	router.Use(middlewares.ErrorHandlingMiddleware())
 
 	controller := controllers.NewController()
 	controller.SetupRoutes(router)
