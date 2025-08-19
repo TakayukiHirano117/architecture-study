@@ -23,16 +23,18 @@ type AppError interface {
 func (e *appErr) Code() int {
 	return e.code
 }
+
 func (e *appErr) Msg() string {
 	return e.msg
 }
+
 func (e *appErr) Error() string {
 	return e.msg
 }
+
 func (e *appErr) Trace() error {
 	return e.trace
 }
-
 
 type BadRequestErr struct {
 	*appErr
@@ -52,7 +54,9 @@ func BadRequest(msg string) *BadRequestErr {
 	}
 }
 // TODO: BadRequestの詳細度に応じてメソッドを追加する
-// TODO: エラーの種類に応じてメソッドとtypeを追加する
+// TODO: エラーの種類に応じてメソッドとtypeを追加する 404, 405
+// 401, 403はログインを実装したら追加する
+
 
 func Internal(msg string) *InternalErr {
 	return &InternalErr{
@@ -75,11 +79,10 @@ func Internalf(format string, msg ...any) *InternalErr {
 		},
 	}
 }
+
 func InternalWrapf(err2 error, format string, msg ...any) *InternalErr {
 	message := fmt.Sprintf(format, msg...)
 
-	// 1.20からWrapがJoinに変わる
-	//err = errors.Join(err, err2)
 	return &InternalErr{
 		&appErr{
 			code:  http.StatusInternalServerError,
