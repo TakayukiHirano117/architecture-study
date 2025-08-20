@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/TakayukiHirano117/architecture-study/src/support/custom_error"
+	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,7 @@ func ErrorHandlingMiddleware() gin.HandlerFunc {
 		err := ctx.Errors.Last()
 		if err != nil {
 			switch e := err.Err.(type) {
-			case custom_error.AppError:
+			case customerr.AppError:
 				log.Printf("ERROR: %+v", e.Trace())
 				ctx.AbortWithStatusJSON(e.Code(), gin.H{
 					"message": fmt.Sprintf("%d: %s", e.Code(), e.Msg()),
