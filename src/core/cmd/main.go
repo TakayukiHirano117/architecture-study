@@ -10,8 +10,9 @@ import (
 
 func main() {
 	router := gin.Default()
-	// router.Use(middlewares.RecoveryMiddleware())
+	
 	router.Use(middlewares.ErrorHandlingMiddleware())
+	router.Use(middlewares.DBMiddleware())
 
 	controller := controllers.NewController()
 	controller.SetupRoutes(router)
