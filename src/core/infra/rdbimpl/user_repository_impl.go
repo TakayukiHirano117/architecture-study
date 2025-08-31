@@ -4,10 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jmoiron/sqlx"
-
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/infra/middlewares"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
 type UserRepositoryImpl struct {
@@ -18,10 +16,16 @@ func NewUserRepositoryImpl() *UserRepositoryImpl {
 }
 
 func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserName) (*userdm.User, error) {
+	conn, err := rdb.ExecFromCtx(ctx)
+	
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		SELECT id FROM users WHERE name = $1
 	`
-	rows, err := ctx.Value(middlewares.DBKey).(*sqlx.DB).QueryContext(ctx, query, name.String())
+	rows, err := conn.Query(query, name.String())
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +39,8 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
-	db, ok := ctx.Value(middlewares.DBKey).(*sqlx.Tx)
-	if !ok {
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
 		return errors.New("transaction not found")
 	}
 
@@ -44,7 +48,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		INSERT INTO users (id, name, email, password, self_introduction, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 	`
-	_, err := db.ExecContext(ctx, userQuery,
+	_, err = conn.Exec(userQuery,
 		user.ID().String(),
 		user.Name().String(),
 		user.Email().String(),
@@ -61,7 +65,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 			VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
 		`
 		for _, career := range user.Careers() {
-			_, err := db.ExecContext(ctx, careerQuery,
+			_, err = conn.Exec(careerQuery,
 				user.ID().String(),
 				career.Detail().String(),
 				career.StartYear().Int(),
@@ -79,7 +83,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 			VALUES (gen_random_uuid(), $1, $2, NOW(), NOW())
 		`
 		for _, skill := range user.Skills() {
-			_, err := db.ExecContext(ctx, skillQuery,
+			_, err = conn.Exec(skillQuery,
 				user.ID().String(),
 				skill.TagID().String(),
 			)

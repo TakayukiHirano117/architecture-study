@@ -5,8 +5,7 @@ import (
 	"errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/infra/middlewares"
-	"github.com/jmoiron/sqlx"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
 type TagRepositoryImpl struct {
@@ -17,10 +16,15 @@ func NewTagRepositoryImpl() *TagRepositoryImpl {
 }
 
 func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagdm.Tag, error) {
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		SELECT id, name, created_at, updated_at FROM tags WHERE id = $1
 	`
-	rows, err := ctx.Value(middlewares.DBKey).(*sqlx.DB).QueryContext(ctx, query, id.String())
+	rows, err := conn.Query(query, id.String())
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +57,15 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 }
 
 func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		SELECT id FROM tags WHERE name = $1
 	`
-	rows, err := ctx.Value(middlewares.DBKey).(*sqlx.DB).QueryContext(ctx, query, tagName.String())
+	rows, err := conn.Query(query, tagName.String())
 	if err != nil {
 		return nil, err
 	}
