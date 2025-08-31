@@ -3,16 +3,25 @@ package main
 import (
 	"fmt"
 
+	"github.com/TakayukiHirano117/architecture-study/config"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/middlewares"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	
+
 	router.Use(middlewares.ErrorHandlingMiddleware())
-	router.Use(middlewares.DBMiddleware())
+
+	conn, err := rdb.NewConnection(config.NewDBConfig())
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	router.Use(middlewares.DBMiddleware(conn))
 
 	controller := controllers.NewController()
 	controller.SetupRoutes(router)
@@ -21,4 +30,5 @@ func main() {
 	fmt.Printf("Server starting on port %s\n", port)
 
 	router.Run(port)
+
 }
