@@ -8,7 +8,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const DBKey = "db"
+type ctxKey struct{}
+var DBKey = ctxKey{}
 
 type DBConfig struct {
 	Host     string

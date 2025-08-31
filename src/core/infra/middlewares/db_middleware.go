@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/TakayukiHirano117/architecture-study/config"
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 )
 

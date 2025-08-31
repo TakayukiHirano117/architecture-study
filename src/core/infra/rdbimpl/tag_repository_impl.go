@@ -24,7 +24,7 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 	query := `
 		SELECT id, name, created_at, updated_at FROM tags WHERE id = $1
 	`
-	rows, err := conn.Query(query, id.String())
+	rows, err := conn.QueryContext(ctx, query, id.String())
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.T
 	query := `
 		SELECT id FROM tags WHERE name = $1
 	`
-	rows, err := conn.Query(query, tagName.String())
+	rows, err := conn.QueryContext(ctx, query, tagName.String())
 	if err != nil {
 		return nil, err
 	}

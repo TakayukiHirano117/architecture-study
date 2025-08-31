@@ -25,7 +25,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	query := `
 		SELECT id FROM users WHERE name = $1
 	`
-	rows, err := conn.Query(query, name.String())
+	rows, err := conn.QueryContext(ctx, query, name.String())
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 		INSERT INTO users (id, name, email, password, self_introduction, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 	`
-	_, err = conn.Exec(userQuery,
+	_, err = conn.ExecContext(ctx, userQuery,
 		user.ID().String(),
 		user.Name().String(),
 		user.Email().String(),
@@ -65,7 +65,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 			VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW(), NOW())
 		`
 		for _, career := range user.Careers() {
-			_, err = conn.Exec(careerQuery,
+			_, err = conn.ExecContext(ctx, careerQuery,
 				user.ID().String(),
 				career.Detail().String(),
 				career.StartYear().Int(),
@@ -83,7 +83,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 			VALUES (gen_random_uuid(), $1, $2, NOW(), NOW())
 		`
 		for _, skill := range user.Skills() {
-			_, err = conn.Exec(skillQuery,
+			_, err = conn.ExecContext(ctx, skillQuery,
 				user.ID().String(),
 				skill.TagID().String(),
 			)

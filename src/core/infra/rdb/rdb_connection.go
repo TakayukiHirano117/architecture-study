@@ -27,6 +27,7 @@ func NewConnection(c *config.DBConfig) (*sqlx.DB, error) {
 
 func ExecFromCtx(ctx context.Context) (db.RDBHandler, error) {
 	val := ctx.Value(config.DBKey)
+
 	if val == nil {
 		return nil, errors.New("fail to get connection from context")
 	}
