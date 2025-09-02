@@ -34,7 +34,7 @@ func (c *CreateUserController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	if err := userapp.NewCreateUserAppService(c.userRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx, &in); err != nil {
+	if err := userapp.NewCreateUserAppService(c.userRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
 		ctx.Error(err)
 		return
 	}

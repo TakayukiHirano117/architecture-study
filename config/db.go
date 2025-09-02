@@ -1,14 +1,15 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
+
+type ctxKey struct{}
+var DBKey = ctxKey{}
 
 type DBConfig struct {
 	Host     string
@@ -33,9 +34,3 @@ func NewDBConfig() *DBConfig {
 	}
 }
 
-func (c *DBConfig) Connect() (*sqlx.DB, error) {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.Host, c.Port, c.User, c.Password, c.DBName)
-
-	return sqlx.Connect("postgres", dsn)
-}
