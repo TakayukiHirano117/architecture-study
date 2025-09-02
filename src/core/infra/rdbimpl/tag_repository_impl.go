@@ -3,7 +3,7 @@ package rdbimpl
 import (
 	"context"
 	"errors"
-
+	"time"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
@@ -36,7 +36,7 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 
 	var tagIdStr string
 	var tagNameStr string
-	var createdAt, updatedAt interface{}
+	var createdAt, updatedAt time.Time
 
 	err = rows.Scan(&tagIdStr, &tagNameStr, &createdAt, &updatedAt)
 	if err != nil {
