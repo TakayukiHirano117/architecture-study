@@ -51,6 +51,20 @@ func NewUserByVal(id UserID, name UserName, password Password, email Email, skil
 }
 
 // TODO: ユーザーのドメインルールを表したメソッドを書く
+func (u *User) UpdateProfile(name UserName, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+
+	return &User{
+		id:               u.id,
+		name:             name,
+		password:         u.password,
+		email:            email,
+		skills:           skills,
+		careers:          careers,
+		selfIntroduction: *selfIntroduction,
+		createdAt:        u.createdAt,
+		updatedAt:        time.Now(),
+	}, nil
+}
 
 func (u *User) ID() UserID {
 	return u.id
