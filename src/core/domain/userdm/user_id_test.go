@@ -8,7 +8,7 @@ import (
 )
 
 func TestUserId_NewUserId(t *testing.T) {
-	userId := userdm.NewUserId()
+	userId := userdm.NewUserID()
 
 	if userId.String() == "" {
 		t.Error("NewUserId() should not return empty string")
@@ -23,7 +23,7 @@ func TestUserId_NewUserId(t *testing.T) {
 func TestUserId_NewUserIdByVal_Success(t *testing.T) {
 	validUUID := uuid.New().String()
 
-	userId, err := userdm.NewUserIdByVal(validUUID)
+	userId, err := userdm.NewUserIDByVal(validUUID)
 	if err != nil {
 		t.Errorf("NewUserIdByVal() with valid UUID should not return error, got: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestUserId_NewUserIdByVal_Success(t *testing.T) {
 }
 
 func TestUserId_NewUserIdByVal_EmptyString(t *testing.T) {
-	_, err := userdm.NewUserIdByVal("")
+	_, err := userdm.NewUserIDByVal("")
 	if err == nil {
 		t.Error("NewUserIdByVal() with empty string should return error")
 	}
@@ -43,7 +43,7 @@ func TestUserId_NewUserIdByVal_EmptyString(t *testing.T) {
 func TestUserId_NewUserIdByVal_InvalidUUID(t *testing.T) {
 	invalidUUID := "invalid-uuid-string"
 
-	_, err := userdm.NewUserIdByVal(invalidUUID)
+	_, err := userdm.NewUserIDByVal(invalidUUID)
 	if err == nil {
 		t.Error("NewUserIdByVal() with invalid UUID should return error")
 	}
@@ -51,7 +51,7 @@ func TestUserId_NewUserIdByVal_InvalidUUID(t *testing.T) {
 
 func TestUserId_String(t *testing.T) {
 	validUUID := uuid.New().String()
-	userId, _ := userdm.NewUserIdByVal(validUUID)
+	userId, _ := userdm.NewUserIDByVal(validUUID)
 
 	if userId.String() != validUUID {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, userId.String())
@@ -60,9 +60,9 @@ func TestUserId_String(t *testing.T) {
 
 func TestUserId_Equal(t *testing.T) {
 	validUUID := uuid.New().String()
-	userId1, _ := userdm.NewUserIdByVal(validUUID)
-	userId2, _ := userdm.NewUserIdByVal(validUUID)
-	userId3 := userdm.NewUserId()
+	userId1, _ := userdm.NewUserIDByVal(validUUID)
+	userId2, _ := userdm.NewUserIDByVal(validUUID)
+	userId3 := userdm.NewUserID()
 
 	if !userId1.Equal(userId2) {
 		t.Error("Equal() should return true for same UUID values")

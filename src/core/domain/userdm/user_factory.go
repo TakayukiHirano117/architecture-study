@@ -68,7 +68,7 @@ func GenIfCreate(
 		skills[i] = *s
 	}
 
-	return NewUser(NewUserId(), userName, password, email, skills, careers, selfIntroduction)
+	return NewUser(NewUserID(), userName, password, email, skills, careers, selfIntroduction)
 }
 
 func GenForTest(id UserID, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
