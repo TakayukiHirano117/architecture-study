@@ -3,6 +3,7 @@ package userdm
 import (
 	"time"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/cockroachdb/errors"
 )
 
@@ -59,6 +60,8 @@ type CareerParamIfUpdate struct {
 type SkillParamIfUpdate struct {
 	ID    *string
 	TagID string
+	Evaluation int
+	YearsOfExperience int
 }
 
 // TODO: ユーザーのドメインルールを表したメソッドを書く
@@ -111,10 +114,40 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 	}
 
 	// skillのtagIdは存在しない場合は作成できない
-	// skills := make([]Skill, len(reqSkills))
-	// for i, rs := range reqSkills {
+	skills := make([]Skill, len(reqSkills))
+	for i, rs := range reqSkills {
+		if rs.ID != nil {
+			id, err := NewSkillIDByVal(*rs.ID)
+			if err != nil {
+				return nil, err
+			}
 
-	// }
+			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
+			if err != nil {
+				return nil, err
+			}
+
+			skill, err := NewSkill(id, tagID, rs.Evaluation, rs.YearsOfExperience)
+			if err != nil {
+				return nil, err
+			}
+
+			skills[i] = *skill
+		} else {
+			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
+			if err != nil {
+				return nil, err
+			}
+
+			skill, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
+			if err != nil {
+				return nil, err
+			}
+
+			skills[i] = *skill
+		}
+	}
+
 	u.name = *userName
 	u.email = *email
 	u.selfIntroduction = *selfIntroduction
