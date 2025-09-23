@@ -50,20 +50,78 @@ func NewUserByVal(id UserID, name UserName, password Password, email Email, skil
 	}, nil
 }
 
-// TODO: ユーザーのドメインルールを表したメソッドを書く
-func (u *User) UpdateProfile(name UserName, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+type CareerParamIfUpdate struct {
+	ID     *string
+	Detail string
+	StartYear int
+	EndYear int
+}
+type SkillParamIfUpdate struct {
+	ID    *string
+	TagID string
+}
 
-	return &User{
-		id:               u.id,
-		name:             name,
-		password:         u.password,
-		email:            email,
-		skills:           skills,
-		careers:          careers,
-		selfIntroduction: *selfIntroduction,
-		createdAt:        u.createdAt,
-		updatedAt:        time.Now(),
-	}, nil
+// TODO: ユーザーのドメインルールを表したメソッドを書く
+func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []SkillParamIfUpdate, reqCareers []CareerParamIfUpdate, reqSelfIntroduction string) (*User, error) {
+	userName, err := NewUserName(reqUserName)
+	if err != nil {
+		return nil, err
+	}
+
+	email, err := NewEmail(reqEmail)
+	if err != nil {
+		return nil, err
+	}
+
+	selfIntroduction, err := NewSelfIntroduction(reqSelfIntroduction)
+	if err != nil {
+		return nil, err
+	}
+
+	careers := make([]Career, len(reqCareers))
+	for i, rc := range reqCareers {
+		if rc.ID != nil {
+			id, err := NewCareerIDByVal(*rc.ID)
+			if err != nil {
+				return nil, err
+			}
+
+			detail, err := NewCareerDetail(rc.Detail)
+			if err != nil {
+				return nil, err
+			}
+
+			startYear, err := NewCareerStartYear(rc.StartYear)
+			if err != nil {
+				return nil, err
+			}
+
+			endYear, err := NewCareerEndYear(rc.EndYear)
+			if err != nil {
+				return nil, err
+			}
+
+			career, err := NewCareer(id, *detail, *startYear, *endYear)
+			if err != nil {
+				return nil, err
+			}
+
+			careers[i] = *career
+		}
+	}
+
+	// skillのtagIdは存在しない場合は作成できない
+	// skills := make([]Skill, len(reqSkills))
+	// for i, rs := range reqSkills {
+
+	// }
+	u.name = *userName
+	u.email = *email
+	u.selfIntroduction = *selfIntroduction
+	u.careers = careers
+	u.skills = skills
+
+	return u, nil
 }
 
 func (u *User) ID() UserID {
