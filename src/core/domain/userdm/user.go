@@ -14,7 +14,7 @@ type User struct {
 	email            Email
 	skills           []Skill
 	careers          []Career
-	selfIntroduction SelfIntroduction
+	selfIntroduction *SelfIntroduction
 	createdAt        time.Time
 	updatedAt        time.Time
 }
@@ -31,7 +31,7 @@ func NewUser(id UserID, name UserName, password Password, email Email, skills []
 		skills:           skills,
 		careers:          careers,
 		email:            email,
-		selfIntroduction: *selfIntroduction,
+		selfIntroduction: selfIntroduction,
 		createdAt:        time.Now(),
 		updatedAt:        time.Now(),
 	}, nil
@@ -45,40 +45,40 @@ func NewUserByVal(id UserID, name UserName, password Password, email Email, skil
 		skills:           skills,
 		careers:          careers,
 		email:            email,
-		selfIntroduction: *selfIntroduction,
+		selfIntroduction: selfIntroduction,
 		createdAt:        time.Now(),
 		updatedAt:        time.Now(),
 	}, nil
 }
 
 type CareerParamIfUpdate struct {
-	ID     *string
-	Detail string
+	ID        *string
+	Detail    string
 	StartYear int
-	EndYear int
+	EndYear   int
 }
 type SkillParamIfUpdate struct {
-	ID    *string
-	TagID string
-	Evaluation int
+	ID                *string
+	TagID             string
+	Evaluation        int
 	YearsOfExperience int
 }
 
 // TODO: ユーザーのドメインルールを表したメソッドを書く
-func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []SkillParamIfUpdate, reqCareers []CareerParamIfUpdate, reqSelfIntroduction string) (*User, error) {
+func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []SkillParamIfUpdate, reqCareers []CareerParamIfUpdate, reqSelfIntroduction string) error {
 	userName, err := NewUserName(reqUserName)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	email, err := NewEmail(reqEmail)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	selfIntroduction, err := NewSelfIntroduction(reqSelfIntroduction)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	careers := make([]Career, len(reqCareers))
@@ -86,27 +86,27 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 		if rc.ID != nil {
 			id, err := NewCareerIDByVal(*rc.ID)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			detail, err := NewCareerDetail(rc.Detail)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			startYear, err := NewCareerStartYear(rc.StartYear)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			endYear, err := NewCareerEndYear(rc.EndYear)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			career, err := NewCareer(id, *detail, *startYear, *endYear)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			careers[i] = *career
@@ -119,29 +119,29 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 		if rs.ID != nil {
 			id, err := NewSkillIDByVal(*rs.ID)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			skill, err := NewSkill(id, tagID, rs.Evaluation, rs.YearsOfExperience)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			skills[i] = *skill
 		} else {
 			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			skill, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
 			if err != nil {
-				return nil, err
+				return err
 			}
 
 			skills[i] = *skill
@@ -150,11 +150,11 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 
 	u.name = *userName
 	u.email = *email
-	u.selfIntroduction = *selfIntroduction
+	u.selfIntroduction = selfIntroduction
 	u.careers = careers
 	u.skills = skills
 
-	return u, nil
+	return nil
 }
 
 func (u *User) ID() UserID {
@@ -181,7 +181,7 @@ func (u *User) Email() Email {
 	return u.email
 }
 
-func (u *User) SelfIntroduction() SelfIntroduction {
+func (u *User) SelfIntroduction() *SelfIntroduction {
 	return u.selfIntroduction
 }
 

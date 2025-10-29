@@ -33,8 +33,12 @@ func NewEmail(value string) (*Email, error) {
 	return &email, nil
 }
 
-func NewEmailByVal(value string) Email {
-	return Email(value)
+func NewEmailByVal(value string) (Email, error) {
+	if value == "" {
+		return "", errors.New("Email must not be empty")
+	}
+
+	return Email(value), nil
 }
 
 func (e Email) String() string {

@@ -16,8 +16,11 @@ func NewCareerEndYear(value int) (*CareerEndYear, error) {
 	return &careerEndYear, nil
 }
 
-func NewCareerEndYearByVal(value int) CareerEndYear {
-	return CareerEndYear(value)
+func NewCareerEndYearByVal(value int) (CareerEndYear, error) {
+	if value == 0 {
+		return 0, errors.New("CareerEndYear must not be empty")
+	}
+	return CareerEndYear(value), nil
 }
 
 func (c CareerEndYear) Int() int {

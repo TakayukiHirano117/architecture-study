@@ -8,7 +8,7 @@ import (
 )
 
 func TestUser_NewUser_Success(t *testing.T) {
-	userId := userdm.NewUserId()
+	userId := userdm.NewUserID()
 	userName, _ := userdm.NewUserName("Test User")
 	password, _ := userdm.NewPassword("validPassword0")
 	email, _ := userdm.NewEmail("test@example.com")
@@ -68,7 +68,7 @@ func TestUser_NewUser_Success(t *testing.T) {
 }
 
 func TestUser_NewUser_EmptySkills(t *testing.T) {
-	userId := userdm.NewUserId()
+	userId := userdm.NewUserID()
 	userName, _ := userdm.NewUserName("Test User")
 	password, _ := userdm.NewPassword("validPassword0")
 	email, _ := userdm.NewEmail("test@example.com")

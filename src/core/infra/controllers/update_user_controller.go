@@ -19,7 +19,7 @@ type UpdateUserController struct {
 
 func NewUpdateUserController() *UpdateUserController {
 	return &UpdateUserController{
-		userRepo: rdbimpl.NewUserRepositoryImpl(),
+		userRepo:          rdbimpl.NewUserRepositoryImpl(),
 		IsExistByUserName: userdm.NewIsExistByUserNameDomainService(rdbimpl.NewUserRepositoryImpl()),
 		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(rdbimpl.NewTagRepositoryImpl()),
 		FindIDByTagName:   tagdm.NewFindIDByTagNameDomainService(rdbimpl.NewTagRepositoryImpl()),
