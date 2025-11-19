@@ -5,12 +5,11 @@ import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 type Skill struct {
 	id                SkillID
 	tagId             tagdm.TagID
-	evaluation        int
-	yearsOfExperience int
+	evaluation        Evaluation
+	yearsOfExperience YearsOfExperience
 }
 
-func NewSkill(id SkillID, tagId tagdm.TagID, evaluation int, yearsOfExperience int) (*Skill, error) {
-	// 必要なバリデーションかける
+func NewSkill(id SkillID, tagId tagdm.TagID, evaluation Evaluation, yearsOfExperience YearsOfExperience) (*Skill, error) {
 	return &Skill{
 		id:                id,
 		tagId:             tagId,
@@ -19,7 +18,7 @@ func NewSkill(id SkillID, tagId tagdm.TagID, evaluation int, yearsOfExperience i
 	}, nil
 }
 
-func NewSkillByVal(id SkillID, tagId tagdm.TagID, evaluation int, yearsOfExperience int) (*Skill, error) {
+func NewSkillByVal(id SkillID, tagId tagdm.TagID, evaluation Evaluation, yearsOfExperience YearsOfExperience) (*Skill, error) {
 	return &Skill{
 		id:                id,
 		tagId:             tagId,
@@ -36,10 +35,10 @@ func (s *Skill) TagID() tagdm.TagID {
 	return s.tagId
 }
 
-func (s *Skill) Evaluation() int {
+func (s *Skill) Evaluation() Evaluation {
 	return s.evaluation
 }
 
-func (s *Skill) YearsOfExperience() int {
+func (s *Skill) YearsOfExperience() YearsOfExperience {
 	return s.yearsOfExperience
 }

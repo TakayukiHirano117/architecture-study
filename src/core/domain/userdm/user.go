@@ -127,11 +127,20 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 				return err
 			}
 
-			skill, err := NewSkill(id, tagID, rs.Evaluation, rs.YearsOfExperience)
+			evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
 			if err != nil {
 				return err
 			}
 
+			yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
+			if err != nil {
+				return err
+			}
+
+			skill, err := NewSkill(id, tagID, evaluationVo, yearsOfExperienceVo)
+			if err != nil {
+				return err
+			}
 			skills[i] = *skill
 		} else {
 			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
@@ -139,7 +148,17 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 				return err
 			}
 
-			skill, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
+			evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
+			if err != nil {
+				return err
+			}
+
+			yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
+			if err != nil {
+				return err
+			}
+
+			skill, err := NewSkill(NewSkillID(), tagID, evaluationVo, yearsOfExperienceVo)
 			if err != nil {
 				return err
 			}
