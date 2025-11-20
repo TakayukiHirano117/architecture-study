@@ -2,7 +2,7 @@ package userapp
 
 import (
 	"context"
-
+	
 	"github.com/cockroachdb/errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
@@ -57,7 +57,6 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 	}
 
 	b, err := app.IsExistByUserName.Exec(ctx, *userName)
-	// モダンなフロントエンドなら入力中にすでに存在します的なメッセージ返すと思うが今は考慮しない
 	if err != nil {
 		return err
 	}
@@ -71,7 +70,6 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 	}
 
 	user, err := app.userRepo.FindByID(ctx, userID)
-
 	if err != nil {
 		return err
 	}
@@ -83,6 +81,8 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		careers[i] = userdm.CareerParamIfUpdate{
 			ID:     &reqCareer.ID,
 			Detail: reqCareer.Detail,
+			StartYear: reqCareer.StartYear,
+			EndYear:   reqCareer.EndYear,
 		}
 	}
 
@@ -90,6 +90,8 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		skills[i] = userdm.SkillParamIfUpdate{
 			ID:    &reqSkill.ID,
 			TagID: reqSkill.TagID,
+			Evaluation: reqSkill.Evaluation,
+			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
 	}
 

@@ -3,12 +3,10 @@ package rdbimpl
 import (
 	"context"
 	"errors"
-	"time"
-
-	"strconv"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/models"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
@@ -42,176 +40,133 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	return nil, nil
 }
 
-// IDに基づいてユーザーを取得する
 func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*userdm.User, error) {
-	// 接続取得
 	conn, err := rdb.ExecFromCtx(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	// usersからskills, careers以外のデータをまず取得する。
-	getUserQuery := `
-		SELECT id, name, email, password, self_introduction, created_at, updated_at FROM users WHERE id = $1
-	`
+	query := `
+		SELECT
+				u.id AS user_id,
+				u.name,
+				u.email,
+				u.password,
+				u.self_introduction,
+				s.id AS skill_id,
+				s.tag_id AS skill_tag_id,
+				s.evaluation AS skill_evaluation,
+				s.years_of_experience AS skill_years_of_experience,
+				c.id AS career_id,
+				c.detail AS career_detail,
+				c.start_year AS career_start_year,
+				c.end_year AS career_end_year
+		FROM users u
+		LEFT JOIN skills s ON s.user_id = u.id
+		LEFT JOIN careers c ON c.user_id = u.id
+		WHERE u.id = $1;
+		`
 
-	userRows, err := conn.QueryContext(ctx, getUserQuery, id.String())
+	rows, err := conn.QueryxContext(ctx, query, id.String())
 	if err != nil {
 		return nil, err
 	}
-	defer userRows.Close()
+	defer rows.Close()
 
-	getSkillsQuery := `
-		SELECT id, tag_id, evaluation, years_of_experience, created_at, updated_at FROM skills WHERE user_id = $1
-	`
-
-	skillRows, err := conn.QueryContext(ctx, getSkillsQuery, id.String())
-	if err != nil {
-		return nil, err
-	}
-	defer skillRows.Close()
-
-	skills := make([]userdm.Skill, 0)
-	for skillRows.Next() {
-		var id, tagId, evaluation, yearsOfExperience string
-		var createdAt, updatedAt time.Time
-
-		err = skillRows.Scan(&id, &tagId, &evaluation, &yearsOfExperience, &createdAt, &updatedAt)
-		if err != nil {
+	userDetailRows := []models.UserDetailModel{}
+	for rows.Next() {
+		var r models.UserDetailModel
+		if err := rows.StructScan(&r); err != nil {
 			return nil, err
 		}
-
-		skillID, err := userdm.NewSkillIDByVal(id)
-		if err != nil {
-			return nil, err
-		}
-
-		tagID, err := tagdm.NewTagIDByVal(tagId)
-		if err != nil {
-			return nil, err
-		}
-
-		evaluationInt, err := strconv.Atoi(evaluation)
-		if err != nil {
-			return nil, err
-		}
-
-		yearsOfExperienceInt, err := strconv.Atoi(yearsOfExperience)
-		if err != nil {
-			return nil, err
-		}
-
-		// evaluation, err := userdm.NewEvaluationByVal(evaluation)
-		// if err != nil {
-		// 	return nil, err
-		// }
-
-		// yearsOfExperience, err := userdm.NewYearsOfExperienceByVal(yearsOfExperience)
-		// if err != nil {
-		// 	return nil, err
-		// }
-
-		skill, err := userdm.NewSkillByVal(skillID, tagID, evaluationInt, yearsOfExperienceInt)
-		if err != nil {
-			return nil, err
-		}
-		skills = append(skills, *skill)
+		userDetailRows = append(userDetailRows, r)
 	}
 
-	getCareersQuery := `
-		SELECT id, detail, start_year, end_year, created_at, updated_at FROM careers WHERE user_id = $1
-	`
-	careerRows, err := conn.QueryContext(ctx, getCareersQuery, id.String())
-	if err != nil {
-		return nil, err
-	}
-	defer careerRows.Close()
-
-	careers := make([]userdm.Career, 0)
-	for careerRows.Next() {
-		var id, detail, startYear, endYear string
-		var createdAt, updatedAt time.Time
-
-		err = careerRows.Scan(&id, &detail, &startYear, &endYear, &createdAt, &updatedAt)
-		if err != nil {
-			return nil, err
-		}
-
-		careerID, err := userdm.NewCareerIDByVal(id)
-		if err != nil {
-			return nil, err
-		}
-
-		careerDetail, err := userdm.NewCareerDetailByVal(detail)
-		if err != nil {
-			return nil, err
-		}
-
-		startYearInt, err := strconv.Atoi(startYear)
-		if err != nil {
-			return nil, err
-		}
-		careerStartYear, err := userdm.NewCareerStartYearByVal(startYearInt)
-		if err != nil {
-			return nil, err
-		}
-
-		endYearInt, err := strconv.Atoi(endYear)
-		if err != nil {
-			return nil, err
-		}
-		careerEndYear, err := userdm.NewCareerEndYearByVal(endYearInt)
-		if err != nil {
-			return nil, err
-		}
-
-		career, err := userdm.NewCareerByVal(careerID, careerDetail, careerStartYear, careerEndYear)
-		if err != nil {
-			return nil, err
-		}
-
-		careers = append(careers, *career)
-	}
-
-	if !userRows.Next() {
+	if len(userDetailRows) == 0 {
 		return nil, errors.New("user not found")
 	}
 
-	var userID, name, email, password, selfIntroduction string
-	var createdAt, updatedAt time.Time
+	skillModels := []models.SkillModel{}
+	careerModels := []models.CareerModel{}
 
-	err = userRows.Scan(&userID, &name, &email, &password, &selfIntroduction, &createdAt, &updatedAt)
+	for _, row := range userDetailRows {
+		if row.SkillID.Valid {
+			skillModels = append(skillModels, models.SkillModel{
+				SkillID:           row.SkillID.String,
+				TagID:             row.SkillTagID.String,
+				Evaluation:        int(row.SkillEvaluation.Int64),
+				YearsOfExperience: int(row.SkillYearsOfExperience.Int64),
+			})
+		}
 
-	userIDByVal, err := userdm.NewUserIDByVal(userID)
-	if err != nil {
-		return nil, err
-	}
-	userNameByVal, err := userdm.NewUserNameByVal(name)
-	if err != nil {
-		return nil, err
-	}
-
-	passwordByVal, err := userdm.NewPasswordByVal(password)
-	if err != nil {
-		return nil, err
-	}
-
-	emailByVal, err := userdm.NewEmailByVal(email)
-	if err != nil {
-		return nil, err
-	}
-
-	selfIntroductionByVal, err := userdm.NewSelfIntroductionByVal(selfIntroduction)
-	if err != nil {
-		return nil, err
+		if row.CareerID.Valid {
+			careerModels = append(careerModels, models.CareerModel{
+				CareerID:  row.CareerID.String,
+				Detail:    row.CareerDetail.String,
+				StartYear: int(row.CareerStart.Int64),
+				EndYear:   int(row.CareerEnd.Int64),
+			})
+		}
 	}
 
-	user, err := userdm.NewUserByVal(userIDByVal, userNameByVal, passwordByVal, emailByVal, skills, careers, &selfIntroductionByVal)
+	u := userDetailRows[0]
+
+	userID, err := userdm.NewUserIDByVal(u.UserID)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	userName, err := userdm.NewUserNameByVal(u.UserName)
+	if err != nil {
+		return nil, err
+	}
+
+	email, err := userdm.NewEmailByVal(u.Email)
+	if err != nil {
+		return nil, err
+	}
+	password, err := userdm.NewPasswordByVal(u.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	selfIntroductionStr := ""
+	if u.SelfIntroduction.Valid {
+		selfIntroductionStr = u.SelfIntroduction.String
+	}
+	selfIntroduction, err := userdm.NewSelfIntroductionByVal(selfIntroductionStr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Skill / Career を VO に詰め替え
+	skills := []userdm.Skill{}
+	for _, s := range skillModels {
+		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
+		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
+		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
+		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tagID, ev, yoe)
+		skills = append(skills, *skill)
+	}
+
+	careers := []userdm.Career{}
+	for _, c := range careerModels {
+		idVo, _ := userdm.NewCareerIDByVal(c.CareerID)
+		detailVo, _ := userdm.NewCareerDetailByVal(c.Detail)
+		startVo, _ := userdm.NewCareerStartYearByVal(c.StartYear)
+		endVo, _ := userdm.NewCareerEndYearByVal(c.EndYear)
+		career, _ := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		careers = append(careers, *career)
+	}
+	return userdm.NewUserByVal(
+		userID,
+		userName,
+		password,
+		email,
+		skills,
+		careers,
+		&selfIntroduction,
+	)
 }
 
 func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error {
@@ -293,17 +248,16 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 		return err
 	}
 
-	// 既存のスキルを更新するだけでなく、tag_idとuser_idの組み合わせがなかったら追加にしなくてはいけない。
 	if len(user.Skills()) > 0 {
 		skillQuery := `
-			UPDATE skills SET tag_id = $1, evaluation = $2, years_of_experience = $3, updated_at = NOW() WHERE user_id = $4
+			UPDATE skills SET tag_id = $1, evaluation = $2, years_of_experience = $3, updated_at = NOW() WHERE id = $4
 		`
 		for _, skill := range user.Skills() {
 			_, err := conn.ExecContext(ctx, skillQuery,
-				user.ID().String(),
 				skill.TagID().String(),
-				skill.Evaluation(),
-				skill.YearsOfExperience(),
+				skill.Evaluation().Int(),
+				skill.YearsOfExperience().Int(),
+				skill.ID().String(),
 			)
 			if err != nil {
 				return err
@@ -311,17 +265,16 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 		}
 	}
 
-	// こちらも追加・更新を2つやる必要あり。
 	if len(user.Careers()) > 0 {
 		careerQuery := `
-			UPDATE careers SET detail = $1, start_year = $2, end_year = $3, updated_at = NOW() WHERE user_id = $4
+			UPDATE careers SET detail = $1, start_year = $2, end_year = $3, updated_at = NOW() WHERE id = $4
 		`
 		for _, career := range user.Careers() {
 			_, err := conn.ExecContext(ctx, careerQuery,
-				user.ID().String(),
 				career.Detail().String(),
 				career.StartYear().Int(),
 				career.EndYear().Int(),
+				career.ID().String(),
 			)
 			if err != nil {
 				return err

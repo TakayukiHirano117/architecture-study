@@ -59,8 +59,17 @@ func GenIfCreate(
 			return nil, err
 		}
 
-		s, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
+		evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
+		if err != nil {
+			return nil, err
+		}
 
+		yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
+		if err != nil {
+			return nil, err
+		}
+
+		s, err := NewSkill(NewSkillID(), tagID, evaluationVo, yearsOfExperienceVo)
 		if err != nil {
 			return nil, err
 		}
