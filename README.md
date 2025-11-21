@@ -107,17 +107,17 @@ docker compose -f ./.docker/compose.yml up
 
 # テスト実行コマンド
 ```
-go test テスト対象ファイルのパス
+docker compose -f ./.docker/compose.yml exec api go test テスト対象ファイルのパス
 ```
 
 // 詳細に出力
 ```
-go test -v テスト対象ファイルのパス
+docker compose -f ./.docker/compose.yml exec api go test -v テスト対象ファイルのパス
 ```
 
 // 再帰的にすべてのテストを実行
 ```
-go test ./...
+docker compose exec api go test ./...
 ```
 
 # gomock生成コマンド
