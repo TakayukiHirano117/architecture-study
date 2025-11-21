@@ -7,7 +7,6 @@ import (
 
 type TagID string
 
-// TODO: これvalue受け取らないかも
 func NewTagID(value string) (TagID, error) {
 	if value == "" {
 		return "", errors.New("TagID is empty")
