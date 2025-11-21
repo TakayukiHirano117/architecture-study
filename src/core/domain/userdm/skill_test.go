@@ -10,8 +10,8 @@ import (
 func TestSkill_NewSkill_Success(t *testing.T) {
 	skillId := userdm.NewSkillID()
 	tagId, _ := tagdm.NewTagID("test-tag-id")
-	evaluation := 5
-	yearsOfExperience := 3
+	evaluation, _ := userdm.NewEvaluation(5)
+	yearsOfExperience, _ := userdm.NewYearsOfExperience(3)
 
 	skill, err := userdm.NewSkill(skillId, tagId, evaluation, yearsOfExperience)
 	if err != nil {

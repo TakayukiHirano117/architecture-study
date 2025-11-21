@@ -54,7 +54,7 @@ func TestUser_NewUser_Success(t *testing.T) {
 		t.Error("Email() should return correct email")
 	}
 
-	if user.SelfIntroduction() != *selfIntroduction {
+	if user.SelfIntroduction() != selfIntroduction {
 		t.Error("SelfIntroduction() should return correct selfIntroduction")
 	}
 
