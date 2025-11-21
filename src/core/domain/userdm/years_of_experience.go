@@ -4,18 +4,16 @@ import "github.com/cockroachdb/errors"
 
 type YearsOfExperience int
 
-func NewYearsOfExperience(value int) (*YearsOfExperience, error) {
+func NewYearsOfExperience(value int) (YearsOfExperience, error) {
 	if value < 0 {
-		return nil, errors.New("YearsOfExperience is invalid")
+		return 0, errors.New("YearsOfExperience is invalid")
 	}
 
 	if value > 100 {
-		return nil, errors.New("YearsOfExperience is too large")
+		return 0, errors.New("YearsOfExperience is too large")
 	}
 
-	yearsOfExperience := YearsOfExperience(value)
-
-	return &yearsOfExperience, nil
+	return YearsOfExperience(value), nil
 }
 
 

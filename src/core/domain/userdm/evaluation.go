@@ -4,18 +4,16 @@ import "github.com/cockroachdb/errors"
 
 type Evaluation int
 
-func NewEvaluation(value int) (*Evaluation, error) {
+func NewEvaluation(value int) (Evaluation, error) {
 	if value < 0 {
-		return nil, errors.New("Evaluation is invalid")
+		return 0, errors.New("Evaluation is invalid")
 	}
 
 	if value > 5 {
-		return nil, errors.New("Evaluation is too large")
+		return 0, errors.New("Evaluation is too large")
 	}
 
-	evaluation := Evaluation(value)
-
-	return &evaluation, nil
+	return Evaluation(value), nil
 }
 
 func NewEvaluationByVal(value int) (Evaluation, error) {
