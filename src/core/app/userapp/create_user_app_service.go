@@ -50,11 +50,12 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	if err != nil {
 		return err
 	}
-	b, err := app.IsExistByUserName.Exec(ctx, *userName)
+
+	isExistByUserName, err := app.IsExistByUserName.Exec(ctx, *userName, userdm.UserID(""))
 	if err != nil {
 		return err
 	}
-	if b {
+	if isExistByUserName {
 		return errors.New("user name already exists")
 	}
 

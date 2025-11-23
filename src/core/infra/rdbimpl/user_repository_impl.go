@@ -25,19 +25,125 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	}
 
 	query := `
-		SELECT id FROM users WHERE name = $1
+		SELECT
+				u.id AS user_id,
+				u.name,
+				u.email,
+				u.password,
+				u.self_introduction,
+				s.id AS skill_id,
+				s.tag_id AS skill_tag_id,
+				s.evaluation AS skill_evaluation,
+				s.years_of_experience AS skill_years_of_experience,
+				c.id AS career_id,
+				c.detail AS career_detail,
+				c.start_year AS career_start_year,
+				c.end_year AS career_end_year
+		FROM users u
+		LEFT JOIN skills s ON s.user_id = u.id
+		LEFT JOIN careers c ON c.user_id = u.id
+		WHERE u.name = $1;
 	`
-	rows, err := conn.QueryContext(ctx, query, name.String())
+	rows, err := conn.QueryxContext(ctx, query, name.String())
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	if rows.Next() {
-		return &userdm.User{}, nil
+	userDetailRows := []models.UserDetailModel{}
+	for rows.Next() {
+		var r models.UserDetailModel
+		if err := rows.StructScan(&r); err != nil {
+			return nil, err
+		}
+		userDetailRows = append(userDetailRows, r)
 	}
 
-	return nil, nil
+	if len(userDetailRows) == 0 {
+		return nil, nil
+	}
+
+	skillModels := []models.SkillModel{}
+	careerModels := []models.CareerModel{}
+
+	for _, row := range userDetailRows {
+		if row.SkillID.Valid {
+			skillModels = append(skillModels, models.SkillModel{
+				SkillID:           row.SkillID.String,
+				TagID:             row.SkillTagID.String,
+				Evaluation:        int(row.SkillEvaluation.Int64),
+				YearsOfExperience: int(row.SkillYearsOfExperience.Int64),
+			})
+		}
+
+		if row.CareerID.Valid {
+			careerModels = append(careerModels, models.CareerModel{
+				CareerID:  row.CareerID.String,
+				Detail:    row.CareerDetail.String,
+				StartYear: int(row.CareerStart.Int64),
+				EndYear:   int(row.CareerEnd.Int64),
+			})
+		}
+	}
+
+	u := userDetailRows[0]
+
+	userID, err := userdm.NewUserIDByVal(u.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	userName, err := userdm.NewUserNameByVal(u.UserName)
+	if err != nil {
+		return nil, err
+	}
+
+	email, err := userdm.NewEmailByVal(u.Email)
+	if err != nil {
+		return nil, err
+	}
+	password, err := userdm.NewPasswordByVal(u.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	selfIntroductionStr := ""
+	if u.SelfIntroduction.Valid {
+		selfIntroductionStr = u.SelfIntroduction.String
+	}
+	selfIntroduction, err := userdm.NewSelfIntroductionByVal(selfIntroductionStr)
+	if err != nil {
+		return nil, err
+	}
+
+	// Skill / Career を VO に詰め替え
+	skills := []userdm.Skill{}
+	for _, s := range skillModels {
+		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
+		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
+		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
+		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tagID, ev, yoe)
+		skills = append(skills, *skill)
+	}
+
+	careers := []userdm.Career{}
+	for _, c := range careerModels {
+		idVo, _ := userdm.NewCareerIDByVal(c.CareerID)
+		detailVo, _ := userdm.NewCareerDetailByVal(c.Detail)
+		startVo, _ := userdm.NewCareerStartYearByVal(c.StartYear)
+		endVo, _ := userdm.NewCareerEndYearByVal(c.EndYear)
+		career, _ := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		careers = append(careers, *career)
+	}
+	return userdm.NewUserByVal(
+		userID,
+		userName,
+		password,
+		email,
+		skills,
+		careers,
+		&selfIntroduction,
+	)
 }
 
 func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*userdm.User, error) {

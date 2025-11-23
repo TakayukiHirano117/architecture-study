@@ -3,7 +3,7 @@ package userdm
 import "context"
 
 type IsExistByUserNameDomainService interface {
-	Exec(ctx context.Context, userName UserName) (bool, error)
+	Exec(ctx context.Context, userName UserName, userID UserID) (bool, error)
 }
 
 type isExistByUserNameDomainService struct {
@@ -16,12 +16,20 @@ func NewIsExistByUserNameDomainService(ur UserRepository) IsExistByUserNameDomai
 	}
 }
 
-func (iebus *isExistByUserNameDomainService) Exec(ctx context.Context, userName UserName) (bool, error) {
-	user, err := iebus.userRepo.FindByName(ctx, userName)
+func (iebunds *isExistByUserNameDomainService) Exec(ctx context.Context, userName UserName, userID UserID) (bool, error) {
+	user, err := iebunds.userRepo.FindByName(ctx, userName)
 
 	if err != nil {
 		return false, err
 	}
 
-	return user != nil, nil
+	if user == nil {
+		return false, nil
+	}
+
+	if user.ID().Equal(userID) {
+		return false, nil
+	}
+
+	return true, nil
 }

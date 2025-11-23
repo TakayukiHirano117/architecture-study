@@ -56,17 +56,18 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		return err
 	}
 
-	b, err := app.IsExistByUserName.Exec(ctx, *userName)
-	if err != nil {
-		return err
-	}
-	if b {
-		return errors.New("user name already exists")
-	}
-
 	userID, err := userdm.NewUserIDByVal(req.ID)
 	if err != nil {
 		return err
+	}
+
+	isExistByUserName, err := app.IsExistByUserName.Exec(ctx, *userName, userID)
+	if err != nil {
+		return err
+	}
+
+	if isExistByUserName {
+		return errors.New("user name already exists")
 	}
 
 	user, err := app.userRepo.FindByID(ctx, userID)
