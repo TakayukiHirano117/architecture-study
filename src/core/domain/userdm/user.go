@@ -110,10 +110,31 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 			}
 
 			careers[i] = *career
+		} else {
+			detail, err := NewCareerDetail(rc.Detail)
+			if err != nil {
+				return err
+			}
+
+			startYear, err := NewCareerStartYear(rc.StartYear)
+			if err != nil {
+				return err
+			}
+
+			endYear, err := NewCareerEndYear(rc.EndYear)
+			if err != nil {
+				return err
+			}
+
+			career, err := NewCareer(NewCareerID(), *detail, *startYear, *endYear)
+			if err != nil {
+				return err
+			}
+
+			careers[i] = *career
 		}
 	}
 
-	// skillのtagIdは存在しない場合は作成できない
 	skills := make([]Skill, len(reqSkills))
 	for i, rs := range reqSkills {
 		if rs.ID != nil {

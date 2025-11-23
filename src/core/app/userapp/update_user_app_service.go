@@ -2,7 +2,7 @@ package userapp
 
 import (
 	"context"
-	
+
 	"github.com/cockroachdb/errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
@@ -78,19 +78,27 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 	careers := make([]userdm.CareerParamIfUpdate, len(req.Careers))
 
 	for i, reqCareer := range req.Careers {
+		var careerID *string
+		if reqCareer.ID != "" {
+			careerID = &reqCareer.ID
+		}
 		careers[i] = userdm.CareerParamIfUpdate{
-			ID:     &reqCareer.ID,
-			Detail: reqCareer.Detail,
+			ID:        careerID,
+			Detail:    reqCareer.Detail,
 			StartYear: reqCareer.StartYear,
 			EndYear:   reqCareer.EndYear,
 		}
 	}
 
 	for i, reqSkill := range req.Skills {
+		var skillID *string
+		if reqSkill.ID != "" {
+			skillID = &reqSkill.ID
+		}
 		skills[i] = userdm.SkillParamIfUpdate{
-			ID:    &reqSkill.ID,
-			TagID: reqSkill.TagID,
-			Evaluation: reqSkill.Evaluation,
+			ID:                skillID,
+			TagID:             reqSkill.TagID,
+			Evaluation:        reqSkill.Evaluation,
 			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
 	}

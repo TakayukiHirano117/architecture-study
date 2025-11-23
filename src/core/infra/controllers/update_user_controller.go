@@ -42,4 +42,6 @@ func (c *UpdateUserController) Exec(ctx *gin.Context) {
 		ctx.Error(err)
 		return
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "User updated successfully"})
 }
