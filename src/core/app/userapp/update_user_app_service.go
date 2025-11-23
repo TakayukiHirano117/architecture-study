@@ -29,7 +29,6 @@ type UpdateUserRequest struct {
 	ID               string
 	Name             string
 	Email            string
-	Password         string
 	Skills           []UpdateSkillRequest
 	Careers          []UpdateCareerRequest
 	SelfIntroduction string
