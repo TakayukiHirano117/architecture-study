@@ -30,10 +30,6 @@ func (c *UpdateUserController) Exec(ctx *gin.Context) {
 	var in userapp.UpdateUserRequest
 
 	userID := ctx.Param("id")
-	if userID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad request", "message": "user id is required"})
-		return
-	}
 
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"status": "bad request"})
