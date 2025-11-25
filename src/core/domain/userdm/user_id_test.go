@@ -51,7 +51,11 @@ func TestUserId_NewUserIdByVal_InvalidUUID(t *testing.T) {
 
 func TestUserId_String(t *testing.T) {
 	validUUID := uuid.New().String()
-	userId, _ := userdm.NewUserIDByVal(validUUID)
+
+	userId, err := userdm.NewUserIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
+	}
 
 	if userId.String() != validUUID {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, userId.String())
@@ -60,8 +64,17 @@ func TestUserId_String(t *testing.T) {
 
 func TestUserId_Equal(t *testing.T) {
 	validUUID := uuid.New().String()
-	userId1, _ := userdm.NewUserIDByVal(validUUID)
-	userId2, _ := userdm.NewUserIDByVal(validUUID)
+
+	userId1, err := userdm.NewUserIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
+	}
+
+	userId2, err := userdm.NewUserIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
+	}
+
 	userId3 := userdm.NewUserID()
 
 	if !userId1.Equal(userId2) {

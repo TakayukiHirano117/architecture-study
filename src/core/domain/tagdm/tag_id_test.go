@@ -7,12 +7,7 @@ import (
 )
 
 func TestTagId_NewTagId(t *testing.T) {
-	validUUID := uuid.New().String()
-	tagId, err := NewTagID(validUUID)
-
-	if err != nil {
-		t.Errorf("NewTagID() with valid UUID should not return error, got: %v", err)
-	}
+	tagId := NewTagID()
 
 	if tagId.String() == "" {
 		t.Error("NewTagId() should not return empty string")
@@ -21,10 +16,6 @@ func TestTagId_NewTagId(t *testing.T) {
 	_, parseErr := uuid.Parse(tagId.String())
 	if parseErr != nil {
 		t.Errorf("NewTagId() should generate valid UUID, got: %s", tagId.String())
-	}
-
-	if tagId.String() != validUUID {
-		t.Errorf("NewTagID() should return the same UUID, expected: %s, got: %s", validUUID, tagId.String())
 	}
 }
 
@@ -59,7 +50,11 @@ func TestTagId_NewTagIdByVal_InvalidUUID(t *testing.T) {
 
 func TestTagId_String(t *testing.T) {
 	validUUID := uuid.New().String()
-	tagId, _ := NewTagIDByVal(validUUID)
+
+	tagId, err := NewTagIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewTagIdByVal() with valid UUID should not return error, got: %v", err)
+	}
 
 	if tagId.String() != validUUID {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, tagId.String())
@@ -68,10 +63,17 @@ func TestTagId_String(t *testing.T) {
 
 func TestTagId_Equal(t *testing.T) {
 	validUUID1 := uuid.New().String()
-	validUUID2 := uuid.New().String()
-	tagId1, _ := NewTagIDByVal(validUUID1)
-	tagId2, _ := NewTagIDByVal(validUUID1)
-	tagId3, _ := NewTagID(validUUID2)
+	tagId1, err := NewTagIDByVal(validUUID1)
+	if err != nil {
+		t.Errorf("NewTagIdByVal() with valid UUID should not return error, got: %v", err)
+	}
+
+	tagId2, err := NewTagIDByVal(validUUID1)
+	if err != nil {
+		t.Errorf("NewTagIdByVal() with valid UUID should not return error, got: %v", err)
+	}
+
+	tagId3 := NewTagID()
 
 	if !tagId1.Equal(tagId2) {
 		t.Error("Equal() should return true for same UUID values")

@@ -9,11 +9,30 @@ import (
 
 func TestSkill_NewSkill_Success(t *testing.T) {
 	skillId := userdm.NewSkillID()
-	tagId, _ := tagdm.NewTagID("test-tag-id")
-	evaluation, _ := userdm.NewEvaluation(5)
-	yearsOfExperience, _ := userdm.NewYearsOfExperience(3)
 
-	skill, err := userdm.NewSkill(skillId, tagId, evaluation, yearsOfExperience)
+	tagId := tagdm.NewTagID()
+
+	tagName, err := tagdm.NewTagName("test-tag-name")
+	if err != nil {
+		t.Errorf("NewTagName() with valid parameters should not return error, got: %v", err)
+	}
+
+	tag, err := tagdm.NewTag(tagId, *tagName)
+	if err != nil {
+		t.Errorf("NewTag() with valid parameters should not return error, got: %v", err)
+	}
+
+	evaluation, err := userdm.NewEvaluation(5)
+	if err != nil {
+		t.Errorf("NewEvaluation() with valid parameters should not return error, got: %v", err)
+	}
+
+	yearsOfExperience, err := userdm.NewYearsOfExperience(3)
+	if err != nil {
+		t.Errorf("NewYearsOfExperience() with valid parameters should not return error, got: %v", err)
+	}
+
+	skill, err := userdm.NewSkill(skillId, tag, evaluation, yearsOfExperience)
 	if err != nil {
 		t.Errorf("NewSkill() with valid parameters should not return error, got: %v", err)
 	}
