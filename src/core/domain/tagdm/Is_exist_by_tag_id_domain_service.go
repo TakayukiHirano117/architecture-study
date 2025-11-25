@@ -1,27 +1,36 @@
 package tagdm
 
-import "context"
+import (
+	"context"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
+)
 
 type IsExistByTagIDDomainService interface {
-	Exec(ctx context.Context, tagID TagID) (bool, error)
+	Exec(ctx context.Context, reqTagID string) (bool, error)
 }
 
 type isExistByTagIDDomainService struct {
-	tagRepo TagRepository
 }
 
-func NewIsExistByTagIDDomainService(tr TagRepository) IsExistByTagIDDomainService {
-	return &isExistByTagIDDomainService{
-		tagRepo: tr,
-	}
+func NewIsExistByTagIDDomainService() IsExistByTagIDDomainService {
+	return &isExistByTagIDDomainService{}
 }
 
-func (ibt *isExistByTagIDDomainService) Exec(ctx context.Context, tagID TagID) (bool, error) {
-	tag, err := ibt.tagRepo.FindByID(ctx, tagID)
-
+func (iebtidds *isExistByTagIDDomainService) Exec(ctx context.Context, reqTagID string) (bool, error) {
+	conn, err := rdb.ExecFromCtx(ctx)
 	if err != nil {
 		return false, err
 	}
 
-	return tag != nil, nil
+	query := `
+		SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)
+	`
+	var isExist bool
+	err = conn.QueryRowxContext(ctx, query, reqTagID).Scan(&isExist)
+	if err != nil {
+		return false, err
+	}
+
+	return isExist, nil
 }

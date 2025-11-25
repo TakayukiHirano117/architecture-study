@@ -2,13 +2,9 @@ package userdm
 
 import "github.com/cockroachdb/errors"
 
-type Evaluation int
+type Evaluation uint8
 
-func NewEvaluation(value int) (Evaluation, error) {
-	if value < 0 {
-		return 0, errors.New("Evaluation is invalid")
-	}
-
+func NewEvaluation(value uint8) (Evaluation, error) {
 	if value > 5 {
 		return 0, errors.New("Evaluation is too large")
 	}
@@ -16,12 +12,12 @@ func NewEvaluation(value int) (Evaluation, error) {
 	return Evaluation(value), nil
 }
 
-func NewEvaluationByVal(value int) (Evaluation, error) {
+func NewEvaluationByVal(value uint8) (Evaluation, error) {
 	return Evaluation(value), nil
 }
 
-func (e Evaluation) Int() int {
-	return int(e)
+func (e Evaluation) Uint8() uint8 {
+	return uint8(e)
 }
 
 func (e Evaluation) Equal(e2 Evaluation) bool {

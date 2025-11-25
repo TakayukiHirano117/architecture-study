@@ -59,12 +59,16 @@ type CareerParamIfUpdate struct {
 }
 type SkillParamIfUpdate struct {
 	ID                *string
-	TagID             string
-	Evaluation        int
-	YearsOfExperience int
+	Tag               TagParamIfUpdate
+	Evaluation        uint8
+	YearsOfExperience uint8
 }
 
-// TODO: ユーザーのドメインルールを表したメソッドを書く
+type TagParamIfUpdate struct {
+	ID   *string
+	Name string
+}
+
 func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []SkillParamIfUpdate, reqCareers []CareerParamIfUpdate, reqSelfIntroduction string) error {
 	userName, err := NewUserName(reqUserName)
 	if err != nil {
@@ -137,55 +141,54 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 
 	skills := make([]Skill, len(reqSkills))
 	for i, rs := range reqSkills {
+		// SkillIDの処理：IDがある場合は既存のIDを使用、ない場合は新規生成
+		var skillID SkillID
 		if rs.ID != nil {
 			id, err := NewSkillIDByVal(*rs.ID)
 			if err != nil {
 				return err
 			}
-
-			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
-			if err != nil {
-				return err
-			}
-
-			evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
-			if err != nil {
-				return err
-			}
-
-			yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
-			if err != nil {
-				return err
-			}
-
-			skill, err := NewSkill(id, tagID, evaluationVo, yearsOfExperienceVo)
-			if err != nil {
-				return err
-			}
-			skills[i] = *skill
+			skillID = id
 		} else {
-			tagID, err := tagdm.NewTagIDByVal(rs.TagID)
-			if err != nil {
-				return err
-			}
-
-			evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
-			if err != nil {
-				return err
-			}
-
-			yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
-			if err != nil {
-				return err
-			}
-
-			skill, err := NewSkill(NewSkillID(), tagID, evaluationVo, yearsOfExperienceVo)
-			if err != nil {
-				return err
-			}
-
-			skills[i] = *skill
+			skillID = NewSkillID()
 		}
+
+		var tagID tagdm.TagID
+		if rs.Tag.ID != nil {
+			id, err := tagdm.NewTagIDByVal(*rs.Tag.ID)
+			if err != nil {
+				return err
+			}
+			tagID = id
+		} else {
+			tagID = tagdm.NewTagID()
+		}
+
+		tagName, err := tagdm.NewTagNameByVal(rs.Tag.Name)
+		if err != nil {
+			return err
+		}
+
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
+		if err != nil {
+			return err
+		}
+
+		evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
+		if err != nil {
+			return err
+		}
+
+		yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
+		if err != nil {
+			return err
+		}
+
+		skill, err := NewSkill(skillID, tag, evaluationVo, yearsOfExperienceVo)
+		if err != nil {
+			return err
+		}
+		skills[i] = *skill
 	}
 
 	u.name = *userName

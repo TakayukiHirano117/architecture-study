@@ -2,13 +2,9 @@ package userdm
 
 import "github.com/cockroachdb/errors"
 
-type YearsOfExperience int
+type YearsOfExperience uint8
 
-func NewYearsOfExperience(value int) (YearsOfExperience, error) {
-	if value < 0 {
-		return 0, errors.New("YearsOfExperience is invalid")
-	}
-
+func NewYearsOfExperience(value uint8) (YearsOfExperience, error) {
 	if value > 100 {
 		return 0, errors.New("YearsOfExperience is too large")
 	}
@@ -16,13 +12,12 @@ func NewYearsOfExperience(value int) (YearsOfExperience, error) {
 	return YearsOfExperience(value), nil
 }
 
-
-func NewYearsOfExperienceByVal(value int) (YearsOfExperience, error) {
+func NewYearsOfExperienceByVal(value uint8) (YearsOfExperience, error) {
 	return YearsOfExperience(value), nil
 }
 
-func (y YearsOfExperience) Int() int {
-	return int(y)
+func (y YearsOfExperience) Uint8() uint8 {
+	return uint8(y)
 }
 
 func (y YearsOfExperience) Equal(y2 YearsOfExperience) bool {

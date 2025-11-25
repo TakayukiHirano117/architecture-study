@@ -11,6 +11,7 @@ type UserDetailModel struct {
 
 	SkillID                sql.NullString `db:"skill_id"`
 	SkillTagID             sql.NullString `db:"skill_tag_id"`
+	SkillTagName           sql.NullString `db:"skill_tag_name"`
 	SkillEvaluation        sql.NullInt64  `db:"skill_evaluation"`
 	SkillYearsOfExperience sql.NullInt64  `db:"skill_years_of_experience"`
 

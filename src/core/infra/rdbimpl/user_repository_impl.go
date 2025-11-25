@@ -71,8 +71,8 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 			skillModels = append(skillModels, models.SkillModel{
 				SkillID:           row.SkillID.String,
 				TagID:             row.SkillTagID.String,
-				Evaluation:        int(row.SkillEvaluation.Int64),
-				YearsOfExperience: int(row.SkillYearsOfExperience.Int64),
+				Evaluation:        uint8(row.SkillEvaluation.Int64),
+				YearsOfExperience: uint8(row.SkillYearsOfExperience.Int64),
 			})
 		}
 
@@ -116,13 +116,14 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 		return nil, err
 	}
 
-	// Skill / Career を VO に詰め替え
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
 		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
+		tagName, _ := tagdm.NewTagNameByVal(s.TagName)
+		tag, _ := tagdm.NewTagByVal(tagID, tagName)
 		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
 		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
-		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tagID, ev, yoe)
+		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
 		skills = append(skills, *skill)
 	}
 
@@ -161,6 +162,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 				u.self_introduction,
 				s.id AS skill_id,
 				s.tag_id AS skill_tag_id,
+				t.name AS skill_tag_name,
 				s.evaluation AS skill_evaluation,
 				s.years_of_experience AS skill_years_of_experience,
 				c.id AS career_id,
@@ -170,6 +172,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 		FROM users u
 		LEFT JOIN skills s ON s.user_id = u.id
 		LEFT JOIN careers c ON c.user_id = u.id
+		LEFT JOIN tags t ON t.id = s.tag_id
 		WHERE u.id = $1;
 		`
 
@@ -200,8 +203,8 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 			skillModels = append(skillModels, models.SkillModel{
 				SkillID:           row.SkillID.String,
 				TagID:             row.SkillTagID.String,
-				Evaluation:        int(row.SkillEvaluation.Int64),
-				YearsOfExperience: int(row.SkillYearsOfExperience.Int64),
+				Evaluation:        uint8(row.SkillEvaluation.Int64),
+				YearsOfExperience: uint8(row.SkillYearsOfExperience.Int64),
 			})
 		}
 
@@ -249,9 +252,11 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
 		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
+		tagName, _ := tagdm.NewTagNameByVal(s.TagName)
+		tag, _ := tagdm.NewTagByVal(tagID, tagName)
 		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
 		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
-		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tagID, ev, yoe)
+		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
 		skills = append(skills, *skill)
 	}
 
@@ -361,8 +366,8 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 		for _, skill := range user.Skills() {
 			_, err := conn.ExecContext(ctx, skillQuery,
 				skill.TagID().String(),
-				skill.Evaluation().Int(),
-				skill.YearsOfExperience().Int(),
+				skill.Evaluation().Uint8(),
+				skill.YearsOfExperience().Uint8(),
 				skill.ID().String(),
 			)
 			if err != nil {
