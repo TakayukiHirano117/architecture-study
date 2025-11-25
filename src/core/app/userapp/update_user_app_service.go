@@ -2,7 +2,6 @@ package userapp
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/cockroachdb/errors"
 
@@ -155,7 +154,6 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		return err
 	}
 
-	fmt.Println("newTagNames", newTagNames)
 	if len(newTagNames) > 0 {
 		newTags := []tagdm.Tag{}
 		for _, skill := range user.Skills() {
