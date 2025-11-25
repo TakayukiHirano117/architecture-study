@@ -1,8 +1,6 @@
-// is_exist_by_user_name_exclude_self_domain_service.go
 package userdm
 
-//go:generate mockgen -source=$GOFILE -destination=is_exist_by_user_name_exclude_self_domain_service_mock.go -package=userdm
-
+//go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/userdm/is_exist_by_user_name_exclude_self_domain_service_mock.go -package=userdm
 
 import "context"
 
