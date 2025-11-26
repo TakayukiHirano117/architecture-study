@@ -12,17 +12,17 @@ import (
 
 type CreateUserController struct {
 	userRepo          userdm.UserRepository
+	tagRepo           tagdm.TagRepository
 	IsExistByUserName userdm.IsExistByUserNameDomainService
 	IsExistByTagID    tagdm.IsExistByTagIDDomainService
-	FindIDByTagName   tagdm.FindIDByTagNameDomainService
 }
 
 func NewCreateUserController() *CreateUserController {
 	return &CreateUserController{
 		userRepo:          rdbimpl.NewUserRepositoryImpl(),
+		tagRepo:           rdbimpl.NewTagRepositoryImpl(),
 		IsExistByUserName: userdm.NewIsExistByUserNameDomainService(rdbimpl.NewUserRepositoryImpl()),
-		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(rdbimpl.NewTagRepositoryImpl()),
-		FindIDByTagName:   tagdm.NewFindIDByTagNameDomainService(rdbimpl.NewTagRepositoryImpl()),
+		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(),
 	}
 }
 
@@ -34,8 +34,10 @@ func (c *CreateUserController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	if err := userapp.NewCreateUserAppService(c.userRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
+	if err := userapp.NewCreateUserAppService(c.userRepo, c.tagRepo, c.IsExistByUserName, c.IsExistByTagID).Exec(ctx.Request.Context(), &in); err != nil {
 		ctx.Error(err)
 		return
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "User created successfully"})
 }

@@ -16,7 +16,7 @@ type SkillParamIfCreate struct {
 }
 
 type TagParamIfCreate struct {
-	ID   string
+	ID   *string
 	Name string
 }
 
@@ -54,16 +54,18 @@ func GenIfCreate(
 	}
 
 	skills := make([]Skill, len(reqSkills))
-	// TODO: tagIdではなくてtag_nameが送られてくる
-	// TODO: tag_nameでfindByNameして、tagIdが取得できればskillを保存。
-	// TODO: できなれけば次のループにスキップ
-	// 実際のMENTAのスキルのフォームがそうだった。
-	// 改修、新規に作成できる様にする
 	for i, rs := range reqSkills {
-		tagID, err := tagdm.NewTagIDByVal(rs.Tag.ID)
-		if err != nil {
-			return nil, err
+		var tagID tagdm.TagID
+		if rs.Tag.ID != nil {
+			id, err := tagdm.NewTagIDByVal(*rs.Tag.ID)
+			if err != nil {
+				return nil, err
+			}
+			tagID = id
+		} else {
+			tagID = tagdm.NewTagID()
 		}
+
 		tagName, err := tagdm.NewTagNameByVal(rs.Tag.Name)
 		if err != nil {
 			return nil, err
