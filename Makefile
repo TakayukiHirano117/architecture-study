@@ -3,3 +3,19 @@ migrate-up:
 
 migrate-down:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'migrate -path src/db/migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" down 1'
+
+# gomock生成コマンド
+gomock-generate-all:
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go generate ./...'
+
+# Lint
+.PHONY: lint lint-fix
+
+lint:
+	golangci-lint run ./...
+
+lint-fix:
+	golangci-lint run --fix ./...
+
+lint-docker:
+	docker-compose -f ./.docker/compose.yml exec api golangci-lint run ./...
