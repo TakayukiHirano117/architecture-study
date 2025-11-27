@@ -37,9 +37,9 @@ type UpdateUserRequest struct {
 	ID               string
 	Name             string
 	Email            string
+	SelfIntroduction string
 	Skills           []UpdateSkillRequest
 	Careers          []UpdateCareerRequest
-	SelfIntroduction string
 }
 
 type UpdateSkillRequest struct {

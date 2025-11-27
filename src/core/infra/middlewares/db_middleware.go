@@ -4,9 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/TakayukiHirano117/architecture-study/config"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/TakayukiHirano117/architecture-study/config"
 )
 
 func DBMiddleware(conn *sqlx.DB) gin.HandlerFunc {

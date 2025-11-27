@@ -3,11 +3,12 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/app/userapp"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdbimpl"
-	"github.com/gin-gonic/gin"
 )
 
 type CreateUserController struct {

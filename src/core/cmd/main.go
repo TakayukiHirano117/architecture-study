@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/TakayukiHirano117/architecture-study/config"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/middlewares"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {

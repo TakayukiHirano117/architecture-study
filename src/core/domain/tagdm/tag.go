@@ -3,10 +3,10 @@ package tagdm
 import "time"
 
 type Tag struct {
-	id        TagID
-	name      TagName
 	createdAt time.Time
 	updatedAt time.Time
+	id        TagID
+	name      TagName
 }
 
 func NewTag(id TagID, name TagName) (*Tag, error) {

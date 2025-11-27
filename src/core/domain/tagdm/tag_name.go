@@ -25,7 +25,7 @@ func NewTagName(value string) (*TagName, error) {
 func NewTagNameByVal(value string) (TagName, error) {
 	if value == "" {
 		return "", errors.New("tag name is empty")
-	}	
+	}
 
 	return TagName(value), nil
 }

@@ -118,7 +118,11 @@ docker compose -f ./.docker/compose.yml exec api go test -v テスト対象フ�
 // 再帰的にすべてのテストを実行
 ```
 docker compose exec api go test ./...
+
 ```
+
+// ユーザーのユースケーステスト実行
+docker compose -f ./.docker/compose.yml exec api sh -c 'cd /app && go test -v ./src/core/app/userapp/...'
 
 # gomock生成コマンド
 サンプル
@@ -130,3 +134,5 @@ mockgen -source=src/core/domain/userdm/is_exist_by_user_name.go
 
 # マイグレーション実行コマンド
 make migrate-up
+
+docker compose -f ./.docker/compose.yml exec api go generate ./src/core/domain/userdm/... 

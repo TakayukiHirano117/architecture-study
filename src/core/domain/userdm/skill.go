@@ -3,8 +3,8 @@ package userdm
 import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 
 type Skill struct {
-	id                SkillID
 	tag               *tagdm.Tag
+	id                SkillID
 	evaluation        Evaluation
 	yearsOfExperience YearsOfExperience
 }

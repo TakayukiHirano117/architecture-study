@@ -56,7 +56,7 @@ func TestEmail_NewEmail_InvalidFormat(t *testing.T) {
 		"test@.com",
 		"test@com",
 	}
-	
+
 	for _, invalidEmail := range testCases {
 		_, err := userdm.NewEmail(invalidEmail)
 		if err == nil {

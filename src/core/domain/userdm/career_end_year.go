@@ -24,7 +24,7 @@ func NewCareerEndYearByVal(value int) (CareerEndYear, error) {
 }
 
 func (c CareerEndYear) Int() int {
-	return int(c) 
+	return int(c)
 }
 
 func (c CareerEndYear) Equal(c2 CareerEndYear) bool {

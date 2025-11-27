@@ -9,6 +9,7 @@ import (
 )
 
 type ctxKey struct{}
+
 var DBKey = ctxKey{}
 
 type DBConfig struct {
@@ -33,4 +34,3 @@ func NewDBConfig() *DBConfig {
 		DBName:   os.Getenv("DB_NAME"),
 	}
 }
-

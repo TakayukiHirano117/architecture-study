@@ -3,20 +3,21 @@ package userdm
 import (
 	"time"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/cockroachdb/errors"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
 
 type User struct {
+	createdAt        time.Time
+	updatedAt        time.Time
+	selfIntroduction *SelfIntroduction
 	id               UserID
 	name             UserName
 	password         Password
 	email            Email
 	skills           []Skill
 	careers          []Career
-	selfIntroduction *SelfIntroduction
-	createdAt        time.Time
-	updatedAt        time.Time
 }
 
 func NewUser(id UserID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {

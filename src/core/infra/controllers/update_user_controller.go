@@ -3,16 +3,18 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/app/userapp"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdbimpl"
-	"github.com/gin-gonic/gin"
 )
 
 type UpdateUserController struct {
 	userRepo          userdm.UserRepository
-	IsExistByUserName userdm.IsExistByUserNameDomainService
+	tagRepo           tagdm.TagRepository
+	IsExistByUserName userdm.IsExistByUserNameExcludeSelfDomainService
 	IsExistByTagID    tagdm.IsExistByTagIDDomainService
 	FindIDByTagName   tagdm.FindIDByTagNameDomainService
 }
@@ -20,8 +22,9 @@ type UpdateUserController struct {
 func NewUpdateUserController() *UpdateUserController {
 	return &UpdateUserController{
 		userRepo:          rdbimpl.NewUserRepositoryImpl(),
-		IsExistByUserName: userdm.NewIsExistByUserNameDomainService(rdbimpl.NewUserRepositoryImpl()),
-		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(rdbimpl.NewTagRepositoryImpl()),
+		tagRepo:           rdbimpl.NewTagRepositoryImpl(),
+		IsExistByUserName: userdm.NewIsExistByUserNameExcludeSelfDomainService(rdbimpl.NewUserRepositoryImpl()),
+		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(),
 		FindIDByTagName:   tagdm.NewFindIDByTagNameDomainService(rdbimpl.NewTagRepositoryImpl()),
 	}
 }
@@ -38,7 +41,7 @@ func (c *UpdateUserController) Exec(ctx *gin.Context) {
 
 	in.ID = userID
 
-	if err := userapp.NewUpdateUserAppService(c.userRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
+	if err := userapp.NewUpdateUserAppService(c.userRepo, c.tagRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
 		ctx.Error(err)
 		return
 	}

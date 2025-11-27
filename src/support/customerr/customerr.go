@@ -8,9 +8,9 @@ import (
 )
 
 type appErr struct {
-	code  int
-	msg   string
 	trace error
+	msg   string
+	code  int
 }
 
 type AppError interface {

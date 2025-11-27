@@ -33,9 +33,9 @@ type CreateUserRequest struct {
 	Name             string
 	Email            string
 	Password         string
+	SelfIntroduction string
 	Skills           []CreateSkillRequest
 	Careers          []CreateCareerRequest
-	SelfIntroduction string
 }
 
 type CreateSkillRequest struct {

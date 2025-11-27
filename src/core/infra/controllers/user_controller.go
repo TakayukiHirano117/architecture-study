@@ -3,8 +3,8 @@ package controllers
 import "github.com/gin-gonic/gin"
 
 type UserController struct {
-	createUserController     *CreateUserController
-	updateUserController     *UpdateUserController
+	createUserController *CreateUserController
+	updateUserController *UpdateUserController
 }
 
 func NewUserController() *UserController {
@@ -12,8 +12,8 @@ func NewUserController() *UserController {
 	updateUserController := NewUpdateUserController()
 
 	return &UserController{
-		createUserController:     createUserController,
-		updateUserController:     updateUserController,
+		createUserController: createUserController,
+		updateUserController: updateUserController,
 	}
 }
 

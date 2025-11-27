@@ -3,9 +3,10 @@ package middlewares
 import (
 	"fmt"
 
-	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+
+	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 )
 
 func RecoveryMiddleware() gin.HandlerFunc {
