@@ -1,3 +1,4 @@
+//go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/tagdm/tag_repository_mock.go -package=tagdm_mock
 package tagdm
 
 import "context"

@@ -1,3 +1,4 @@
+//go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/userdm/user_repository_mock.go -package=userdm_mock
 package userdm
 
 import "context"
