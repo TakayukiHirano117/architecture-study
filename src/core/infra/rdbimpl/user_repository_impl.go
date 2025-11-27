@@ -118,22 +118,55 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
-		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
-		tagName, _ := tagdm.NewTagNameByVal(s.TagName)
-		tag, _ := tagdm.NewTagByVal(tagID, tagName)
-		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
-		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
-		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
+		tagID, err := tagdm.NewTagIDByVal(s.TagID)
+		if err != nil {
+			return nil, err
+		}
+		tagName, err := tagdm.NewTagNameByVal(s.TagName)
+		if err != nil {
+			return nil, err
+		}
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
+		if err != nil {
+			return nil, err
+		}
+		ev, err := userdm.NewEvaluationByVal(s.Evaluation)
+		if err != nil {
+			return nil, err
+		}
+		yoe, err := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
+		if err != nil {
+			return nil, err
+		}
+		skill, err := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
+		if err != nil {
+			return nil, err
+		}
 		skills = append(skills, *skill)
 	}
 
 	careers := []userdm.Career{}
 	for _, c := range careerModels {
-		idVo, _ := userdm.NewCareerIDByVal(c.CareerID)
-		detailVo, _ := userdm.NewCareerDetailByVal(c.Detail)
-		startVo, _ := userdm.NewCareerStartYearByVal(c.StartYear)
-		endVo, _ := userdm.NewCareerEndYearByVal(c.EndYear)
-		career, _ := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		idVo, err := userdm.NewCareerIDByVal(c.CareerID)
+		if err != nil {
+			return nil, err
+		}
+		detailVo, err := userdm.NewCareerDetailByVal(c.Detail)
+		if err != nil {
+			return nil, err
+		}
+		startVo, err := userdm.NewCareerStartYearByVal(c.StartYear)
+		if err != nil {
+			return nil, err
+		}
+		endVo, err := userdm.NewCareerEndYearByVal(c.EndYear)
+		if err != nil {
+			return nil, err
+		}
+		career, err := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		if err != nil {
+			return nil, err
+		}
 		careers = append(careers, *career)
 	}
 	return userdm.NewUserByVal(
@@ -251,22 +284,55 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 	// Skill / Career を VO に詰め替え
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
-		tagID, _ := tagdm.NewTagIDByVal(s.TagID)
-		tagName, _ := tagdm.NewTagNameByVal(s.TagName)
-		tag, _ := tagdm.NewTagByVal(tagID, tagName)
-		ev, _ := userdm.NewEvaluationByVal(s.Evaluation)
-		yoe, _ := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
-		skill, _ := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
+		tagID, err := tagdm.NewTagIDByVal(s.TagID)
+		if err != nil {
+			return nil, err
+		}
+		tagName, err := tagdm.NewTagNameByVal(s.TagName)
+		if err != nil {
+			return nil, err
+		}
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
+		if err != nil {
+			return nil, err
+		}
+		ev, err := userdm.NewEvaluationByVal(s.Evaluation)
+		if err != nil {
+			return nil, err
+		}
+		yoe, err := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
+		if err != nil {
+			return nil, err
+		}
+		skill, err := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
+		if err != nil {
+			return nil, err
+		}
 		skills = append(skills, *skill)
 	}
 
 	careers := []userdm.Career{}
 	for _, c := range careerModels {
-		idVo, _ := userdm.NewCareerIDByVal(c.CareerID)
-		detailVo, _ := userdm.NewCareerDetailByVal(c.Detail)
-		startVo, _ := userdm.NewCareerStartYearByVal(c.StartYear)
-		endVo, _ := userdm.NewCareerEndYearByVal(c.EndYear)
-		career, _ := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		idVo, err := userdm.NewCareerIDByVal(c.CareerID)
+		if err != nil {
+			return nil, err
+		}
+		detailVo, err := userdm.NewCareerDetailByVal(c.Detail)
+		if err != nil {
+			return nil, err
+		}
+		startVo, err := userdm.NewCareerStartYearByVal(c.StartYear)
+		if err != nil {
+			return nil, err
+		}
+		endVo, err := userdm.NewCareerEndYearByVal(c.EndYear)
+		if err != nil {
+			return nil, err
+		}
+		career, err := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		if err != nil {
+			return nil, err
+		}
 		careers = append(careers, *career)
 	}
 	return userdm.NewUserByVal(
