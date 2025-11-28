@@ -4,67 +4,78 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestCareerStartYear_NewCareerStartYear_Success(t *testing.T) {
-	validYear := 2020
-
-	careerStartYear, err := userdm.NewCareerStartYear(validYear)
-	if err != nil {
-		t.Errorf("NewCareerStartYear() with valid year should not return error, got: %v", err)
+func TestCareerStartYear_NewCareerStartYear(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   int
+		wantErr bool
+	}{
+		{
+			name:    "有効な年で作成できる",
+			input:   2020,
+			wantErr: false,
+		},
+		{
+			name:    "1970年未満はエラー",
+			input:   1969,
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 1970年は有効",
+			input:   1970,
+			wantErr: false,
+		},
 	}
 
-	if careerStartYear == nil {
-		t.Error("NewCareerStartYear() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			careerStartYear, err := userdm.NewCareerStartYear(tt.input)
 
-	if int(*careerStartYear) != validYear {
-		t.Errorf("NewCareerStartYear() should return correct value, expected: %d, got: %d", validYear, int(*careerStartYear))
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestCareerStartYear_NewCareerStartYear_Invalid(t *testing.T) {
-	invalidYear := 1969
-
-	_, err := userdm.NewCareerStartYear(invalidYear)
-	if err == nil {
-		t.Error("NewCareerStartYear() with year < 1970 should return error")
-	}
-}
-
-func TestCareerStartYear_NewCareerStartYear_MinYear(t *testing.T) {
-	minYear := 1970
-
-	careerStartYear, err := userdm.NewCareerStartYear(minYear)
-	if err != nil {
-		t.Errorf("NewCareerStartYear() with min year should not return error, got: %v", err)
-	}
-
-	if careerStartYear == nil {
-		t.Error("NewCareerStartYear() should not return nil")
-	}
-}
-
-func TestCareerStartYear_String(t *testing.T) {
-	year := 2020
-	careerStartYear, _ := userdm.NewCareerStartYear(year)
-
-	if int(*careerStartYear) != year {
-		t.Errorf("String() should return correct value, expected: %d, got: %d", year, int(*careerStartYear))
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, int(*careerStartYear))
+		})
 	}
 }
 
 func TestCareerStartYear_Equal(t *testing.T) {
-	year := 2020
-	careerStartYear1, _ := userdm.NewCareerStartYear(year)
-	careerStartYear2, _ := userdm.NewCareerStartYear(year)
-	careerStartYear3, _ := userdm.NewCareerStartYear(2021)
-
-	if !careerStartYear1.Equal(*careerStartYear2) {
-		t.Error("Equal() should return true for same year values")
+	tests := []struct {
+		name     string
+		year1    int
+		year2    int
+		expected bool
+	}{
+		{
+			name:     "同じ年は等しい",
+			year1:    2020,
+			year2:    2020,
+			expected: true,
+		},
+		{
+			name:     "異なる年は等しくない",
+			year1:    2020,
+			year2:    2021,
+			expected: false,
+		},
 	}
 
-	if careerStartYear1.Equal(*careerStartYear3) {
-		t.Error("Equal() should return false for different year values")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			careerStartYear1, err := userdm.NewCareerStartYear(tt.year1)
+			require.NoError(t, err)
+
+			careerStartYear2, err := userdm.NewCareerStartYear(tt.year2)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expected, careerStartYear1.Equal(*careerStartYear2))
+		})
 	}
 }

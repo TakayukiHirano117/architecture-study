@@ -5,50 +5,49 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestCareerDetail_NewCareerDetail_Success(t *testing.T) {
-	validDetail := "Webアプリケーション開発に従事しました。"
-
-	careerDetail, err := userdm.NewCareerDetail(validDetail)
-	if err != nil {
-		t.Errorf("NewCareerDetail() with valid detail should not return error, got: %v", err)
+func TestCareerDetail_NewCareerDetail(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効な経歴詳細で作成できる",
+			input:   "Webアプリケーション開発に従事しました。",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "2001文字以上はエラー",
+			input:   strings.Repeat("a", 2001),
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 2000文字は有効",
+			input:   strings.Repeat("a", 2000),
+			wantErr: false,
+		},
 	}
 
-	if careerDetail == nil {
-		t.Error("NewCareerDetail() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			careerDetail, err := userdm.NewCareerDetail(tt.input)
 
-	if string(*careerDetail) != validDetail {
-		t.Errorf("NewCareerDetail() should return correct value, expected: %s, got: %s", validDetail, string(*careerDetail))
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestCareerDetail_NewCareerDetail_EmptyString(t *testing.T) {
-	_, err := userdm.NewCareerDetail("")
-	if err == nil {
-		t.Error("NewCareerDetail() with empty string should return error")
-	}
-}
-
-func TestCareerDetail_NewCareerDetail_TooLong(t *testing.T) {
-	tooLongDetail := strings.Repeat("a", 2001)
-
-	_, err := userdm.NewCareerDetail(tooLongDetail)
-	if err == nil {
-		t.Error("NewCareerDetail() with too long detail should return error")
-	}
-}
-
-func TestCareerDetail_NewCareerDetail_MaxLength(t *testing.T) {
-	maxLengthDetail := strings.Repeat("a", 2000)
-
-	careerDetail, err := userdm.NewCareerDetail(maxLengthDetail)
-	if err != nil {
-		t.Errorf("NewCareerDetail() with max length detail should not return error, got: %v", err)
-	}
-
-	if careerDetail == nil {
-		t.Error("NewCareerDetail() should not return nil")
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, string(*careerDetail))
+		})
 	}
 }

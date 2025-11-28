@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -11,78 +13,84 @@ import (
 func TestUserId_NewUserId(t *testing.T) {
 	userId := userdm.NewUserID()
 
-	if userId.String() == "" {
-		t.Error("NewUserId() should not return empty string")
-	}
+	assert.NotEmpty(t, userId.String())
 
 	_, err := uuid.Parse(userId.String())
-	if err != nil {
-		t.Errorf("NewUserId() should generate valid UUID, got: %s", userId.String())
-	}
+	assert.NoError(t, err, "生成されたIDは有効なUUIDであるべき")
 }
 
-func TestUserId_NewUserIdByVal_Success(t *testing.T) {
+func TestUserId_NewUserIdByVal(t *testing.T) {
 	validUUID := uuid.New().String()
 
-	userId, err := userdm.NewUserIDByVal(validUUID)
-	if err != nil {
-		t.Errorf("NewUserIdByVal() with valid UUID should not return error, got: %v", err)
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効なUUIDで作成できる",
+			input:   validUUID,
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "無効なUUID形式はエラー",
+			input:   "invalid-uuid-string",
+			wantErr: true,
+		},
 	}
 
-	if userId.String() != validUUID {
-		t.Errorf("NewUserIdByVal() should return correct value, expected: %s, got: %s", validUUID, userId.String())
-	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userId, err := userdm.NewUserIDByVal(tt.input)
 
-func TestUserId_NewUserIdByVal_EmptyString(t *testing.T) {
-	_, err := userdm.NewUserIDByVal("")
-	if err == nil {
-		t.Error("NewUserIdByVal() with empty string should return error")
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestUserId_NewUserIdByVal_InvalidUUID(t *testing.T) {
-	invalidUUID := "invalid-uuid-string"
-
-	_, err := userdm.NewUserIDByVal(invalidUUID)
-	if err == nil {
-		t.Error("NewUserIdByVal() with invalid UUID should return error")
-	}
-}
-
-func TestUserId_String(t *testing.T) {
-	validUUID := uuid.New().String()
-
-	userId, err := userdm.NewUserIDByVal(validUUID)
-	if err != nil {
-		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
-	}
-
-	if userId.String() != validUUID {
-		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, userId.String())
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, userId.String())
+		})
 	}
 }
 
 func TestUserId_Equal(t *testing.T) {
 	validUUID := uuid.New().String()
 
-	userId1, err := userdm.NewUserIDByVal(validUUID)
-	if err != nil {
-		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
+	tests := []struct {
+		name     string
+		value1   string
+		value2   string
+		expected bool
+	}{
+		{
+			name:     "同じUUIDは等しい",
+			value1:   validUUID,
+			value2:   validUUID,
+			expected: true,
+		},
+		{
+			name:     "異なるUUIDは等しくない",
+			value1:   validUUID,
+			value2:   uuid.New().String(),
+			expected: false,
+		},
 	}
 
-	userId2, err := userdm.NewUserIDByVal(validUUID)
-	if err != nil {
-		t.Errorf("NewUserIDByVal() with valid UUID should not return error, got: %v", err)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userId1, err := userdm.NewUserIDByVal(tt.value1)
+			require.NoError(t, err)
 
-	userId3 := userdm.NewUserID()
+			userId2, err := userdm.NewUserIDByVal(tt.value2)
+			require.NoError(t, err)
 
-	if !userId1.Equal(userId2) {
-		t.Error("Equal() should return true for same UUID values")
-	}
-
-	if userId1.Equal(userId3) {
-		t.Error("Equal() should return false for different UUID values")
+			assert.Equal(t, tt.expected, userId1.Equal(userId2))
+		})
 	}
 }

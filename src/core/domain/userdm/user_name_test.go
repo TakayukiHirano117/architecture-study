@@ -5,50 +5,49 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestUserName_NewUserName_Success(t *testing.T) {
-	validName := "Test User"
-
-	userName, err := userdm.NewUserName(validName)
-	if err != nil {
-		t.Errorf("NewUserName() with valid name should not return error, got: %v", err)
+func TestUserName_NewUserName(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効なユーザー名で作成できる",
+			input:   "Test User",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "256文字以上はエラー",
+			input:   strings.Repeat("a", 256),
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 255文字は有効",
+			input:   strings.Repeat("a", 255),
+			wantErr: false,
+		},
 	}
 
-	if userName == nil {
-		t.Error("NewUserName() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userName, err := userdm.NewUserName(tt.input)
 
-	if string(*userName) != validName {
-		t.Errorf("NewUserName() should return correct value, expected: %s, got: %s", validName, userName.String())
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestUserName_NewUserName_EmptyString(t *testing.T) {
-	_, err := userdm.NewUserName("")
-	if err == nil {
-		t.Error("NewUserName() with empty string should return error")
-	}
-}
-
-func TestUserName_NewUserName_TooLong(t *testing.T) {
-	tooLongName := strings.Repeat("a", 256)
-
-	_, err := userdm.NewUserName(tooLongName)
-	if err == nil {
-		t.Error("NewUserName() with too long name should return error")
-	}
-}
-
-func TestUserName_NewUserName_MaxLength(t *testing.T) {
-	maxLengthName := strings.Repeat("a", 255)
-
-	userName, err := userdm.NewUserName(maxLengthName)
-	if err != nil {
-		t.Errorf("NewUserName() with max length name should not return error, got: %v", err)
-	}
-
-	if userName == nil {
-		t.Error("NewUserName() should not return nil")
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, string(*userName))
+		})
 	}
 }

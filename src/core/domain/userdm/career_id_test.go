@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -11,65 +13,75 @@ import (
 func TestCareerId_NewCareerId(t *testing.T) {
 	careerId := userdm.NewCareerID()
 
-	if careerId.String() == "" {
-		t.Error("NewCareerId() should not return empty string")
-	}
+	assert.NotEmpty(t, careerId.String())
 
 	_, err := uuid.Parse(careerId.String())
-	if err != nil {
-		t.Errorf("NewCareerId() should generate valid UUID, got: %s", careerId.String())
-	}
+	assert.NoError(t, err, "生成されたIDは有効なUUIDであるべき")
 }
 
-func TestCareerId_NewCareerIdByVal_Success(t *testing.T) {
-	validValue := "test-career-id"
-
-	careerId, err := userdm.NewCareerIDByVal(validValue)
-	if err != nil {
-		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
+func TestCareerId_NewCareerIdByVal(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効な値で作成できる",
+			input:   "test-career-id",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
 	}
 
-	if careerId.String() != validValue {
-		t.Errorf("NewCareerIdByVal() should return correct value, expected: %s, got: %s", validValue, careerId.String())
-	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			careerId, err := userdm.NewCareerIDByVal(tt.input)
 
-func TestCareerId_NewCareerIdByVal_EmptyString(t *testing.T) {
-	_, err := userdm.NewCareerIDByVal("")
-	if err == nil {
-		t.Error("NewCareerIdByVal() with empty string should return error")
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestCareerId_String(t *testing.T) {
-	validValue := "test-career-id"
-	careerId, err := userdm.NewCareerIDByVal(validValue)
-	if err != nil {
-		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
-	}
-
-	if careerId.String() != validValue {
-		t.Errorf("String() should return correct value, expected: %s, got: %s", validValue, careerId.String())
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, careerId.String())
+		})
 	}
 }
 
 func TestCareerId_Equal(t *testing.T) {
-	validValue := "test-career-id"
-	careerId1, err := userdm.NewCareerIDByVal(validValue)
-	if err != nil {
-		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
+	tests := []struct {
+		name     string
+		value1   string
+		value2   string
+		expected bool
+	}{
+		{
+			name:     "同じ値は等しい",
+			value1:   "test-career-id",
+			value2:   "test-career-id",
+			expected: true,
+		},
+		{
+			name:     "異なる値は等しくない",
+			value1:   "test-career-id-1",
+			value2:   "test-career-id-2",
+			expected: false,
+		},
 	}
-	careerId2, err := userdm.NewCareerIDByVal(validValue)
-	if err != nil {
-		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
-	}
-	careerId3 := userdm.NewCareerID()
 
-	if !careerId1.Equal(careerId2) {
-		t.Error("Equal() should return true for same values")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			careerId1, err := userdm.NewCareerIDByVal(tt.value1)
+			require.NoError(t, err)
 
-	if careerId1.Equal(careerId3) {
-		t.Error("Equal() should return false for different values")
+			careerId2, err := userdm.NewCareerIDByVal(tt.value2)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.expected, careerId1.Equal(careerId2))
+		})
 	}
 }
