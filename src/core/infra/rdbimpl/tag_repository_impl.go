@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"time"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
@@ -87,4 +88,29 @@ func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.T
 	}
 
 	return &tagID, nil
+}
+
+func (r *TagRepositoryImpl) BulkInsert(ctx context.Context, tags []tagdm.Tag) error {
+	if len(tags) == 0 {
+		return nil
+	}
+
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
+		return err
+	}
+
+	query := `
+		INSERT INTO tags (id, name, created_at, updated_at)
+		VALUES ($1, $2, $3, $4)
+	`
+
+	for _, tag := range tags {
+		_, err = conn.ExecContext(ctx, query, tag.ID().String(), tag.Name().String(), tag.CreatedAt(), tag.UpdatedAt())
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

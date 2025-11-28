@@ -47,7 +47,10 @@ func TestCareerEndYear_NewCareerEndYear_MinYear(t *testing.T) {
 
 func TestCareerEndYear_String(t *testing.T) {
 	year := 2020
-	careerEndYear, _ := userdm.NewCareerEndYear(year)
+	careerEndYear, err := userdm.NewCareerEndYear(year)
+	if err != nil {
+		t.Errorf("NewCareerEndYear() with valid year should not return error, got: %v", err)
+	}
 
 	if int(*careerEndYear) != year {
 		t.Errorf("String() should return correct value, expected: %d, got: %d", year, int(*careerEndYear))
@@ -56,9 +59,18 @@ func TestCareerEndYear_String(t *testing.T) {
 
 func TestCareerEndYear_Equal(t *testing.T) {
 	year := 2020
-	careerEndYear1, _ := userdm.NewCareerEndYear(year)
-	careerEndYear2, _ := userdm.NewCareerEndYear(year)
-	careerEndYear3, _ := userdm.NewCareerEndYear(2021)
+	careerEndYear1, err := userdm.NewCareerEndYear(year)
+	if err != nil {
+		t.Errorf("NewCareerEndYear() with valid year should not return error, got: %v", err)
+	}
+	careerEndYear2, err := userdm.NewCareerEndYear(year)
+	if err != nil {
+		t.Errorf("NewCareerEndYear() with valid year should not return error, got: %v", err)
+	}
+	careerEndYear3, err := userdm.NewCareerEndYear(2021)
+	if err != nil {
+		t.Errorf("NewCareerEndYear() with valid year should not return error, got: %v", err)
+	}
 
 	if !careerEndYear1.Equal(*careerEndYear2) {
 		t.Error("Equal() should return true for same year values")

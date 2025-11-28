@@ -37,8 +37,12 @@ func NewPassword(value string) (*Password, error) {
 	return &password, nil
 }
 
-func NewPasswordByVal(value string) Password {
-	return Password(value)
+func NewPasswordByVal(value string) (Password, error) {
+	if value == "" {
+		return "", errors.New("Password must not be empty")
+	}
+
+	return Password(value), nil
 }
 
 func (p Password) String() string {

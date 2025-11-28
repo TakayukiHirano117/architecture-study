@@ -1,3 +1,4 @@
+//go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/userdm/is_exist_by_user_name_domain_service_mock.go -package=userdm_mock
 package userdm
 
 import "context"
@@ -16,12 +17,16 @@ func NewIsExistByUserNameDomainService(ur UserRepository) IsExistByUserNameDomai
 	}
 }
 
-func (iebus *isExistByUserNameDomainService) Exec(ctx context.Context, userName UserName) (bool, error) {
-	user, err := iebus.userRepo.FindByName(ctx, userName)
+func (iebunds *isExistByUserNameDomainService) Exec(ctx context.Context, userName UserName) (bool, error) {
+	user, err := iebunds.userRepo.FindByName(ctx, userName)
 
 	if err != nil {
 		return false, err
 	}
 
-	return user != nil, nil
+	if user == nil {
+		return false, nil
+	}
+
+	return true, nil
 }

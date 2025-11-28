@@ -22,8 +22,12 @@ func NewSelfIntroduction(value string) (*SelfIntroduction, error) {
 	return &selfIntroduction, nil
 }
 
-func NewSelfIntroductionByVal(value string) SelfIntroduction {
-	return SelfIntroduction(value)
+func NewSelfIntroductionByVal(value string) (SelfIntroduction, error) {
+	if value == "" {
+		return "", errors.New("SelfIntroduction must not be empty")
+	}
+
+	return SelfIntroduction(value), nil
 }
 
 func (si SelfIntroduction) String() string {

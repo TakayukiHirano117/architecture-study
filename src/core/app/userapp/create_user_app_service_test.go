@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
+	userdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/userdm"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -17,27 +17,36 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockUserRepo := userdm.NewMockUserRepository(ctrl)
-	mockIsExistByUserNameDomainService := userdm.NewMockIsExistByUserNameDomainService(ctrl)
-	mockIsExistByTagIDDomainService := tagdm.NewMockIsExistByTagIDDomainService(ctrl)
-	mockFindIDByTagNameDomainService := tagdm.NewMockFindIDByTagNameDomainService(ctrl)
+	mockUserRepo := userdm_mock.NewMockUserRepository(ctrl)
+	mockTagRepo := tagdm_mock.NewMockTagRepository(ctrl)
+	mockIsExistByUserName := userdm_mock.NewMockIsExistByUserNameDomainService(ctrl)
+	mockIsExistByTagID := tagdm_mock.NewMockIsExistByTagIDDomainService(ctrl)
 
-	service := NewCreateUserAppService(mockUserRepo, mockIsExistByUserNameDomainService, mockIsExistByTagIDDomainService, mockFindIDByTagNameDomainService)
+	service := NewCreateUserAppService(mockUserRepo, mockTagRepo, mockIsExistByUserName, mockIsExistByTagID)
 
-	t.Run("正常系: ユーザーが正常に作成される", func(t *testing.T) {
+	t.Run("正常系: 既存タグIDを使用してユーザーが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
+		goTagID := uuid.New().String()
+		pythonTagID := uuid.New().String()
+
 		req := &CreateUserRequest{
 			Name:     "test_user",
 			Email:    "test@example.com",
 			Password: "password123456",
 			Skills: []CreateSkillRequest{
 				{
-					TagName:           "Go",
+					Tag: TagParamRequest{
+						ID:   &goTagID,
+						Name: "Go",
+					},
 					Evaluation:        4,
 					YearsOfExperience: 3,
 				},
 				{
-					TagName:           "Python",
+					Tag: TagParamRequest{
+						ID:   &pythonTagID,
+						Name: "Python",
+					},
 					Evaluation:        3,
 					YearsOfExperience: 2,
 				},
@@ -52,32 +61,68 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 			SelfIntroduction: "I am a passionate software engineer.",
 		}
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグIDの取得（Go）
-		goTagId, _ := tagdm.NewTagID(uuid.New().String())
-		mockFindIDByTagNameDomainService.EXPECT().
-			Exec(ctx, gomock.Any()).
-			Return(&goTagId, nil)
+		mockIsExistByTagID.EXPECT().
+			Exec(ctx, goTagID).
+			Return(true, nil)
 
-		// Mock設定: タグIDの取得（Python）
-		pythonTagId, _ := tagdm.NewTagID(uuid.New().String())
-		mockFindIDByTagNameDomainService.EXPECT().
-			Exec(ctx, gomock.Any()).
-			Return(&pythonTagId, nil)
+		mockIsExistByTagID.EXPECT().
+			Exec(ctx, pythonTagID).
+			Return(true, nil)
 
-		// Mock設定: ユーザーの保存
 		mockUserRepo.EXPECT().
 			Store(ctx, gomock.Any()).
 			Return(nil)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
+		assert.NoError(t, err)
+	})
+
+	t.Run("正常系: 新規タグを使用してユーザーが正常に作成される", func(t *testing.T) {
+		ctx := context.Background()
+
+		req := &CreateUserRequest{
+			Name:     "test_user",
+			Email:    "test@example.com",
+			Password: "password123456",
+			Skills: []CreateSkillRequest{
+				{
+					Tag: TagParamRequest{
+						ID:   nil,
+						Name: "NewTag",
+					},
+					Evaluation:        4,
+					YearsOfExperience: 3,
+				},
+			},
+			Careers: []CreateCareerRequest{
+				{
+					Detail:    "Software Engineer at ABC Corp",
+					StartYear: 2020,
+					EndYear:   2023,
+				},
+			},
+			SelfIntroduction: "I am a passionate software engineer.",
+		}
+
+		mockIsExistByUserName.EXPECT().
+			Exec(ctx, gomock.Any()).
+			Return(false, nil)
+
+		mockTagRepo.EXPECT().
+			BulkInsert(ctx, gomock.Any()).
+			Return(nil)
+
+		mockUserRepo.EXPECT().
+			Store(ctx, gomock.Any()).
+			Return(nil)
+
+		err := service.Exec(ctx, req)
+
 		assert.NoError(t, err)
 	})
 
@@ -86,34 +131,36 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		req := &CreateUserRequest{
 			Name:             "existing_user",
 			Email:            "test@example.com",
-			Password:         "password123",
+			Password:         "password123456",
 			Skills:           []CreateSkillRequest{},
 			Careers:          []CreateCareerRequest{},
 			SelfIntroduction: "Test introduction",
 		}
 
-		// Mock設定: ユーザー名の重複チェック（存在する）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(true, nil)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 		assert.Equal(t, "user name already exists", err.Error())
 	})
 
-	t.Run("異常系: タグが存在しない", func(t *testing.T) {
+	t.Run("異常系: タグIDが存在しない", func(t *testing.T) {
 		ctx := context.Background()
+		nonExistentTagID := uuid.New().String()
+
 		req := &CreateUserRequest{
 			Name:     "test_user",
 			Email:    "test@example.com",
 			Password: "password123456",
 			Skills: []CreateSkillRequest{
 				{
-					TagName:           "NonExistentTag",
+					Tag: TagParamRequest{
+						ID:   &nonExistentTagID,
+						Name: "NonExistentTag",
+					},
 					Evaluation:        4,
 					YearsOfExperience: 3,
 				},
@@ -122,22 +169,19 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 			SelfIntroduction: "Test introduction",
 		}
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグIDの取得（存在しない）
-		mockFindIDByTagNameDomainService.EXPECT().
-			Exec(ctx, gomock.Any()).
-			Return(nil, nil)
+		mockIsExistByTagID.EXPECT().
+			Exec(ctx, nonExistentTagID).
+			Return(false, nil)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
-		assert.Equal(t, "tag name not found", err.Error())
+		assert.Contains(t, err.Error(), "tag with ID")
+		assert.Contains(t, err.Error(), "not found")
 	})
 
 	t.Run("異常系: ユーザー名チェックでエラーが発生", func(t *testing.T) {
@@ -145,7 +189,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 		req := &CreateUserRequest{
 			Name:             "test_user",
 			Email:            "test@example.com",
-			Password:         "password123",
+			Password:         "password123456",
 			Skills:           []CreateSkillRequest{},
 			Careers:          []CreateCareerRequest{},
 			SelfIntroduction: "Test introduction",
@@ -153,28 +197,30 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 		expectedError := errors.New("database connection error")
 
-		// Mock設定: ユーザー名の重複チェックでエラー
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, expectedError)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 		assert.Equal(t, expectedError, err)
 	})
 
-	t.Run("異常系: タグ取得でエラーが発生", func(t *testing.T) {
+	t.Run("異常系: タグ存在確認でエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
+		tagID := uuid.New().String()
+
 		req := &CreateUserRequest{
 			Name:     "test_user",
 			Email:    "test@example.com",
 			Password: "password123456",
 			Skills: []CreateSkillRequest{
 				{
-					TagName:           "Go",
+					Tag: TagParamRequest{
+						ID:   &tagID,
+						Name: "Go",
+					},
 					Evaluation:        4,
 					YearsOfExperience: 3,
 				},
@@ -185,33 +231,34 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 		expectedError := errors.New("tag service error")
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグIDの取得でエラー
-		mockFindIDByTagNameDomainService.EXPECT().
-			Exec(ctx, gomock.Any()).
-			Return(nil, expectedError)
+		mockIsExistByTagID.EXPECT().
+			Exec(ctx, tagID).
+			Return(false, expectedError)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 		assert.Equal(t, expectedError, err)
 	})
 
 	t.Run("異常系: ユーザー保存でエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
+		tagID := uuid.New().String()
+
 		req := &CreateUserRequest{
 			Name:     "test_user",
 			Email:    "test@example.com",
 			Password: "password123456",
 			Skills: []CreateSkillRequest{
 				{
-					TagName:           "Go",
+					Tag: TagParamRequest{
+						ID:   &tagID,
+						Name: "Go",
+					},
 					Evaluation:        4,
 					YearsOfExperience: 3,
 				},
@@ -222,26 +269,63 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 		expectedError := errors.New("repository save error")
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// Mock設定: タグIDの取得（Go）
-		goTagId, _ := tagdm.NewTagID(uuid.New().String())
-		mockFindIDByTagNameDomainService.EXPECT().
-			Exec(ctx, gomock.Any()).
-			Return(&goTagId, nil)
+		mockIsExistByTagID.EXPECT().
+			Exec(ctx, tagID).
+			Return(true, nil)
 
-		// Mock設定: ユーザーの保存でエラー
 		mockUserRepo.EXPECT().
 			Store(ctx, gomock.Any()).
 			Return(expectedError)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
+		assert.Error(t, err)
+		assert.Equal(t, expectedError, err)
+	})
+
+	t.Run("異常系: 新規タグ保存でエラーが発生", func(t *testing.T) {
+		ctx := context.Background()
+
+		req := &CreateUserRequest{
+			Name:     "test_user",
+			Email:    "test@example.com",
+			Password: "password123456",
+			Skills: []CreateSkillRequest{
+				{
+					Tag: TagParamRequest{
+						ID:   nil,
+						Name: "NewTag",
+					},
+					Evaluation:        4,
+					YearsOfExperience: 3,
+				},
+			},
+			Careers: []CreateCareerRequest{
+				{
+					Detail:    "Software Engineer at ABC Corp",
+					StartYear: 2020,
+					EndYear:   2023,
+				},
+			},
+			SelfIntroduction: "Test introduction",
+		}
+
+		expectedError := errors.New("tag bulk insert error")
+
+		mockIsExistByUserName.EXPECT().
+			Exec(ctx, gomock.Any()).
+			Return(false, nil)
+
+		mockTagRepo.EXPECT().
+			BulkInsert(ctx, gomock.Any()).
+			Return(expectedError)
+
+		err := service.Exec(ctx, req)
+
 		assert.Error(t, err)
 		assert.Equal(t, expectedError, err)
 	})
@@ -251,17 +335,17 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockUserRepo := userdm.NewMockUserRepository(ctrl)
-	mockIsExistByUserNameDomainService := userdm.NewMockIsExistByUserNameDomainService(ctrl)
-	mockIsExistByTagIDDomainService := tagdm.NewMockIsExistByTagIDDomainService(ctrl)
-	mockFindIDByTagNameDomainService := tagdm.NewMockFindIDByTagNameDomainService(ctrl)
+	mockUserRepo := userdm_mock.NewMockUserRepository(ctrl)
+	mockTagRepo := tagdm_mock.NewMockTagRepository(ctrl)
+	mockIsExistByUserName := userdm_mock.NewMockIsExistByUserNameDomainService(ctrl)
+	mockIsExistByTagID := tagdm_mock.NewMockIsExistByTagIDDomainService(ctrl)
 
-	service := NewCreateUserAppService(mockUserRepo, mockIsExistByUserNameDomainService, mockIsExistByTagIDDomainService, mockFindIDByTagNameDomainService)
+	service := NewCreateUserAppService(mockUserRepo, mockTagRepo, mockIsExistByUserName, mockIsExistByTagID)
 
 	t.Run("異常系: 無効なユーザー名", func(t *testing.T) {
 		ctx := context.Background()
 		req := &CreateUserRequest{
-			Name:             "", // 空のユーザー名
+			Name:             "",
 			Email:            "test@example.com",
 			Password:         "password123456",
 			Skills:           []CreateSkillRequest{},
@@ -269,10 +353,8 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 			SelfIntroduction: "Test introduction",
 		}
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 	})
 
@@ -280,22 +362,19 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 		ctx := context.Background()
 		req := &CreateUserRequest{
 			Name:             "test_user",
-			Email:            "invalid-email", // 無効なメールアドレス
+			Email:            "invalid-email",
 			Password:         "password123456",
 			Skills:           []CreateSkillRequest{},
 			Careers:          []CreateCareerRequest{},
 			SelfIntroduction: "Test introduction",
 		}
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 	})
 
@@ -304,21 +383,18 @@ func TestCreateUserAppService_Exec_InvalidInput(t *testing.T) {
 		req := &CreateUserRequest{
 			Name:             "test_user",
 			Email:            "test@example.com",
-			Password:         "short", // 短すぎるパスワード
+			Password:         "short",
 			Skills:           []CreateSkillRequest{},
 			Careers:          []CreateCareerRequest{},
 			SelfIntroduction: "Test introduction",
 		}
 
-		// Mock設定: ユーザー名の重複チェック（存在しない）
-		mockIsExistByUserNameDomainService.EXPECT().
+		mockIsExistByUserName.EXPECT().
 			Exec(ctx, gomock.Any()).
 			Return(false, nil)
 
-		// 実行
 		err := service.Exec(ctx, req)
 
-		// 検証
 		assert.Error(t, err)
 	})
 }

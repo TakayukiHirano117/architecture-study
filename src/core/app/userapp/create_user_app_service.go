@@ -10,17 +10,22 @@ import (
 
 type CreateUserAppService struct {
 	userRepo          userdm.UserRepository
+	tagRepo           tagdm.TagRepository
 	IsExistByUserName userdm.IsExistByUserNameDomainService
 	IsExistByTagID    tagdm.IsExistByTagIDDomainService
-	FindIDByTagName   tagdm.FindIDByTagNameDomainService
 }
 
-func NewCreateUserAppService(userRepo userdm.UserRepository, isExistByUserNameDomainService userdm.IsExistByUserNameDomainService, isExistByTagIDDomainService tagdm.IsExistByTagIDDomainService, findIDByTagNameDomainService tagdm.FindIDByTagNameDomainService) *CreateUserAppService {
+func NewCreateUserAppService(
+	userRepo userdm.UserRepository,
+	tagRepo tagdm.TagRepository,
+	isExistByUserNameDomainService userdm.IsExistByUserNameDomainService,
+	isExistByTagIDDomainService tagdm.IsExistByTagIDDomainService,
+) *CreateUserAppService {
 	return &CreateUserAppService{
 		userRepo:          userRepo,
+		tagRepo:           tagRepo,
 		IsExistByUserName: isExistByUserNameDomainService,
 		IsExistByTagID:    isExistByTagIDDomainService,
-		FindIDByTagName:   findIDByTagNameDomainService,
 	}
 }
 
@@ -28,15 +33,16 @@ type CreateUserRequest struct {
 	Name             string
 	Email            string
 	Password         string
+	SelfIntroduction string
 	Skills           []CreateSkillRequest
 	Careers          []CreateCareerRequest
-	SelfIntroduction string
 }
 
 type CreateSkillRequest struct {
-	TagName           string
-	Evaluation        int
-	YearsOfExperience int
+	ID                *string
+	Tag               TagParamRequest
+	Evaluation        uint8
+	YearsOfExperience uint8
 }
 
 type CreateCareerRequest struct {
@@ -45,16 +51,22 @@ type CreateCareerRequest struct {
 	EndYear   int
 }
 
+type TagParamRequest struct {
+	ID   *string
+	Name string
+}
+
 func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserRequest) error {
 	userName, err := userdm.NewUserName(req.Name)
 	if err != nil {
 		return err
 	}
-	b, err := app.IsExistByUserName.Exec(ctx, *userName)
+
+	isExistByUserName, err := app.IsExistByUserName.Exec(ctx, *userName)
 	if err != nil {
 		return err
 	}
-	if b {
+	if isExistByUserName {
 		return errors.New("user name already exists")
 	}
 
@@ -69,24 +81,36 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	}
 
 	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
-	for i, reqSkill := range req.Skills {
-		// ここでtagNameの存在チェック
-		tagName, err := tagdm.NewTagName(reqSkill.TagName)
-		if err != nil {
-			return err
-		}
+	newTagNames := []string{}
 
-		// tagNameがあったらtagIdを取得、DBに保存するのはtagIdなので
-		tagId, err := app.FindIDByTagName.Exec(ctx, *tagName)
-		if err != nil {
-			return err
-		}
-		if tagId == nil {
-			return errors.New("tag name not found")
+	for i, reqSkill := range req.Skills {
+		var tagParam userdm.TagParamIfCreate
+
+		if reqSkill.Tag.ID != nil && *reqSkill.Tag.ID != "" {
+			isExist, err := app.IsExistByTagID.Exec(ctx, *reqSkill.Tag.ID)
+			if err != nil {
+				return err
+			}
+
+			if !isExist {
+				return errors.New("tag with ID " + *reqSkill.Tag.ID + " not found")
+			}
+
+			tagParam = userdm.TagParamIfCreate{
+				ID:   reqSkill.Tag.ID,
+				Name: reqSkill.Tag.Name,
+			}
+		} else {
+			newTagNames = append(newTagNames, reqSkill.Tag.Name)
+			tagParam = userdm.TagParamIfCreate{
+				ID:   nil,
+				Name: reqSkill.Tag.Name,
+			}
 		}
 
 		skills[i] = userdm.SkillParamIfCreate{
-			TagId:             tagId.String(),
+			ID:                reqSkill.ID,
+			Tag:               tagParam,
 			Evaluation:        reqSkill.Evaluation,
 			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
@@ -110,6 +134,25 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 
 	if err != nil {
 		return err
+	}
+
+	if len(newTagNames) > 0 {
+		newTags := []tagdm.Tag{}
+		for _, skill := range user.Skills() {
+			tag := skill.Tag()
+			for _, name := range newTagNames {
+				if tag.Name().String() == name {
+					newTags = append(newTags, *tag)
+					break
+				}
+			}
+		}
+
+		if len(newTags) > 0 {
+			if err := app.tagRepo.BulkInsert(ctx, newTags); err != nil {
+				return err
+			}
+		}
 	}
 
 	return app.userRepo.Store(ctx, user)

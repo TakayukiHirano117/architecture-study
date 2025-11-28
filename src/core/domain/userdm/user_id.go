@@ -7,11 +7,11 @@ import (
 
 type UserID string
 
-func NewUserId() UserID {
+func NewUserID() UserID {
 	return UserID(uuid.New().String())
 }
 
-func NewUserIdByVal(val string) (UserID, error) {
+func NewUserIDByVal(val string) (UserID, error) {
 	if val == "" {
 		return "", errors.New("UserID is empty")
 	}

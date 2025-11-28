@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TakayukiHirano117/architecture-study/config"
-	"github.com/TakayukiHirano117/architecture-study/src/db"
 	"github.com/cockroachdb/errors"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/TakayukiHirano117/architecture-study/config"
+	"github.com/TakayukiHirano117/architecture-study/src/db"
 )
 
 func NewConnection(c *config.DBConfig) (*sqlx.DB, error) {

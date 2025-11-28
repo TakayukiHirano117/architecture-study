@@ -1,3 +1,4 @@
+# ユースケース　
 - メールパスログイン→こちらはwant
 - ユーザ新規作成
     - 必須項目
@@ -100,3 +101,38 @@
 - 月額契約は2ヶ月目以降は契約時の金額を請求する
     - 例えば1ヶ月目に1万円で契約したが2ヶ月目はプランが2万円の金額に変わっていた場合、引き続き1万円で契約は続行する
     - 2万円に変わってから契約した人は2万円の月額契約となる
+
+# 起動コマンド
+docker compose -f ./.docker/compose.yml up
+
+# テスト実行コマンド
+```
+docker compose -f ./.docker/compose.yml exec api go test テスト対象ファイルのパス
+```
+
+// 詳細に出力
+```
+docker compose -f ./.docker/compose.yml exec api go test -v テスト対象ファイルのパス
+```
+
+// 再帰的にすべてのテストを実行
+```
+docker compose exec api go test ./...
+
+```
+
+// ユーザーのユースケーステスト実行
+docker compose -f ./.docker/compose.yml exec api sh -c 'cd /app && go test -v ./src/core/app/userapp/...'
+
+# gomock生成コマンド
+サンプル
+```
+mockgen -source=src/core/domain/userdm/is_exist_by_user_name.go 
+				-destination=src/core/domain/userdm/is_exist_by_user_name_mock.go 
+				-package=userdm
+```
+
+# マイグレーション実行コマンド
+make migrate-up
+
+docker compose -f ./.docker/compose.yml exec api go generate ./src/core/domain/userdm/... 

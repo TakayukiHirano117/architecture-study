@@ -7,17 +7,8 @@ import (
 
 type TagID string
 
-// TODO: これvalue受け取らないかも
-func NewTagID(value string) (TagID, error) {
-	if value == "" {
-		return "", errors.New("TagID is empty")
-	}
-
-	if _, err := uuid.Parse(value); err != nil {
-		return "", errors.New("TagID is invalid")
-	}
-
-	return TagID(value), nil
+func NewTagID() TagID {
+	return TagID(uuid.New().String())
 }
 
 func NewTagIDByVal(val string) (TagID, error) {

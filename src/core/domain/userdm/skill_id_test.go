@@ -3,8 +3,9 @@ package userdm_test
 import (
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/google/uuid"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 func TestSkillId_NewSkillId(t *testing.T) {
@@ -51,7 +52,11 @@ func TestSkillId_NewSkillIdByVal_InvalidUUID(t *testing.T) {
 
 func TestSkillId_String(t *testing.T) {
 	validUUID := uuid.New().String()
-	skillId, _ := userdm.NewSkillIDByVal(validUUID)
+
+	skillId, err := userdm.NewSkillIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewSkillIdByVal() with valid value should not return error, got: %v", err)
+	}
 
 	if skillId.String() != validUUID {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validUUID, skillId.String())
@@ -60,8 +65,17 @@ func TestSkillId_String(t *testing.T) {
 
 func TestSkillId_Equal(t *testing.T) {
 	validUUID := uuid.New().String()
-	skillId1, _ := userdm.NewSkillIDByVal(validUUID)
-	skillId2, _ := userdm.NewSkillIDByVal(validUUID)
+
+	skillId1, err := userdm.NewSkillIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewSkillIdByVal() with valid value should not return error, got: %v", err)
+	}
+
+	skillId2, err := userdm.NewSkillIDByVal(validUUID)
+	if err != nil {
+		t.Errorf("NewSkillIdByVal() with valid value should not return error, got: %v", err)
+	}
+
 	skillId3 := userdm.NewSkillID()
 
 	if !skillId1.Equal(skillId2) {

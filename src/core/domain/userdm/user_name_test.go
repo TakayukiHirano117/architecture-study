@@ -20,7 +20,7 @@ func TestUserName_NewUserName_Success(t *testing.T) {
 	}
 
 	if string(*userName) != validName {
-		t.Errorf("NewUserName() should return correct value, expected: %s, got: %s", validName, string(*userName))
+		t.Errorf("NewUserName() should return correct value, expected: %s, got: %s", validName, userName.String())
 	}
 }
 

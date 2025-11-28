@@ -50,6 +50,8 @@ CREATE TABLE skills (
     id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id),
     tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    evaluation INT NOT NULL,
+    years_of_experience INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );

@@ -22,8 +22,12 @@ func NewCareerDetail(value string) (*CareerDetail, error) {
 	return &careerDetail, nil
 }
 
-func NewCareerDetailByVal(value string) CareerDetail {
-	return CareerDetail(value)
+func NewCareerDetailByVal(value string) (CareerDetail, error) {
+	if value == "" {
+		return "", errors.New("CareerDetail must not be empty")
+	}
+
+	return CareerDetail(value), nil
 }
 
 func (cd CareerDetail) String() string {

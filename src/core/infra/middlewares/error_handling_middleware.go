@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 	"github.com/gin-gonic/gin"
+
+	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 )
 
 func ErrorHandlingMiddleware() gin.HandlerFunc {

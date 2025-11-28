@@ -3,8 +3,9 @@ package userdm_test
 import (
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/google/uuid"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 func TestCareerId_NewCareerId(t *testing.T) {
@@ -42,7 +43,10 @@ func TestCareerId_NewCareerIdByVal_EmptyString(t *testing.T) {
 
 func TestCareerId_String(t *testing.T) {
 	validValue := "test-career-id"
-	careerId, _ := userdm.NewCareerIDByVal(validValue)
+	careerId, err := userdm.NewCareerIDByVal(validValue)
+	if err != nil {
+		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
+	}
 
 	if careerId.String() != validValue {
 		t.Errorf("String() should return correct value, expected: %s, got: %s", validValue, careerId.String())
@@ -51,8 +55,14 @@ func TestCareerId_String(t *testing.T) {
 
 func TestCareerId_Equal(t *testing.T) {
 	validValue := "test-career-id"
-	careerId1, _ := userdm.NewCareerIDByVal(validValue)
-	careerId2, _ := userdm.NewCareerIDByVal(validValue)
+	careerId1, err := userdm.NewCareerIDByVal(validValue)
+	if err != nil {
+		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
+	}
+	careerId2, err := userdm.NewCareerIDByVal(validValue)
+	if err != nil {
+		t.Errorf("NewCareerIdByVal() with valid value should not return error, got: %v", err)
+	}
 	careerId3 := userdm.NewCareerID()
 
 	if !careerId1.Equal(careerId2) {

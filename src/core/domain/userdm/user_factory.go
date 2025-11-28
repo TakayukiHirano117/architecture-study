@@ -9,9 +9,15 @@ type CareerParamIfCreate struct {
 }
 
 type SkillParamIfCreate struct {
-	TagId             string
-	Evaluation        int
-	YearsOfExperience int
+	ID                *string
+	Tag               TagParamIfCreate
+	Evaluation        uint8
+	YearsOfExperience uint8
+}
+
+type TagParamIfCreate struct {
+	ID   *string
+	Name string
 }
 
 func GenIfCreate(
@@ -48,19 +54,38 @@ func GenIfCreate(
 	}
 
 	skills := make([]Skill, len(reqSkills))
-	// TODO: tagIdではなくてtag_nameが送られてくる
-	// TODO: tag_nameでfindByNameして、tagIdが取得できればskillを保存。
-	// TODO: できなれけば次のループにスキップ
-	// 実際のMENTAのスキルのフォームがそうだった。
 	for i, rs := range reqSkills {
-		tagID, err := tagdm.NewTagIDByVal(rs.TagId)
+		var tagID tagdm.TagID
+		if rs.Tag.ID != nil {
+			id, err := tagdm.NewTagIDByVal(*rs.Tag.ID)
+			if err != nil {
+				return nil, err
+			}
+			tagID = id
+		} else {
+			tagID = tagdm.NewTagID()
+		}
 
+		tagName, err := tagdm.NewTagNameByVal(rs.Tag.Name)
+		if err != nil {
+			return nil, err
+		}
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
 		if err != nil {
 			return nil, err
 		}
 
-		s, err := NewSkill(NewSkillID(), tagID, rs.Evaluation, rs.YearsOfExperience)
+		evaluationVo, err := NewEvaluationByVal(rs.Evaluation)
+		if err != nil {
+			return nil, err
+		}
 
+		yearsOfExperienceVo, err := NewYearsOfExperienceByVal(rs.YearsOfExperience)
+		if err != nil {
+			return nil, err
+		}
+
+		s, err := NewSkill(NewSkillID(), tag, evaluationVo, yearsOfExperienceVo)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +93,7 @@ func GenIfCreate(
 		skills[i] = *s
 	}
 
-	return NewUser(NewUserId(), userName, password, email, skills, careers, selfIntroduction)
+	return NewUser(NewUserID(), userName, password, email, skills, careers, selfIntroduction)
 }
 
 func GenForTest(id UserID, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {

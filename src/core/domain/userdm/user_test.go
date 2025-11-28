@@ -8,25 +8,72 @@ import (
 )
 
 func TestUser_NewUser_Success(t *testing.T) {
-	userId := userdm.NewUserId()
-	userName, _ := userdm.NewUserName("Test User")
-	password, _ := userdm.NewPassword("validPassword0")
-	email, _ := userdm.NewEmail("test@example.com")
-	selfIntroduction, _ := userdm.NewSelfIntroduction("よろしくお願いします")
+	userId := userdm.NewUserID()
 
-	tagId, _ := tagdm.NewTagID("test-tag-id")
-	skill, _ := userdm.NewSkill(userdm.NewSkillID(), tagId, 5, 3)
+	userName, err := userdm.NewUserName("Test User")
+	if err != nil {
+		t.Errorf("NewUserName() with valid parameters should not return error, got: %v", err)
+	}
+
+	password, err := userdm.NewPassword("validPassword0")
+	if err != nil {
+		t.Errorf("NewPassword() with valid parameters should not return error, got: %v", err)
+	}
+
+	email, err := userdm.NewEmail("test@example.com")
+	if err != nil {
+		t.Errorf("NewEmail() with valid parameters should not return error, got: %v", err)
+	}
+
+	selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
+	if err != nil {
+		t.Errorf("NewSelfIntroduction() with valid parameters should not return error, got: %v", err)
+	}
+
+	tagId := tagdm.NewTagID()
+
+	tagName, err := tagdm.NewTagName("test-tag-name")
+	if err != nil {
+		t.Errorf("NewTagName() with valid parameters should not return error, got: %v", err)
+	}
+
+	tag, err := tagdm.NewTag(tagId, *tagName)
+	if err != nil {
+		t.Errorf("NewTag() with valid parameters should not return error, got: %v", err)
+	}
+
+	skill, err := userdm.NewSkill(userdm.NewSkillID(), tag, 5, 3)
+	if err != nil {
+		t.Errorf("NewSkill() with valid parameters should not return error, got: %v", err)
+	}
+
 	skills := []userdm.Skill{*skill}
 
-	careerDetail, _ := userdm.NewCareerDetail("Web開発に従事")
-	careerStartYear, _ := userdm.NewCareerStartYear(2020)
-	careerEndYear, _ := userdm.NewCareerEndYear(2022)
-	career, _ := userdm.NewCareer(
+	careerDetail, err := userdm.NewCareerDetail("Web開発に従事")
+	if err != nil {
+		t.Errorf("NewCareerDetail() with valid parameters should not return error, got: %v", err)
+	}
+
+	careerStartYear, err := userdm.NewCareerStartYear(2020)
+	if err != nil {
+		t.Errorf("NewCareerStartYear() with valid parameters should not return error, got: %v", err)
+	}
+
+	careerEndYear, err := userdm.NewCareerEndYear(2022)
+	if err != nil {
+		t.Errorf("NewCareerEndYear() with valid parameters should not return error, got: %v", err)
+	}
+
+	career, err := userdm.NewCareer(
 		userdm.NewCareerID(),
 		*careerDetail,
 		*careerStartYear,
 		*careerEndYear,
 	)
+	if err != nil {
+		t.Errorf("NewCareer() with valid parameters should not return error, got: %v", err)
+	}
+
 	careers := []userdm.Career{*career}
 
 	user, err := userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
@@ -54,7 +101,7 @@ func TestUser_NewUser_Success(t *testing.T) {
 		t.Error("Email() should return correct email")
 	}
 
-	if user.SelfIntroduction() != *selfIntroduction {
+	if user.SelfIntroduction() != selfIntroduction {
 		t.Error("SelfIntroduction() should return correct selfIntroduction")
 	}
 
@@ -68,16 +115,28 @@ func TestUser_NewUser_Success(t *testing.T) {
 }
 
 func TestUser_NewUser_EmptySkills(t *testing.T) {
-	userId := userdm.NewUserId()
-	userName, _ := userdm.NewUserName("Test User")
-	password, _ := userdm.NewPassword("validPassword0")
-	email, _ := userdm.NewEmail("test@example.com")
-	selfIntroduction, _ := userdm.NewSelfIntroduction("よろしくお願いします")
+	userId := userdm.NewUserID()
+	userName, err := userdm.NewUserName("Test User")
+	if err != nil {
+		t.Errorf("NewUserName() with valid parameters should not return error, got: %v", err)
+	}
+	password, err := userdm.NewPassword("validPassword0")
+	if err != nil {
+		t.Errorf("NewPassword() with valid parameters should not return error, got: %v", err)
+	}
+	email, err := userdm.NewEmail("test@example.com")
+	if err != nil {
+		t.Errorf("NewEmail() with valid parameters should not return error, got: %v", err)
+	}
+	selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
+	if err != nil {
+		t.Errorf("NewSelfIntroduction() with valid parameters should not return error, got: %v", err)
+	}
 
 	skills := []userdm.Skill{}
 	careers := []userdm.Career{}
 
-	_, err := userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
+	_, err = userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
 	if err == nil {
 		t.Error("NewUser() with empty skills should return error")
 	}
