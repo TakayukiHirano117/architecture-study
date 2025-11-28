@@ -5,50 +5,49 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestSelfIntroduction_NewSelfIntroduction_Success(t *testing.T) {
-	validIntroduction := "こんにちは、よろしくお願いします。"
-
-	selfIntroduction, err := userdm.NewSelfIntroduction(validIntroduction)
-	if err != nil {
-		t.Errorf("NewSelfIntroduction() with valid introduction should not return error, got: %v", err)
+func TestSelfIntroduction_NewSelfIntroduction(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効な自己紹介で作成できる",
+			input:   "こんにちは、よろしくお願いします。",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "2001文字以上はエラー",
+			input:   strings.Repeat("a", 2001),
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 2000文字は有効",
+			input:   strings.Repeat("a", 2000),
+			wantErr: false,
+		},
 	}
 
-	if selfIntroduction == nil {
-		t.Error("NewSelfIntroduction() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			selfIntroduction, err := userdm.NewSelfIntroduction(tt.input)
 
-	if string(*selfIntroduction) != validIntroduction {
-		t.Errorf("NewSelfIntroduction() should return correct value, expected: %s, got: %s", validIntroduction, string(*selfIntroduction))
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestSelfIntroduction_NewSelfIntroduction_EmptyString(t *testing.T) {
-	_, err := userdm.NewSelfIntroduction("")
-	if err == nil {
-		t.Error("NewSelfIntroduction() with empty string should return error")
-	}
-}
-
-func TestSelfIntroduction_NewSelfIntroduction_TooLong(t *testing.T) {
-	tooLongIntroduction := strings.Repeat("a", 2001)
-
-	_, err := userdm.NewSelfIntroduction(tooLongIntroduction)
-	if err == nil {
-		t.Error("NewSelfIntroduction() with too long introduction should return error")
-	}
-}
-
-func TestSelfIntroduction_NewSelfIntroduction_MaxLength(t *testing.T) {
-	maxLengthIntroduction := strings.Repeat("a", 2000)
-
-	selfIntroduction, err := userdm.NewSelfIntroduction(maxLengthIntroduction)
-	if err != nil {
-		t.Errorf("NewSelfIntroduction() with max length introduction should not return error, got: %v", err)
-	}
-
-	if selfIntroduction == nil {
-		t.Error("NewSelfIntroduction() should not return nil")
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, string(*selfIntroduction))
+		})
 	}
 }

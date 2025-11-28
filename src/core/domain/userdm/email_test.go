@@ -5,62 +5,69 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestEmail_NewEmail_Success(t *testing.T) {
-	validEmail := "test@example.com"
-
-	email, err := userdm.NewEmail(validEmail)
-	if err != nil {
-		t.Errorf("NewEmail() with valid email should not return error, got: %v", err)
+func TestEmail_NewEmail(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効なメールアドレスで作成できる",
+			input:   "test@example.com",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "長すぎるメールアドレスはエラー",
+			input:   strings.Repeat("a", 250) + "@test.com",
+			wantErr: true,
+		},
+		{
+			name:    "@がないメールアドレスはエラー",
+			input:   "testexample.com",
+			wantErr: true,
+		},
+		{
+			name:    "@の後に何もないメールアドレスはエラー",
+			input:   "test@",
+			wantErr: true,
+		},
+		{
+			name:    "@の前に何もないメールアドレスはエラー",
+			input:   "@example.com",
+			wantErr: true,
+		},
+		{
+			name:    "ドメインがドットで始まるメールアドレスはエラー",
+			input:   "test@.com",
+			wantErr: true,
+		},
+		{
+			name:    "ドメインにドットがないメールアドレスはエラー",
+			input:   "test@com",
+			wantErr: true,
+		},
 	}
 
-	if email == nil {
-		t.Error("NewEmail() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			email, err := userdm.NewEmail(tt.input)
 
-	if string(*email) != validEmail {
-		t.Errorf("NewEmail() should return correct value, expected: %s, got: %s", validEmail, string(*email))
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestEmail_NewEmail_EmptyString(t *testing.T) {
-	_, err := userdm.NewEmail("")
-	if err == nil {
-		t.Error("NewEmail() with empty string should return error")
-	}
-}
-
-func TestEmail_NewEmail_TooLong(t *testing.T) {
-	tooLongEmail := strings.Repeat("a", 250) + "@test.com"
-
-	_, err := userdm.NewEmail(tooLongEmail)
-	if err == nil {
-		t.Error("NewEmail() with too long email should return error")
-	}
-}
-
-func TestEmail_NewEmail_NoAtSign(t *testing.T) {
-	invalidEmail := "testexample.com"
-
-	_, err := userdm.NewEmail(invalidEmail)
-	if err == nil {
-		t.Error("NewEmail() without @ should return error")
-	}
-}
-
-func TestEmail_NewEmail_InvalidFormat(t *testing.T) {
-	testCases := []string{
-		"test@",
-		"@example.com",
-		"test@.com",
-		"test@com",
-	}
-
-	for _, invalidEmail := range testCases {
-		_, err := userdm.NewEmail(invalidEmail)
-		if err == nil {
-			t.Errorf("NewEmail() with invalid format '%s' should return error", invalidEmail)
-		}
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, string(*email))
+		})
 	}
 }

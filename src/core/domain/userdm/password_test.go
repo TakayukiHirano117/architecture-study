@@ -4,68 +4,59 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestPassword_NewPassword_Success(t *testing.T) {
-	validPassword := "validPassword0"
-
-	password, err := userdm.NewPassword(validPassword)
-	if err != nil {
-		t.Errorf("NewPassword() with valid password should not return error, got: %v", err)
+func TestPassword_NewPassword(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+	}{
+		{
+			name:    "有効なパスワードで作成できる",
+			input:   "validPassword0",
+			wantErr: false,
+		},
+		{
+			name:    "空文字はエラー",
+			input:   "",
+			wantErr: true,
+		},
+		{
+			name:    "短すぎるパスワードはエラー",
+			input:   "short1A",
+			wantErr: true,
+		},
+		{
+			name:    "英字がないパスワードはエラー",
+			input:   "123456789012",
+			wantErr: true,
+		},
+		{
+			name:    "数字がないパスワードはエラー",
+			input:   "validPasswordOnly",
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 最小長のパスワードは有効",
+			input:   "validPassw0rd",
+			wantErr: false,
+		},
 	}
 
-	if password == nil {
-		t.Error("NewPassword() should not return nil")
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			password, err := userdm.NewPassword(tt.input)
 
-	if string(*password) != validPassword {
-		t.Errorf("NewPassword() should return correct value, expected: %s, got: %s", validPassword, string(*password))
-	}
-}
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-func TestPassword_NewPassword_EmptyString(t *testing.T) {
-	_, err := userdm.NewPassword("")
-	if err == nil {
-		t.Error("NewPassword() with empty string should return error")
-	}
-}
-
-func TestPassword_NewPassword_TooShort(t *testing.T) {
-	shortPassword := "short1A"
-
-	_, err := userdm.NewPassword(shortPassword)
-	if err == nil {
-		t.Error("NewPassword() with too short password should return error")
-	}
-}
-
-func TestPassword_NewPassword_NoLetter(t *testing.T) {
-	noLetterPassword := "123456789012"
-
-	_, err := userdm.NewPassword(noLetterPassword)
-	if err == nil {
-		t.Error("NewPassword() without letter should return error")
-	}
-}
-
-func TestPassword_NewPassword_NoNumber(t *testing.T) {
-	noNumberPassword := "validPasswordOnly"
-
-	_, err := userdm.NewPassword(noNumberPassword)
-	if err == nil {
-		t.Error("NewPassword() without number should return error")
-	}
-}
-
-func TestPassword_NewPassword_MinLength(t *testing.T) {
-	minLengthPassword := "validPassw0rd"
-
-	password, err := userdm.NewPassword(minLengthPassword)
-	if err != nil {
-		t.Errorf("NewPassword() with min length password should not return error, got: %v", err)
-	}
-
-	if password == nil {
-		t.Error("NewPassword() should not return nil")
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, string(*password))
+		})
 	}
 }

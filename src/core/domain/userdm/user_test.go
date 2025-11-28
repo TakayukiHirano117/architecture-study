@@ -5,64 +5,37 @@ import (
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestUser_NewUser_Success(t *testing.T) {
-	userId := userdm.NewUserID()
-
-	userName, err := userdm.NewUserName("Test User")
-	if err != nil {
-		t.Errorf("NewUserName() with valid parameters should not return error, got: %v", err)
-	}
-
-	password, err := userdm.NewPassword("validPassword0")
-	if err != nil {
-		t.Errorf("NewPassword() with valid parameters should not return error, got: %v", err)
-	}
-
-	email, err := userdm.NewEmail("test@example.com")
-	if err != nil {
-		t.Errorf("NewEmail() with valid parameters should not return error, got: %v", err)
-	}
-
-	selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
-	if err != nil {
-		t.Errorf("NewSelfIntroduction() with valid parameters should not return error, got: %v", err)
-	}
+func createValidSkill(t *testing.T) *userdm.Skill {
+	t.Helper()
 
 	tagId := tagdm.NewTagID()
-
 	tagName, err := tagdm.NewTagName("test-tag-name")
-	if err != nil {
-		t.Errorf("NewTagName() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
 	tag, err := tagdm.NewTag(tagId, *tagName)
-	if err != nil {
-		t.Errorf("NewTag() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
 	skill, err := userdm.NewSkill(userdm.NewSkillID(), tag, 5, 3)
-	if err != nil {
-		t.Errorf("NewSkill() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
-	skills := []userdm.Skill{*skill}
+	return skill
+}
+
+func createValidCareer(t *testing.T) *userdm.Career {
+	t.Helper()
 
 	careerDetail, err := userdm.NewCareerDetail("Web開発に従事")
-	if err != nil {
-		t.Errorf("NewCareerDetail() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
 	careerStartYear, err := userdm.NewCareerStartYear(2020)
-	if err != nil {
-		t.Errorf("NewCareerStartYear() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
 	careerEndYear, err := userdm.NewCareerEndYear(2022)
-	if err != nil {
-		t.Errorf("NewCareerEndYear() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
 	career, err := userdm.NewCareer(
 		userdm.NewCareerID(),
@@ -70,74 +43,92 @@ func TestUser_NewUser_Success(t *testing.T) {
 		*careerStartYear,
 		*careerEndYear,
 	)
-	if err != nil {
-		t.Errorf("NewCareer() with valid parameters should not return error, got: %v", err)
-	}
+	require.NoError(t, err)
 
-	careers := []userdm.Career{*career}
-
-	user, err := userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
-	if err != nil {
-		t.Errorf("NewUser() with valid parameters should not return error, got: %v", err)
-	}
-
-	if user == nil {
-		t.Error("NewUser() should not return nil")
-	}
-
-	if user.ID() != userId {
-		t.Error("Id() should return correct userId")
-	}
-
-	if user.Name() != *userName {
-		t.Error("Name() should return correct userName")
-	}
-
-	if user.Password() != *password {
-		t.Error("Password() should return correct password")
-	}
-
-	if user.Email() != *email {
-		t.Error("Email() should return correct email")
-	}
-
-	if user.SelfIntroduction() != selfIntroduction {
-		t.Error("SelfIntroduction() should return correct selfIntroduction")
-	}
-
-	if len(user.Skills()) != 1 {
-		t.Error("Skills() should return correct number of skills")
-	}
-
-	if len(user.Careers()) != 1 {
-		t.Error("Careers() should return correct number of careers")
-	}
+	return career
 }
 
-func TestUser_NewUser_EmptySkills(t *testing.T) {
-	userId := userdm.NewUserID()
-	userName, err := userdm.NewUserName("Test User")
-	if err != nil {
-		t.Errorf("NewUserName() with valid parameters should not return error, got: %v", err)
-	}
-	password, err := userdm.NewPassword("validPassword0")
-	if err != nil {
-		t.Errorf("NewPassword() with valid parameters should not return error, got: %v", err)
-	}
-	email, err := userdm.NewEmail("test@example.com")
-	if err != nil {
-		t.Errorf("NewEmail() with valid parameters should not return error, got: %v", err)
-	}
-	selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
-	if err != nil {
-		t.Errorf("NewSelfIntroduction() with valid parameters should not return error, got: %v", err)
+func TestUser_NewUser(t *testing.T) {
+	tests := []struct {
+		name       string
+		setupFunc  func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction)
+		wantErr    bool
+		assertions func(t *testing.T, user *userdm.User)
+	}{
+		{
+			name: "有効なパラメータでUserを作成できる",
+			setupFunc: func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
+				userId := userdm.NewUserID()
+
+				userName, err := userdm.NewUserName("Test User")
+				require.NoError(t, err)
+
+				password, err := userdm.NewPassword("validPassword0")
+				require.NoError(t, err)
+
+				email, err := userdm.NewEmail("test@example.com")
+				require.NoError(t, err)
+
+				selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
+				require.NoError(t, err)
+
+				skill := createValidSkill(t)
+				skills := []userdm.Skill{*skill}
+
+				career := createValidCareer(t)
+				careers := []userdm.Career{*career}
+
+				return userId, *userName, *password, *email, skills, careers, selfIntroduction
+			},
+			wantErr: false,
+			assertions: func(t *testing.T, user *userdm.User) {
+				assert.NotNil(t, user)
+				assert.Equal(t, 1, len(user.Skills()))
+				assert.Equal(t, 1, len(user.Careers()))
+			},
+		},
+		{
+			name: "空のスキルリストはエラー",
+			setupFunc: func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
+				userId := userdm.NewUserID()
+
+				userName, err := userdm.NewUserName("Test User")
+				require.NoError(t, err)
+
+				password, err := userdm.NewPassword("validPassword0")
+				require.NoError(t, err)
+
+				email, err := userdm.NewEmail("test@example.com")
+				require.NoError(t, err)
+
+				selfIntroduction, err := userdm.NewSelfIntroduction("よろしくお願いします")
+				require.NoError(t, err)
+
+				skills := []userdm.Skill{}
+				careers := []userdm.Career{}
+
+				return userId, *userName, *password, *email, skills, careers, selfIntroduction
+			},
+			wantErr:    true,
+			assertions: nil,
+		},
 	}
 
-	skills := []userdm.Skill{}
-	careers := []userdm.Career{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userId, userName, password, email, skills, careers, selfIntroduction := tt.setupFunc(t)
 
-	_, err = userdm.NewUser(userId, *userName, *password, *email, skills, careers, selfIntroduction)
-	if err == nil {
-		t.Error("NewUser() with empty skills should return error")
+			user, err := userdm.NewUser(userId, userName, password, email, skills, careers, selfIntroduction)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+			if tt.assertions != nil {
+				tt.assertions(t, user)
+			}
+		})
 	}
 }

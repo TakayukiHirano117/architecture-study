@@ -4,29 +4,26 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestCareer_NewCareer_Success(t *testing.T) {
-	careerId := userdm.NewCareerID()
-	careerDetail, err := userdm.NewCareerDetail("Web開発に従事")
-	if err != nil {
-		t.Errorf("NewCareerDetail() with valid detail should not return error, got: %v", err)
-	}
-	careerStartYear, err := userdm.NewCareerStartYear(2020)
-	if err != nil {
-		t.Errorf("NewCareerStartYear() with valid year should not return error, got: %v", err)
-	}
-	careerEndYear, err := userdm.NewCareerEndYear(2022)
-	if err != nil {
-		t.Errorf("NewCareerEndYear() with valid year should not return error, got: %v", err)
-	}
+func TestCareer_NewCareer(t *testing.T) {
+	t.Run("有効なパラメータでCareerを作成できる", func(t *testing.T) {
+		careerId := userdm.NewCareerID()
 
-	career, err := userdm.NewCareer(careerId, *careerDetail, *careerStartYear, *careerEndYear)
-	if err != nil {
-		t.Errorf("NewCareer() with valid parameters should not return error, got: %v", err)
-	}
+		careerDetail, err := userdm.NewCareerDetail("Web開発に従事")
+		require.NoError(t, err)
 
-	if career == nil {
-		t.Error("NewCareer() should not return nil")
-	}
+		careerStartYear, err := userdm.NewCareerStartYear(2020)
+		require.NoError(t, err)
+
+		careerEndYear, err := userdm.NewCareerEndYear(2022)
+		require.NoError(t, err)
+
+		career, err := userdm.NewCareer(careerId, *careerDetail, *careerStartYear, *careerEndYear)
+
+		require.NoError(t, err)
+		assert.NotNil(t, career)
+	})
 }

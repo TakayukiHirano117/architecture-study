@@ -4,26 +4,49 @@ import (
 	"testing"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestEvaluation_NewEvaluation_Success(t *testing.T) {
-	var validEvaluation uint8 = 5
-
-	evaluation, err := userdm.NewEvaluation(validEvaluation)
-	if err != nil {
-		t.Errorf("NewEvaluation() with valid evaluation should not return error, got: %v", err)
+func TestEvaluation_NewEvaluation(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   uint8
+		wantErr bool
+	}{
+		{
+			name:    "有効な評価値で作成できる",
+			input:   5,
+			wantErr: false,
+		},
+		{
+			name:    "6以上はエラー",
+			input:   6,
+			wantErr: true,
+		},
+		{
+			name:    "境界値: 0は有効",
+			input:   0,
+			wantErr: false,
+		},
+		{
+			name:    "境界値: 5は有効",
+			input:   5,
+			wantErr: false,
+		},
 	}
 
-	if evaluation.Uint8() != validEvaluation {
-		t.Errorf("NewEvaluation() should return correct value, expected: %d, got: %d", validEvaluation, evaluation.Uint8())
-	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			evaluation, err := userdm.NewEvaluation(tt.input)
 
-func TestEvaluation_TooLongEvaluationReturnError(t *testing.T) {
-	var tooLongEvaluation uint8 = 6
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 
-	_, err := userdm.NewEvaluation(tooLongEvaluation)
-	if err == nil {
-		t.Errorf("NewEvaluation() with too long evaluation must be less than 5")
+			require.NoError(t, err)
+			assert.Equal(t, tt.input, evaluation.Uint8())
+		})
 	}
 }
