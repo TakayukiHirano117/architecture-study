@@ -20,12 +20,12 @@ func NewCategory(id CategoryID, name CategoryName) (*Category, error) {
 	}, nil
 }
 
-func NewCategoryByVal(id CategoryID, name CategoryName) (*Category, error) {
+func NewCategoryByVal(id CategoryID, name CategoryName, createdAt time.Time, updatedAt time.Time) (*Category, error) {
 	return &Category{
 		id:        id,
 		name:      name,
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
+		createdAt: createdAt,
+		updatedAt: updatedAt,
 	}, nil
 }
 
