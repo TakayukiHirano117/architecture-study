@@ -68,19 +68,19 @@ func TestCategory_NewCategory(t *testing.T) {
 func TestCategory_NewCategoryByVal(t *testing.T) {
 	tests := []struct {
 		name       string
-		setupFunc  func(t *testing.T) (categorydm.CategoryID, categorydm.CategoryName)
+		setupFunc  func(t *testing.T) (categorydm.CategoryID, categorydm.CategoryName, time.Time, time.Time)
 		wantErr    bool
 		assertions func(t *testing.T, category *categorydm.Category, id categorydm.CategoryID, categoryName categorydm.CategoryName)
 	}{
 		{
 			name: "有効なパラメータでCategoryを作成できる",
-			setupFunc: func(t *testing.T) (categorydm.CategoryID, categorydm.CategoryName) {
+			setupFunc: func(t *testing.T) (categorydm.CategoryID, categorydm.CategoryName, time.Time, time.Time) {
 				categoryId := categorydm.NewCategoryID()
 
 				categoryName, err := categorydm.NewCategoryNameByVal("デザイン")
 				require.NoError(t, err)
 
-				return categoryId, categoryName
+				return categoryId, categoryName, time.Now(), time.Now()
 			},
 			wantErr: false,
 			assertions: func(t *testing.T, category *categorydm.Category, id categorydm.CategoryID, categoryName categorydm.CategoryName) {
@@ -95,9 +95,9 @@ func TestCategory_NewCategoryByVal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			categoryId, categoryName := tt.setupFunc(t)
+			categoryId, categoryName, createdAt, updatedAt := tt.setupFunc(t)
 
-			category, err := categorydm.NewCategoryByVal(categoryId, categoryName)
+			category, err := categorydm.NewCategoryByVal(categoryId, categoryName, createdAt, updatedAt)
 
 			if tt.wantErr {
 				assert.Error(t, err)
