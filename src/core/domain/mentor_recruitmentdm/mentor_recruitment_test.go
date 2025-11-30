@@ -17,7 +17,7 @@ type mentorRecruitmentParams struct {
 	id                 mentor_recruitmentdm.MentorRecruitmentID
 	title              string
 	description        string
-	category           categorydm.Category
+	category_id        categorydm.CategoryID
 	consultationType   mentor_recruitmentdm.ConsultationType
 	consultationMethod mentor_recruitmentdm.ConsultationMethod
 	budgetFrom         uint32
@@ -43,7 +43,7 @@ func createValidMentorRecruitmentParams(t *testing.T) mentorRecruitmentParams {
 		id:                 mentor_recruitmentdm.NewMentorRecruitmentID(),
 		title:              "Goのメンターを募集します",
 		description:        "Go言語の学習をサポートしてくれるメンターを探しています。",
-		category:           createValidCategory(t),
+		category_id:        createValidCategoryID(t),
 		consultationType:   consultationType,
 		consultationMethod: consultationMethod,
 		budgetFrom:         5000,
@@ -54,17 +54,10 @@ func createValidMentorRecruitmentParams(t *testing.T) mentorRecruitmentParams {
 	}
 }
 
-func createValidCategory(t *testing.T) categorydm.Category {
+func createValidCategoryID(t *testing.T) categorydm.CategoryID {
 	t.Helper()
 
-	categoryId := categorydm.NewCategoryID()
-	categoryName, err := categorydm.NewCategoryName("プログラミング")
-	require.NoError(t, err)
-
-	category, err := categorydm.NewCategory(categoryId, *categoryName)
-	require.NoError(t, err)
-
-	return *category
+	return categorydm.NewCategoryID()
 }
 
 func createValidTag(t *testing.T) tagdm.Tag {
@@ -88,7 +81,7 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -110,7 +103,7 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -134,7 +127,7 @@ func TestMentorRecruitment_NewMentorRecruitment_TitleValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -156,7 +149,7 @@ func TestMentorRecruitment_NewMentorRecruitment_TitleValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -178,7 +171,7 @@ func TestMentorRecruitment_NewMentorRecruitment_TitleValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -202,7 +195,7 @@ func TestMentorRecruitment_NewMentorRecruitment_DescriptionValidation(t *testing
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -224,7 +217,7 @@ func TestMentorRecruitment_NewMentorRecruitment_DescriptionValidation(t *testing
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -246,7 +239,7 @@ func TestMentorRecruitment_NewMentorRecruitment_DescriptionValidation(t *testing
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -271,7 +264,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -294,7 +287,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -317,7 +310,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -340,7 +333,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -363,7 +356,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -386,7 +379,7 @@ func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,
@@ -411,7 +404,7 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 			cvmrp.id,
 			cvmrp.title,
 			cvmrp.description,
-			cvmrp.category,
+			cvmrp.category_id,
 			cvmrp.consultationType,
 			cvmrp.consultationMethod,
 			cvmrp.budgetFrom,

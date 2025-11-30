@@ -15,7 +15,7 @@ type MentorRecruitment struct {
 	id                 MentorRecruitmentID
 	title              string
 	description        string
-	category           categorydm.Category
+	category_id        categorydm.CategoryID
 	consultationType   ConsultationType
 	consultationMethod ConsultationMethod
 	budgetFrom         uint32
@@ -35,7 +35,7 @@ func NewMentorRecruitment(
 	id MentorRecruitmentID,
 	title string,
 	description string,
-	category categorydm.Category,
+	category_id categorydm.CategoryID,
 	consultationType ConsultationType,
 	consultationMethod ConsultationMethod,
 	budgetFrom uint32,
@@ -76,7 +76,7 @@ func NewMentorRecruitment(
 		id:                 id,
 		title:              title,
 		description:        description,
-		category:           category,
+		category_id:        category_id,
 		consultationType:   consultationType,
 		consultationMethod: consultationMethod,
 		budgetFrom:         budgetFrom,
@@ -93,7 +93,7 @@ func NewMentorRecruitmentByVal(
 	id MentorRecruitmentID,
 	title string,
 	description string,
-	category categorydm.Category,
+	category_id categorydm.CategoryID,
 	consultationType ConsultationType,
 	consultationMethod ConsultationMethod,
 	budgetFrom uint32,
@@ -108,7 +108,7 @@ func NewMentorRecruitmentByVal(
 		id:                 id,
 		title:              title,
 		description:        description,
-		category:           category,
+		category_id:        category_id,
 		consultationType:   consultationType,
 		consultationMethod: consultationMethod,
 		budgetFrom:         budgetFrom,
