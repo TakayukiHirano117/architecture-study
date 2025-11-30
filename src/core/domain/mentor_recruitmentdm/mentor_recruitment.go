@@ -2,7 +2,9 @@ package mentor_recruitmentdm
 
 import (
 	"time"
+	"unicode/utf8"
 
+	"github.com/cockroachdb/errors"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
@@ -11,29 +13,65 @@ type MentorRecruitment struct {
 	createdAt          time.Time
 	updatedAt          time.Time
 	id                 MentorRecruitmentID
-	title              Title
-	description        Description
+	title              string
+	description        string
 	category           categorydm.Category
 	consultationType   ConsultationType
 	consultationMethod ConsultationMethod
-	budget             Budget
+	budgetFrom         uint32
+	budgetTo           uint32
 	applicationPeriod  ApplicationPeriod
 	status             Status
 	tags               []tagdm.Tag
 }
 
+const (
+	MinBudget uint32 = 1000
+	MaxBudget uint32 = 1000000
+)
+
+
 func NewMentorRecruitment(
 	id MentorRecruitmentID,
-	title Title,
-	description Description,
+	title string,
+	description string,
 	category categorydm.Category,
 	consultationType ConsultationType,
 	consultationMethod ConsultationMethod,
-	budget Budget,
+	budgetFrom uint32,
+	budgetTo uint32,
 	applicationPeriod ApplicationPeriod,
 	status Status,
 	tags []tagdm.Tag,
 ) (*MentorRecruitment, error) {
+	if title == "" {
+		return nil, errors.New("title must not be empty")
+	}
+
+	if utf8.RuneCountInString(title) > 255 {
+		return nil, errors.New("title must be less than 255 characters")
+	}
+
+	if description == "" {
+		return nil, errors.New("description must not be empty")
+	}
+
+	if utf8.RuneCountInString(description) > 2000 {
+		return nil, errors.New("description must be less than 2000 characters")
+	}
+
+	if budgetFrom < MinBudget {
+		return nil, errors.Newf("minimum budget must be at least %d", MinBudget)
+	}
+
+	if budgetTo > MaxBudget {
+		return nil, errors.Newf("maximum budget must be at most %d", MaxBudget)
+	}
+
+	if budgetFrom > budgetTo {
+		return nil, errors.New("minimum budget must be less than or equal to maximum budget")
+	}
+
 	return &MentorRecruitment{
 		id:                 id,
 		title:              title,
@@ -41,7 +79,8 @@ func NewMentorRecruitment(
 		category:           category,
 		consultationType:   consultationType,
 		consultationMethod: consultationMethod,
-		budget:             budget,
+		budgetFrom:         budgetFrom,
+		budgetTo:           budgetTo,
 		applicationPeriod:  applicationPeriod,
 		status:             status,
 		tags:               tags,
@@ -52,12 +91,13 @@ func NewMentorRecruitment(
 
 func NewMentorRecruitmentByVal(
 	id MentorRecruitmentID,
-	title Title,
-	description Description,
+	title string,
+	description string,
 	category categorydm.Category,
 	consultationType ConsultationType,
 	consultationMethod ConsultationMethod,
-	budget Budget,
+	budgetFrom uint32,
+	budgetTo uint32,
 	applicationPeriod ApplicationPeriod,
 	status Status,
 	tags []tagdm.Tag,
@@ -71,7 +111,8 @@ func NewMentorRecruitmentByVal(
 		category:           category,
 		consultationType:   consultationType,
 		consultationMethod: consultationMethod,
-		budget:             budget,
+		budgetFrom:         budgetFrom,
+		budgetTo:           budgetTo,
 		applicationPeriod:  applicationPeriod,
 		status:             status,
 		tags:               tags,
