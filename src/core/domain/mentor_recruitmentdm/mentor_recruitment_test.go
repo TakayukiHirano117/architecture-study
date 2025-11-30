@@ -1,6 +1,7 @@
 package mentor_recruitmentdm_test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -11,6 +12,47 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
+
+type mentorRecruitmentParams struct {
+	id                 mentor_recruitmentdm.MentorRecruitmentID
+	title              string
+	description        string
+	category           categorydm.Category
+	consultationType   mentor_recruitmentdm.ConsultationType
+	consultationMethod mentor_recruitmentdm.ConsultationMethod
+	budgetFrom         uint32
+	budgetTo           uint32
+	applicationPeriod  mentor_recruitmentdm.ApplicationPeriod
+	status             mentor_recruitmentdm.Status
+	tags               []tagdm.Tag
+}
+
+func createValidMentorRecruitmentParams(t *testing.T) mentorRecruitmentParams {
+	t.Helper()
+
+	consultationType, err := mentor_recruitmentdm.NewConsultationType("単発")
+	require.NoError(t, err)
+
+	consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("チャット")
+	require.NoError(t, err)
+
+	status, err := mentor_recruitmentdm.NewStatus("公開")
+	require.NoError(t, err)
+
+	return mentorRecruitmentParams{
+		id:                 mentor_recruitmentdm.NewMentorRecruitmentID(),
+		title:              "Goのメンターを募集します",
+		description:        "Go言語の学習をサポートしてくれるメンターを探しています。",
+		category:           createValidCategory(t),
+		consultationType:   consultationType,
+		consultationMethod: consultationMethod,
+		budgetFrom:         5000,
+		budgetTo:           10000,
+		applicationPeriod:  mentor_recruitmentdm.NewApplicationPeriod(),
+		status:             status,
+		tags:               []tagdm.Tag{createValidTag(t)},
+	}
+}
 
 func createValidCategory(t *testing.T) categorydm.Category {
 	t.Helper()
@@ -39,254 +81,349 @@ func createValidTag(t *testing.T) tagdm.Tag {
 }
 
 func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
-	tests := []struct {
-		name      string
-		setupFunc func(t *testing.T) (
-			mentor_recruitmentdm.MentorRecruitmentID,
-			string,
-			string,
-			categorydm.Category,
-			mentor_recruitmentdm.ConsultationType,
-			mentor_recruitmentdm.ConsultationMethod,
-			uint32,
-			uint32,
-			mentor_recruitmentdm.ApplicationPeriod,
-			mentor_recruitmentdm.Status,
-			[]tagdm.Tag,
+	t.Run("有効なパラメータでMentorRecruitmentを作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
 		)
-		wantErr    bool
-		assertions func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment)
-	}{
-		{
-			name: "有効なパラメータでMentorRecruitmentを作成できる",
-			setupFunc: func(t *testing.T) (
-				mentor_recruitmentdm.MentorRecruitmentID,
-				string,
-				string,
-				categorydm.Category,
-				mentor_recruitmentdm.ConsultationType,
-				mentor_recruitmentdm.ConsultationMethod,
-				uint32,
-				uint32,
-				mentor_recruitmentdm.ApplicationPeriod,
-				mentor_recruitmentdm.Status,
-				[]tagdm.Tag,
-			) {
-				id := mentor_recruitmentdm.NewMentorRecruitmentID()
 
-				title := "Goのメンターを募集します"
-				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
 
-				category := createValidCategory(t)
+	t.Run("tagsが空でもMentorRecruitmentを作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.tags = []tagdm.Tag{}
 
-				consultationType, err := mentor_recruitmentdm.NewConsultationType("単発")
-				require.NoError(t, err)
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("チャット")
-				require.NoError(t, err)
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
+}
 
-				budgetFrom := uint32(5000)
-				budgetTo := uint32(10000)
-				require.NoError(t, err)
+func TestMentorRecruitment_NewMentorRecruitment_TitleValidation(t *testing.T) {
+	t.Run("タイトルが空文字の場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.title = ""
 
-				applicationPeriod := mentor_recruitmentdm.NewApplicationPeriod()
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				status, err := mentor_recruitmentdm.NewStatus("公開")
-				require.NoError(t, err)
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
 
-				tags := []tagdm.Tag{createValidTag(t)}
+	t.Run("タイトルが255文字の場合は作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.title = strings.Repeat("あ", 255)
 
-				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags
-			},
-			wantErr: false,
-			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
-				assert.NotNil(t, mr)
-			},
-		},
-		{
-			name: "tagsが空でもMentorRecruitmentを作成できる（任意項目）",
-			setupFunc: func(t *testing.T) (
-				mentor_recruitmentdm.MentorRecruitmentID,
-				string,
-				string,
-				categorydm.Category,
-				mentor_recruitmentdm.ConsultationType,
-				mentor_recruitmentdm.ConsultationMethod,
-				uint32,
-				uint32,
-				mentor_recruitmentdm.ApplicationPeriod,
-				mentor_recruitmentdm.Status,
-				[]tagdm.Tag,
-			) {
-				id := mentor_recruitmentdm.NewMentorRecruitmentID()
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				title := "Goのメンターを募集します"
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
 
-				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
+	t.Run("タイトルが256文字以上の場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.title = strings.Repeat("あ", 256)
 
-				category := createValidCategory(t)
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				consultationType, err := mentor_recruitmentdm.NewConsultationType("継続")
-				require.NoError(t, err)
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
+}
 
-				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("ビデオ通話")
-				require.NoError(t, err)
+func TestMentorRecruitment_NewMentorRecruitment_DescriptionValidation(t *testing.T) {
+	t.Run("説明が空文字の場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.description = ""
 
-				budgetFrom := uint32(10000)
-				budgetTo := uint32(50000)
-				require.NoError(t, err)
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				applicationPeriod := mentor_recruitmentdm.NewApplicationPeriod()
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
 
-				status, err := mentor_recruitmentdm.NewStatus("公開")
-				require.NoError(t, err)
+	t.Run("説明が2000文字の場合は作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.description = strings.Repeat("あ", 2000)
 
-				tags := []tagdm.Tag{}
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags
-			},
-			wantErr: false,
-			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
-				assert.NotNil(t, mr)
-			},
-		},
-	}
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags := tt.setupFunc(t)
+	t.Run("説明が2001文字以上の場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.description = strings.Repeat("あ", 2001)
 
-			mr, err := mentor_recruitmentdm.NewMentorRecruitment(
-				id,
-				title,
-				description,
-				category,
-				consultationType,
-				consultationMethod,
-				budgetFrom,
-				budgetTo,
-				applicationPeriod,
-				status,
-				tags,
-			)
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
 
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
+}
 
-			require.NoError(t, err)
-			if tt.assertions != nil {
-				tt.assertions(t, mr)
-			}
-		})
-	}
+func TestMentorRecruitment_NewMentorRecruitment_BudgetValidation(t *testing.T) {
+	t.Run("budgetFromが最小値(1000)の場合は作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 1000
+		cvmrp.budgetTo = 10000
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
+
+	t.Run("budgetFromが最小値未満の場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 999
+		cvmrp.budgetTo = 10000
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
+
+	t.Run("budgetToが最大値(1000000)の場合は作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 5000
+		cvmrp.budgetTo = 1000000
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
+
+	t.Run("budgetToが最大値を超える場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 5000
+		cvmrp.budgetTo = 1000001
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
+
+	t.Run("budgetFromがbudgetToより大きい場合はエラー", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 20000
+		cvmrp.budgetTo = 10000
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		assert.Error(t, err)
+		assert.Nil(t, mr)
+	})
+
+	t.Run("budgetFromとbudgetToが同じ値の場合は作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		cvmrp.budgetFrom = 5000
+		cvmrp.budgetTo = 5000
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitment(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+		)
+
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
 }
 
 func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
-	tests := []struct {
-		name      string
-		setupFunc func(t *testing.T) (
-			mentor_recruitmentdm.MentorRecruitmentID,
-			string,
-			string,
-			categorydm.Category,
-			mentor_recruitmentdm.ConsultationType,
-			mentor_recruitmentdm.ConsultationMethod,
-			uint32,
-			uint32,
-			mentor_recruitmentdm.ApplicationPeriod,
-			mentor_recruitmentdm.Status,
-			[]tagdm.Tag,
-			time.Time,
-			time.Time,
+	t.Run("有効なパラメータでMentorRecruitmentを作成できる", func(t *testing.T) {
+		cvmrp := createValidMentorRecruitmentParams(t)
+		createdAt := time.Now()
+		updatedAt := time.Now()
+
+		mr, err := mentor_recruitmentdm.NewMentorRecruitmentByVal(
+			cvmrp.id,
+			cvmrp.title,
+			cvmrp.description,
+			cvmrp.category,
+			cvmrp.consultationType,
+			cvmrp.consultationMethod,
+			cvmrp.budgetFrom,
+			cvmrp.budgetTo,
+			cvmrp.applicationPeriod,
+			cvmrp.status,
+			cvmrp.tags,
+			createdAt,
+			updatedAt,
 		)
-		wantErr    bool
-		assertions func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment)
-	}{
-		{
-			name: "有効なパラメータでMentorRecruitmentを作成できる",
-			setupFunc: func(t *testing.T) (
-				mentor_recruitmentdm.MentorRecruitmentID,
-				string,
-				string,
-				categorydm.Category,
-				mentor_recruitmentdm.ConsultationType,
-				mentor_recruitmentdm.ConsultationMethod,
-				uint32,
-				uint32,
-				mentor_recruitmentdm.ApplicationPeriod,
-				mentor_recruitmentdm.Status,
-				[]tagdm.Tag,
-				time.Time,
-				time.Time,
-			) {
-				id := mentor_recruitmentdm.NewMentorRecruitmentID()
 
-				title := "Goのメンターを募集します"
-
-				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
-
-				category := createValidCategory(t)
-
-				consultationType, err := mentor_recruitmentdm.NewConsultationTypeByVal("単発")
-				require.NoError(t, err)
-
-				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethodByVal("チャット")
-				require.NoError(t, err)
-
-				budgetFrom := uint32(5000)
-				budgetTo := uint32(10000)
-				require.NoError(t, err)
-
-				applicationPeriod, err := mentor_recruitmentdm.NewApplicationPeriodByVal(time.Now().AddDate(0, 0, 7))
-				require.NoError(t, err)
-
-				status, err := mentor_recruitmentdm.NewStatusByVal("公開")
-				require.NoError(t, err)
-
-				tags := []tagdm.Tag{createValidTag(t)}
-				createdAt := time.Now()
-				updatedAt := time.Now()
-
-				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags, createdAt, updatedAt
-			},
-			wantErr: false,
-			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
-				assert.NotNil(t, mr)
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags, createdAt, updatedAt := tt.setupFunc(t)
-
-			mr, err := mentor_recruitmentdm.NewMentorRecruitmentByVal(
-				id,
-				title,
-				description,
-				category,
-				consultationType,
-				consultationMethod,
-				budgetFrom,
-				budgetTo,
-				applicationPeriod,
-				status,
-				tags,
-				createdAt,
-				updatedAt,
-			)
-
-			if tt.wantErr {
-				assert.Error(t, err)
-				return
-			}
-
-			require.NoError(t, err)
-			if tt.assertions != nil {
-				tt.assertions(t, mr)
-			}
-		})
-	}
+		require.NoError(t, err)
+		assert.NotNil(t, mr)
+	})
 }
