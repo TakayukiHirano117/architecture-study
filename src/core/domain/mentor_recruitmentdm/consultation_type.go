@@ -5,13 +5,13 @@ import "github.com/cockroachdb/errors"
 type ConsultationType string
 
 const (
-	oneTime    ConsultationType = "単発"
-	continuous ConsultationType = "継続"
+	Once ConsultationType = "単発"
+	Continuous ConsultationType = "継続"
 )
 
 func NewConsultationType(value string) (ConsultationType, error) {
 	t := ConsultationType(value)
-	if t != oneTime && t != continuous {
+	if t != Once && t != Continuous {
 		return "", errors.New("consultation type must be 単発 or 継続")
 	}
 
@@ -28,10 +28,10 @@ func NewConsultationTypeByVal(value string) (ConsultationType, error) {
 
 func (c ConsultationType) String() (string, error) {
 	switch c {
-	case oneTime:
-		return "単発", nil
-	case continuous:
-		return "継続", nil
+	case Once:
+		return string(Once), nil
+	case Continuous:
+		return string(Continuous), nil
 	}
 
 	return "", errors.New("invalid consultation type")

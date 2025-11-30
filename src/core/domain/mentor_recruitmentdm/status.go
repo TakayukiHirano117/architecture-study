@@ -5,13 +5,13 @@ import "github.com/cockroachdb/errors"
 type Status string
 
 const (
-	published Status = "公開"
-	cancelled Status = "中止"
+	Published Status = "公開"
+	Cancelled Status = "中止"
 )
 
 func NewStatus(value string) (Status, error) {
 	status := Status(value)
-	if status != published && status != cancelled {
+	if status != Published && status != Cancelled {
 		return "", errors.New("status must be 公開 or 中止")
 	}
 
@@ -28,10 +28,10 @@ func NewStatusByVal(value string) (Status, error) {
 
 func (s Status) String() (string, error) {
 	switch s {
-	case published:
-		return "公開", nil
-	case cancelled:
-		return "中止", nil
+	case Published:
+		return string(Published), nil
+	case Cancelled:
+		return string(Cancelled), nil
 	}
 
 	return "", errors.New("invalid status")

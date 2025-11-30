@@ -43,12 +43,13 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 		name      string
 		setupFunc func(t *testing.T) (
 			mentor_recruitmentdm.MentorRecruitmentID,
-			mentor_recruitmentdm.Title,
-			mentor_recruitmentdm.Description,
+			string,
+			string,
 			categorydm.Category,
 			mentor_recruitmentdm.ConsultationType,
 			mentor_recruitmentdm.ConsultationMethod,
-			mentor_recruitmentdm.Budget,
+			uint32,
+			uint32,
 			mentor_recruitmentdm.ApplicationPeriod,
 			mentor_recruitmentdm.Status,
 			[]tagdm.Tag,
@@ -60,23 +61,21 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 			name: "有効なパラメータでMentorRecruitmentを作成できる",
 			setupFunc: func(t *testing.T) (
 				mentor_recruitmentdm.MentorRecruitmentID,
-				mentor_recruitmentdm.Title,
-				mentor_recruitmentdm.Description,
+				string,
+				string,
 				categorydm.Category,
 				mentor_recruitmentdm.ConsultationType,
 				mentor_recruitmentdm.ConsultationMethod,
-				mentor_recruitmentdm.Budget,
+				uint32,
+				uint32,
 				mentor_recruitmentdm.ApplicationPeriod,
 				mentor_recruitmentdm.Status,
 				[]tagdm.Tag,
 			) {
 				id := mentor_recruitmentdm.NewMentorRecruitmentID()
 
-				title, err := mentor_recruitmentdm.NewTitle("Goのメンターを募集します")
-				require.NoError(t, err)
-
-				description, err := mentor_recruitmentdm.NewDescription("Go言語の学習をサポートしてくれるメンターを探しています。")
-				require.NoError(t, err)
+				title := "Goのメンターを募集します"
+				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
 
 				category := createValidCategory(t)
 
@@ -86,7 +85,8 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("チャット")
 				require.NoError(t, err)
 
-				budget, err := mentor_recruitmentdm.NewBudget(5000, 10000)
+				budgetFrom := uint32(5000)
+				budgetTo := uint32(10000)
 				require.NoError(t, err)
 
 				applicationPeriod := mentor_recruitmentdm.NewApplicationPeriod()
@@ -96,7 +96,7 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 
 				tags := []tagdm.Tag{createValidTag(t)}
 
-				return id, title, description, category, consultationType, consultationMethod, budget, applicationPeriod, status, tags
+				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags
 			},
 			wantErr: false,
 			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
@@ -107,23 +107,22 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 			name: "tagsが空でもMentorRecruitmentを作成できる（任意項目）",
 			setupFunc: func(t *testing.T) (
 				mentor_recruitmentdm.MentorRecruitmentID,
-				mentor_recruitmentdm.Title,
-				mentor_recruitmentdm.Description,
+				string,
+				string,
 				categorydm.Category,
 				mentor_recruitmentdm.ConsultationType,
 				mentor_recruitmentdm.ConsultationMethod,
-				mentor_recruitmentdm.Budget,
+				uint32,
+				uint32,
 				mentor_recruitmentdm.ApplicationPeriod,
 				mentor_recruitmentdm.Status,
 				[]tagdm.Tag,
 			) {
 				id := mentor_recruitmentdm.NewMentorRecruitmentID()
 
-				title, err := mentor_recruitmentdm.NewTitle("Goのメンターを募集します")
-				require.NoError(t, err)
+				title := "Goのメンターを募集します"
 
-				description, err := mentor_recruitmentdm.NewDescription("Go言語の学習をサポートしてくれるメンターを探しています。")
-				require.NoError(t, err)
+				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
 
 				category := createValidCategory(t)
 
@@ -133,7 +132,8 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("ビデオ通話")
 				require.NoError(t, err)
 
-				budget, err := mentor_recruitmentdm.NewBudget(10000, 50000)
+				budgetFrom := uint32(10000)
+				budgetTo := uint32(50000)
 				require.NoError(t, err)
 
 				applicationPeriod := mentor_recruitmentdm.NewApplicationPeriod()
@@ -143,7 +143,7 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 
 				tags := []tagdm.Tag{}
 
-				return id, title, description, category, consultationType, consultationMethod, budget, applicationPeriod, status, tags
+				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags
 			},
 			wantErr: false,
 			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
@@ -154,7 +154,7 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			id, title, description, category, consultationType, consultationMethod, budget, applicationPeriod, status, tags := tt.setupFunc(t)
+			id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags := tt.setupFunc(t)
 
 			mr, err := mentor_recruitmentdm.NewMentorRecruitment(
 				id,
@@ -163,7 +163,8 @@ func TestMentorRecruitment_NewMentorRecruitment(t *testing.T) {
 				category,
 				consultationType,
 				consultationMethod,
-				budget,
+				budgetFrom,
+				budgetTo,
 				applicationPeriod,
 				status,
 				tags,
@@ -187,12 +188,13 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 		name      string
 		setupFunc func(t *testing.T) (
 			mentor_recruitmentdm.MentorRecruitmentID,
-			mentor_recruitmentdm.Title,
-			mentor_recruitmentdm.Description,
+			string,
+			string,
 			categorydm.Category,
 			mentor_recruitmentdm.ConsultationType,
 			mentor_recruitmentdm.ConsultationMethod,
-			mentor_recruitmentdm.Budget,
+			uint32,
+			uint32,
 			mentor_recruitmentdm.ApplicationPeriod,
 			mentor_recruitmentdm.Status,
 			[]tagdm.Tag,
@@ -206,12 +208,13 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 			name: "有効なパラメータでMentorRecruitmentを作成できる",
 			setupFunc: func(t *testing.T) (
 				mentor_recruitmentdm.MentorRecruitmentID,
-				mentor_recruitmentdm.Title,
-				mentor_recruitmentdm.Description,
+				string,
+				string,
 				categorydm.Category,
 				mentor_recruitmentdm.ConsultationType,
 				mentor_recruitmentdm.ConsultationMethod,
-				mentor_recruitmentdm.Budget,
+				uint32,
+				uint32,
 				mentor_recruitmentdm.ApplicationPeriod,
 				mentor_recruitmentdm.Status,
 				[]tagdm.Tag,
@@ -220,11 +223,9 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 			) {
 				id := mentor_recruitmentdm.NewMentorRecruitmentID()
 
-				title, err := mentor_recruitmentdm.NewTitleByVal("Goのメンターを募集します")
-				require.NoError(t, err)
+				title := "Goのメンターを募集します"
 
-				description, err := mentor_recruitmentdm.NewDescriptionByVal("Go言語の学習をサポートしてくれるメンターを探しています。")
-				require.NoError(t, err)
+				description := "Go言語の学習をサポートしてくれるメンターを探しています。"
 
 				category := createValidCategory(t)
 
@@ -234,7 +235,8 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 				consultationMethod, err := mentor_recruitmentdm.NewConsultationMethodByVal("チャット")
 				require.NoError(t, err)
 
-				budget, err := mentor_recruitmentdm.NewBudget(5000, 10000)
+				budgetFrom := uint32(5000)
+				budgetTo := uint32(10000)
 				require.NoError(t, err)
 
 				applicationPeriod, err := mentor_recruitmentdm.NewApplicationPeriodByVal(time.Now().AddDate(0, 0, 7))
@@ -247,7 +249,7 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 				createdAt := time.Now()
 				updatedAt := time.Now()
 
-				return id, title, description, category, consultationType, consultationMethod, budget, applicationPeriod, status, tags, createdAt, updatedAt
+				return id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags, createdAt, updatedAt
 			},
 			wantErr: false,
 			assertions: func(t *testing.T, mr *mentor_recruitmentdm.MentorRecruitment) {
@@ -258,7 +260,7 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			id, title, description, category, consultationType, consultationMethod, budget, applicationPeriod, status, tags, createdAt, updatedAt := tt.setupFunc(t)
+			id, title, description, category, consultationType, consultationMethod, budgetFrom, budgetTo, applicationPeriod, status, tags, createdAt, updatedAt := tt.setupFunc(t)
 
 			mr, err := mentor_recruitmentdm.NewMentorRecruitmentByVal(
 				id,
@@ -267,7 +269,8 @@ func TestMentorRecruitment_NewMentorRecruitmentByVal(t *testing.T) {
 				category,
 				consultationType,
 				consultationMethod,
-				budget,
+				budgetFrom,
+				budgetTo,
 				applicationPeriod,
 				status,
 				tags,

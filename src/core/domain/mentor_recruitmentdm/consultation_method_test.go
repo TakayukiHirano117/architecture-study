@@ -108,7 +108,8 @@ func TestConsultationMethod_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			method, _ := mentor_recruitmentdm.NewConsultationMethod(tt.input)
+			method, err := mentor_recruitmentdm.NewConsultationMethod(tt.input)
+			require.NoError(t, err)
 			str, err := method.String()
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, str)
@@ -146,8 +147,10 @@ func TestConsultationMethod_Equal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			method1, _ := mentor_recruitmentdm.NewConsultationMethod(tt.input1)
-			method2, _ := mentor_recruitmentdm.NewConsultationMethod(tt.input2)
+			method1, err := mentor_recruitmentdm.NewConsultationMethod(tt.input1)
+			require.NoError(t, err)
+			method2, err := mentor_recruitmentdm.NewConsultationMethod(tt.input2)
+			require.NoError(t, err)
 			assert.Equal(t, tt.expected, method1.Equal(method2))
 		})
 	}

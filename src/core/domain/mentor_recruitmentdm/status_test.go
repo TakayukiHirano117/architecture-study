@@ -62,8 +62,11 @@ func TestStatus_NewStatusByVal(t *testing.T) {
 }
 
 func TestStatus_String(t *testing.T) {
-	published, _ := mentor_recruitmentdm.NewStatus("公開")
-	cancelled, _ := mentor_recruitmentdm.NewStatus("中止")
+	published, err := mentor_recruitmentdm.NewStatus("公開")
+	require.NoError(t, err)
+
+	cancelled, err := mentor_recruitmentdm.NewStatus("中止")
+	require.NoError(t, err)
 
 	publishedStr, err := published.String()
 	require.NoError(t, err)
@@ -82,10 +85,14 @@ func TestStatus_String_InvalidStatus(t *testing.T) {
 }
 
 func TestStatus_Equal(t *testing.T) {
-	status1, _ := mentor_recruitmentdm.NewStatus("公開")
-	status2, _ := mentor_recruitmentdm.NewStatus("公開")
-	status3, _ := mentor_recruitmentdm.NewStatus("中止")
+	status1, err := mentor_recruitmentdm.NewStatus("公開")
+	require.NoError(t, err)
+	status2, err := mentor_recruitmentdm.NewStatus("公開")
+	require.NoError(t, err)
+	status3, err := mentor_recruitmentdm.NewStatus("中止")
+	require.NoError(t, err)
 
 	assert.True(t, status1.Equal(status2))
 	assert.False(t, status1.Equal(status3))
+	assert.False(t, status2.Equal(status3))
 }

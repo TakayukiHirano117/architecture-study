@@ -108,7 +108,9 @@ func TestConsultationType_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			consultationType, _ := mentor_recruitmentdm.NewConsultationType(tt.input)
+			consultationType, err := mentor_recruitmentdm.NewConsultationType(tt.input)
+			require.NoError(t, err)
+
 			str, err := consultationType.String()
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, str)
@@ -146,8 +148,10 @@ func TestConsultationType_Equal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			type1, _ := mentor_recruitmentdm.NewConsultationType(tt.input1)
-			type2, _ := mentor_recruitmentdm.NewConsultationType(tt.input2)
+			type1, err := mentor_recruitmentdm.NewConsultationType(tt.input1)
+			require.NoError(t, err)
+			type2, err := mentor_recruitmentdm.NewConsultationType(tt.input2)
+			require.NoError(t, err)
 			assert.Equal(t, tt.expected, type1.Equal(type2))
 		})
 	}

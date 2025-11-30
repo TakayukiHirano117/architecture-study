@@ -5,13 +5,13 @@ import "github.com/cockroachdb/errors"
 type ConsultationMethod string
 
 const (
-	chat      ConsultationMethod = "チャット"
-	videoCall ConsultationMethod = "ビデオ通話"
+	Chat      ConsultationMethod = "チャット"
+	VideoCall ConsultationMethod = "ビデオ通話"
 )
 
 func NewConsultationMethod(value string) (ConsultationMethod, error) {
 	method := ConsultationMethod(value)
-	if method != chat && method != videoCall {
+	if method != Chat && method != VideoCall {
 		return "", errors.New("consultation method must be チャット or ビデオ通話")
 	}
 
@@ -28,10 +28,10 @@ func NewConsultationMethodByVal(value string) (ConsultationMethod, error) {
 
 func (c ConsultationMethod) String() (string, error) {
 	switch c {
-	case chat:
-		return "チャット", nil
-	case videoCall:
-		return "ビデオ通話", nil
+	case Chat:
+		return string(Chat), nil
+	case VideoCall:
+		return string(VideoCall), nil
 	}
 
 	return "", errors.New("invalid consultation method")
