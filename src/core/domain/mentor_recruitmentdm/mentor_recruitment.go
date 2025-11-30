@@ -7,12 +7,14 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type MentorRecruitment struct {
 	createdAt          time.Time
 	updatedAt          time.Time
 	id                 MentorRecruitmentID
+	user_id            userdm.UserID
 	title              string
 	description        string
 	category_id        categorydm.CategoryID
@@ -33,6 +35,7 @@ const (
 
 func NewMentorRecruitment(
 	id MentorRecruitmentID,
+	user_id userdm.UserID,
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
@@ -74,6 +77,7 @@ func NewMentorRecruitment(
 
 	return &MentorRecruitment{
 		id:                 id,
+		user_id:            user_id,
 		title:              title,
 		description:        description,
 		category_id:        category_id,
@@ -91,6 +95,7 @@ func NewMentorRecruitment(
 
 func NewMentorRecruitmentByVal(
 	id MentorRecruitmentID,
+	user_id userdm.UserID,
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
@@ -106,6 +111,7 @@ func NewMentorRecruitmentByVal(
 ) (*MentorRecruitment, error) {
 	return &MentorRecruitment{
 		id:                 id,
+		user_id:            user_id,
 		title:              title,
 		description:        description,
 		category_id:        category_id,
