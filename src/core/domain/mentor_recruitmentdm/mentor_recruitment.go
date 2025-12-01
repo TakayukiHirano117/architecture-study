@@ -127,4 +127,50 @@ func NewMentorRecruitmentByVal(
 	}, nil
 }
 
-// TODO: getterやドメインルールを表すメソッドを追加する
+func (m *MentorRecruitment) ID() MentorRecruitmentID {
+	return m.id
+}
+
+func (m *MentorRecruitment) UserID() userdm.UserID {
+	return m.user_id
+}
+
+func (m *MentorRecruitment) Title() string {
+	return m.title
+}
+
+func (m *MentorRecruitment) Description() string {
+	return m.description
+}
+
+func (m *MentorRecruitment) CategoryID() categorydm.CategoryID {
+	return m.category_id
+}
+
+func (m *MentorRecruitment) ConsultationType() ConsultationType {
+	return m.consultationType
+}
+
+func (m *MentorRecruitment) ConsultationMethod() ConsultationMethod {
+	return m.consultationMethod
+}
+
+func (m *MentorRecruitment) BudgetFrom() uint32 {
+	return m.budgetFrom
+}
+
+func (m *MentorRecruitment) BudgetTo() uint32 {
+	return m.budgetTo
+}
+
+func (m *MentorRecruitment) ApplicationPeriod() ApplicationPeriod {
+	return m.applicationPeriod
+}
+
+func (m *MentorRecruitment) Status() Status {
+	return m.status
+}
+
+func (m *MentorRecruitment) Tags() []tagdm.Tag {
+	return m.tags
+}
