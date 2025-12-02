@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +39,6 @@ func (c *CreateMentorRecruitmentController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(in)
 	if err := mentorrecruitmentapp.NewCreateMentorRecruitmentAppService(c.isExistByUserID, c.isExistByCategoryID, c.mentorRecruitmentRepo, c.tagRepo).Exec(ctx.Request.Context(), &in); err != nil {
 		ctx.Error(err)
 		return
