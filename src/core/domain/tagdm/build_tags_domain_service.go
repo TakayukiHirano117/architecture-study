@@ -1,0 +1,72 @@
+package tagdm
+
+import (
+	"context"
+	"errors"
+)
+
+type TagRequest struct {
+	ID   string
+	Name string
+}
+
+type BuildTagsDomainService interface {
+	Exec(ctx context.Context, reqTags []TagRequest) ([]Tag, error)
+}
+
+type buildTagsDomainService struct {
+	tagRepo TagRepository
+}
+
+func NewBuildTagsDomainService(tr TagRepository) BuildTagsDomainService {
+	return &buildTagsDomainService{
+		tagRepo: tr,
+	}
+}
+
+func (btds *buildTagsDomainService) Exec(ctx context.Context, reqTags []TagRequest) ([]Tag, error) {
+	var existingTagIDs []TagID
+	newTags := make([]Tag, len(reqTags))
+
+	for i, reqTag := range reqTags {
+		if reqTag.ID == "" {
+			tagName, err := NewTagNameByVal(reqTag.Name)
+			if err != nil {
+				return nil, err
+			}
+			newTag, err := NewTag(NewTagID(), tagName)
+			if err != nil {
+				return nil, err
+			}
+			newTags[i] = *newTag
+		} else {
+			tagID, err := NewTagIDByVal(reqTag.ID)
+			if err != nil {
+				return nil, err
+			}
+			existingTagIDs = append(existingTagIDs, tagID)
+		}
+	}
+
+	if len(newTags) > 0 {
+		if err := btds.tagRepo.BulkInsert(ctx, newTags); err != nil {
+			return nil, err
+		}
+	}
+
+	var existingTags []Tag
+	if len(existingTagIDs) > 0 {
+		var err error
+		existingTags, err = btds.tagRepo.FindByIDs(ctx, existingTagIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(existingTags) != len(existingTagIDs) {
+			return nil, errors.New("some tags not found")
+		}
+	}
+
+	tags := append(existingTags, newTags...)
+	return tags, nil
+}
