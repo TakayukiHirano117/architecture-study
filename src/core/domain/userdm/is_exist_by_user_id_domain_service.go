@@ -23,9 +23,5 @@ func (iebids *isExistByUserIDDomainService) Exec(ctx context.Context, userID Use
 		return false, err
 	}
 
-	if user == nil {
-		return false, nil
-	}
-
-	return true, nil
+	return user != nil, nil
 }
