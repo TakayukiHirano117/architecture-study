@@ -3,18 +3,17 @@ package mentorrecruitmentapp
 import (
 	"context"
 
-	"github.com/cockroachdb/errors"
-
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
 )
 
 type CreateMentorRecruitmentAppService struct {
-	isExistByUserIDDomainService userdm.IsExistByUserIDDomainService
-	mentorRecruitmentRepo mentor_recruitmentdm.MentorRecruitmentRepository
-	tagRepo               tagdm.TagRepository
+	isExistByUserIDDomainService     userdm.IsExistByUserIDDomainService
+	mentorRecruitmentRepo            mentor_recruitmentdm.MentorRecruitmentRepository
+	tagRepo                          tagdm.TagRepository
 	isExistByCategoryIDDomainService categorydm.IsExistByCategoryIDDomainService
 }
 
@@ -30,6 +29,7 @@ type CreateMentorRecruitmentRequest struct {
 	Tags               []CreateMentorRecruitmentTagRequest     `json:"tags"`
 }
 
+// TODO: IDのみを受け取り、NameはDBから取得する様に書き換える
 type CreateMentorRecruitmentTagRequest struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
@@ -42,85 +42,53 @@ func NewCreateMentorRecruitmentAppService(
 	tagRepo tagdm.TagRepository,
 ) *CreateMentorRecruitmentAppService {
 	return &CreateMentorRecruitmentAppService{
-		isExistByUserIDDomainService: isExistByUserIDDomainService,
+		isExistByUserIDDomainService:     isExistByUserIDDomainService,
 		isExistByCategoryIDDomainService: isExistByCategoryIDDomainService,
-		mentorRecruitmentRepo: mentorRecruitmentRepo,
-		tagRepo:               tagRepo,
+		mentorRecruitmentRepo:            mentorRecruitmentRepo,
+		tagRepo:                          tagRepo,
 	}
 }
 
 func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *CreateMentorRecruitmentRequest) error {
 	userID, err := userdm.NewUserIDByVal(req.UserID.String())
 	if err != nil {
-		return err
+		return customerr.BadRequestWrapf(err, "%s", err.Error())
 	}
 
 	isExistUser, err := app.isExistByUserIDDomainService.Exec(ctx, userID)
 	if err != nil {
-		return err
+		return customerr.InternalWrapf(err, "failed to check if user exists")
 	}
+
 	if !isExistUser {
-		return errors.New("user not found")
+		return customerr.NotFound("user not found")
 	}
 
 	categoryID, err := categorydm.NewCategoryIDByVal(req.CategoryID.String())
 	if err != nil {
-		return err
+		return customerr.BadRequestWrapf(err, "%s", err.Error())
 	}
 
 	isExistCategory, err := app.isExistByCategoryIDDomainService.Exec(ctx, categoryID)
 	if err != nil {
-		return err
+		return customerr.InternalWrapf(err, "failed to check if category exists")
 	}
+
 	if !isExistCategory {
-		return errors.New("category not found")
+		return customerr.NotFound("category not found")
 	}
 
 	status := mentor_recruitmentdm.Published
 
-	var existingTagIDs []tagdm.TagID
-	var newTags []tagdm.Tag
-
-	for _, reqTag := range req.Tags {
-		if reqTag.ID == "" {
-			tagName, err := tagdm.NewTagNameByVal(reqTag.Name)
-			if err != nil {
-				return err
-			}
-			newTag, err := tagdm.NewTag(tagdm.NewTagID(), tagName)
-			if err != nil {
-				return err
-			}
-			newTags = append(newTags, *newTag)
-		} else {
-			tagID, err := tagdm.NewTagIDByVal(reqTag.ID)
-			if err != nil {
-				return err
-			}
-			existingTagIDs = append(existingTagIDs, tagID)
-		}
+	tagRequests := make([]tagdm.TagRequest, len(req.Tags))
+	for i, t := range req.Tags {
+		tagRequests[i] = tagdm.TagRequest{ID: t.ID, Name: t.Name}
 	}
 
-	if len(newTags) > 0 {
-		if err := app.tagRepo.BulkInsert(ctx, newTags); err != nil {
-			return err
-		}
+	tags, err := tagdm.NewBuildTagsDomainService(app.tagRepo).Exec(ctx, tagRequests)
+	if err != nil {
+		return customerr.InternalWrapf(err, "failed to build tags")
 	}
-
-	var existingTags []tagdm.Tag
-	if len(existingTagIDs) > 0 {
-		var err error
-		existingTags, err = app.tagRepo.FindByIDs(ctx, existingTagIDs)
-		if err != nil {
-			return err
-		}
-
-		if len(existingTags) != len(existingTagIDs) {
-			return errors.Newf("some tags not found: requested %d, found %d", len(existingTagIDs), len(existingTags))
-		}
-	}
-
-	tags := append(existingTags, newTags...)
 
 	mentorRecruitment, err := mentor_recruitmentdm.NewMentorRecruitment(
 		mentor_recruitmentdm.NewMentorRecruitmentID(),
@@ -137,7 +105,7 @@ func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *Cre
 		tags,
 	)
 	if err != nil {
-		return err
+		return customerr.InternalWrapf(err, "%s", err.Error())
 	}
 
 	return app.mentorRecruitmentRepo.Store(ctx, mentorRecruitment)
