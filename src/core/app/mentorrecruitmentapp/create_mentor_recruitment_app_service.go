@@ -57,7 +57,7 @@ func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *Cre
 
 	isExistUser, err := app.isExistByUserIDDomainService.Exec(ctx, userID)
 	if err != nil {
-		return customerr.InternalWrapf(err, "failed to check if user exists")
+		return customerr.InternalWrapf(err, "failed to check if user exists: %s", err.Error())
 	}
 
 	if !isExistUser {
@@ -71,7 +71,7 @@ func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *Cre
 
 	isExistCategory, err := app.isExistByCategoryIDDomainService.Exec(ctx, categoryID)
 	if err != nil {
-		return customerr.InternalWrapf(err, "failed to check if category exists")
+		return customerr.InternalWrapf(err, "failed to check if category exists: %s", err.Error())
 	}
 
 	if !isExistCategory {
