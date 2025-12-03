@@ -87,7 +87,7 @@ func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *Cre
 
 	tags, err := tagdm.NewBuildTagsDomainService(app.tagRepo).Exec(ctx, tagRequests)
 	if err != nil {
-		return customerr.InternalWrapf(err, "failed to build tags")
+		return customerr.InternalWrapf(err, "failed to build tags: %s", err.Error())
 	}
 
 	mentorRecruitment, err := mentor_recruitmentdm.NewMentorRecruitment(
