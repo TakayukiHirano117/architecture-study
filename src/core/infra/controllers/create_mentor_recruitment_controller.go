@@ -23,11 +23,11 @@ type CreateMentorRecruitmentController struct {
 
 func NewCreateMentorRecruitmentController() *CreateMentorRecruitmentController {
 	return &CreateMentorRecruitmentController{
-		mentorRecruitmentRepo:        rdbimpl.NewMentorRecruitmentRepositoryImpl(),
-		tagRepo:                      rdbimpl.NewTagRepositoryImpl(),
-		userRepo:                     rdbimpl.NewUserRepositoryImpl(),
-		isExistByCategoryID:          rdbimpl.NewIsExistByCategoryIDDomainServiceImpl(),
-		isExistByUserID:              userdm.NewIsExistByUserIDDomainService(rdbimpl.NewUserRepositoryImpl()),
+		mentorRecruitmentRepo: rdbimpl.NewMentorRecruitmentRepositoryImpl(),
+		tagRepo:               rdbimpl.NewTagRepositoryImpl(),
+		userRepo:              rdbimpl.NewUserRepositoryImpl(),
+		isExistByCategoryID:   categorydm.NewIsExistByCategoryIDDomainService(rdbimpl.NewCategoryRepositoryImpl()),
+		isExistByUserID:       userdm.NewIsExistByUserIDDomainService(rdbimpl.NewUserRepositoryImpl()),
 	}
 }
 
