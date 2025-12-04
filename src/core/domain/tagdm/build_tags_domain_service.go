@@ -54,7 +54,8 @@ func (btds *buildTagsDomainService) Exec(ctx context.Context, reqTags []TagReque
 		}
 	}
 
-	var existingTags []Tag
+	existingTags := make([]Tag, 0)
+
 	if len(existingTagIDs) > 0 {
 		var err error
 		existingTags, err = btds.tagRepo.FindByIDs(ctx, existingTagIDs)
