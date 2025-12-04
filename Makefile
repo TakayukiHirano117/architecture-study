@@ -16,3 +16,11 @@ lint-docker:
 
 lint-fix-docker:
 	docker-compose -f ./.docker/compose.yml exec api golangci-lint run --fix ./...
+
+# Format
+format-docker:
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go fmt ./...'
+
+# tidy
+tidy-docker:
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go mod tidy'

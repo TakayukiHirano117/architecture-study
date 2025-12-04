@@ -225,7 +225,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 	}
 
 	if len(userDetailRows) == 0 {
-		return nil, errors.New("user not found")
+		return nil, nil
 	}
 
 	skillModels := []models.SkillModel{}

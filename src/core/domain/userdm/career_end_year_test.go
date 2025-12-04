@@ -11,7 +11,7 @@ import (
 func TestCareerEndYear_NewCareerEndYear(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   int
+		input   uint16
 		wantErr bool
 	}{
 		{
@@ -49,8 +49,8 @@ func TestCareerEndYear_NewCareerEndYear(t *testing.T) {
 func TestCareerEndYear_Equal(t *testing.T) {
 	tests := []struct {
 		name     string
-		year1    int
-		year2    int
+		year1    uint16
+		year2    uint16
 		expected bool
 	}{
 		{
