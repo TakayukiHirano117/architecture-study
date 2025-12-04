@@ -199,4 +199,3 @@ func createUpdateTestUser(t *testing.T, userIDStr string) *userdm.User {
 
 	return user
 }
-
