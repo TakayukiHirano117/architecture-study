@@ -1,8 +1,9 @@
 package categorydm
 
 import (
-	"github.com/cockroachdb/errors"
 	"unicode/utf8"
+
+	"github.com/cockroachdb/errors"
 )
 
 type CategoryName string

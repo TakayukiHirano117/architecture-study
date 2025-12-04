@@ -1,4 +1,4 @@
-.PHONY: migrate-up migrate-down migrate-force gomock-generate-all lint-docker lint-fix-docker
+.PHONY: migrate-up migrate-down migrate-force gomock-generate-all lint-docker lint-fix-docker format-docker goimports-docker
 
 migrate-up:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'migrate -path src/db/migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" up'
@@ -24,9 +24,14 @@ lint-docker:
 lint-fix-docker:
 	docker-compose -f ./.docker/compose.yml exec api golangci-lint run --fix ./...
 
-# Format
+# Format (gofmt + goimports)
 format-docker:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'go fmt ./...'
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'goimports -w -local github.com/TakayukiHirano117/architecture-study .'
+
+# goimports のみ実行
+goimports-docker:
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'goimports -w -local github.com/TakayukiHirano117/architecture-study .'
 
 # tidy
 tidy-docker:

@@ -4,10 +4,11 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/cockroachdb/errors"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
-	"github.com/cockroachdb/errors"
 )
 
 type MentorRecruitment struct {

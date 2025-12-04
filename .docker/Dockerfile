@@ -18,5 +18,6 @@ RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.0/
 
 RUN go install go.uber.org/mock/mockgen@latest
 RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+RUN go install golang.org/x/tools/cmd/goimports@latest
 
 CMD ["air"]
