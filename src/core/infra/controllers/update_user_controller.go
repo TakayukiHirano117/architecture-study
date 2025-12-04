@@ -42,7 +42,7 @@ func (c *UpdateUserController) Exec(ctx *gin.Context) {
 	in.ID = userID
 
 	if err := userapp.NewUpdateUserAppService(c.userRepo, c.tagRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
-		ctx.Error(err)
+		_ = ctx.Error(err)
 		return
 	}
 
