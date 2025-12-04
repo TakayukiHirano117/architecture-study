@@ -70,6 +70,21 @@ func (mr *MockTagRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockTagRepository)(nil).FindByID), ctx, id)
 }
 
+// FindByIDs mocks base method.
+func (m *MockTagRepository) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([]tagdm.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIDs", ctx, ids)
+	ret0, _ := ret[0].([]tagdm.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIDs indicates an expected call of FindByIDs.
+func (mr *MockTagRepositoryMockRecorder) FindByIDs(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIDs", reflect.TypeOf((*MockTagRepository)(nil).FindByIDs), ctx, ids)
+}
+
 // FindIdByTagName mocks base method.
 func (m *MockTagRepository) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
 	m.ctrl.T.Helper()
