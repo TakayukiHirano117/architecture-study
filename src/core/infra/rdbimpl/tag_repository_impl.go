@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/lib/pq"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
@@ -55,6 +57,61 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 	}
 
 	return tagdm.NewTagByVal(tagID, tagName)
+}
+
+func (r *TagRepositoryImpl) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([]tagdm.Tag, error) {
+	if len(ids) == 0 {
+		return []tagdm.Tag{}, nil
+	}
+
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// IDのスライスをstring配列に変換
+	idStrs := make([]string, len(ids))
+	for i, id := range ids {
+		idStrs[i] = id.String()
+	}
+
+	query := `
+		SELECT id, name FROM tags WHERE id = ANY($1)
+	`
+	rows, err := conn.QueryContext(ctx, query, pq.Array(idStrs))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tags := []tagdm.Tag{}
+	for rows.Next() {
+		var tagIdStr string
+		var tagNameStr string
+
+		if err := rows.Scan(&tagIdStr, &tagNameStr); err != nil {
+			return nil, err
+		}
+
+		tagID, err := tagdm.NewTagIDByVal(tagIdStr)
+		if err != nil {
+			return nil, err
+		}
+
+		tagName, err := tagdm.NewTagNameByVal(tagNameStr)
+		if err != nil {
+			return nil, err
+		}
+
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, *tag)
+	}
+
+	return tags, nil
 }
 
 func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
