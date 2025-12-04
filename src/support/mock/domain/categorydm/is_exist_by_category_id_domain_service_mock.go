@@ -13,9 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	categorydm "github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockIsExistByCategoryIDDomainService is a mock of IsExistByCategoryIDDomainService interface.

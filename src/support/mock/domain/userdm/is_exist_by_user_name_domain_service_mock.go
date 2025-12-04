@@ -13,9 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	userdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockIsExistByUserNameDomainService is a mock of IsExistByUserNameDomainService interface.

@@ -13,19 +13,16 @@ import (
 
 type UpdateUserController struct {
 	userRepo          userdm.UserRepository
-	tagRepo           tagdm.TagRepository
 	IsExistByUserName userdm.IsExistByUserNameExcludeSelfDomainService
-	IsExistByTagID    tagdm.IsExistByTagIDDomainService
-	FindIDByTagName   tagdm.FindIDByTagNameDomainService
+	BuildTags         tagdm.BuildTagsDomainService
 }
 
 func NewUpdateUserController() *UpdateUserController {
+	tagRepo := rdbimpl.NewTagRepositoryImpl()
 	return &UpdateUserController{
 		userRepo:          rdbimpl.NewUserRepositoryImpl(),
-		tagRepo:           rdbimpl.NewTagRepositoryImpl(),
 		IsExistByUserName: userdm.NewIsExistByUserNameExcludeSelfDomainService(rdbimpl.NewUserRepositoryImpl()),
-		IsExistByTagID:    tagdm.NewIsExistByTagIDDomainService(),
-		FindIDByTagName:   tagdm.NewFindIDByTagNameDomainService(rdbimpl.NewTagRepositoryImpl()),
+		BuildTags:         tagdm.NewBuildTagsDomainService(tagRepo),
 	}
 }
 
@@ -41,7 +38,7 @@ func (c *UpdateUserController) Exec(ctx *gin.Context) {
 
 	in.ID = userID
 
-	if err := userapp.NewUpdateUserAppService(c.userRepo, c.tagRepo, c.IsExistByUserName, c.IsExistByTagID, c.FindIDByTagName).Exec(ctx.Request.Context(), &in); err != nil {
+	if err := userapp.NewUpdateUserAppService(c.userRepo, c.IsExistByUserName, c.BuildTags).Exec(ctx.Request.Context(), &in); err != nil {
 		_ = ctx.Error(err)
 		return
 	}
