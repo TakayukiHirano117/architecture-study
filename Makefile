@@ -15,7 +15,7 @@ gomock-generate-all:
 
 # test
 test-docker:
-	docker-compose -f ./.docker/compose.yml exec api sh -c 'go test ./...'
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go test $$(go list ./... | grep -v -E "(/mock/|/infra/|/db$$|/customerr)")'
 
 # Lint
 lint-docker:

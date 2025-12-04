@@ -41,7 +41,7 @@ func TestCareerEndYear_NewCareerEndYear(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, tt.input, int(*careerEndYear))
+			assert.Equal(t, tt.input, careerEndYear.Uint16())
 		})
 	}
 }
