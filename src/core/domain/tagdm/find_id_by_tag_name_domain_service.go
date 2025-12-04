@@ -1,3 +1,4 @@
+//go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/tagdm/find_id_by_tag_name_domain_service_mock.go -package=tagdm_mock
 package tagdm
 
 import "context"

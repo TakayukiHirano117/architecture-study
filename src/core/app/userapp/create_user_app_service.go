@@ -10,22 +10,19 @@ import (
 
 type CreateUserAppService struct {
 	userRepo          userdm.UserRepository
-	tagRepo           tagdm.TagRepository
 	IsExistByUserName userdm.IsExistByUserNameDomainService
-	IsExistByTagID    tagdm.IsExistByTagIDDomainService
+	BuildTags         tagdm.BuildTagsDomainService
 }
 
 func NewCreateUserAppService(
 	userRepo userdm.UserRepository,
-	tagRepo tagdm.TagRepository,
 	isExistByUserNameDomainService userdm.IsExistByUserNameDomainService,
-	isExistByTagIDDomainService tagdm.IsExistByTagIDDomainService,
+	buildTags tagdm.BuildTagsDomainService,
 ) *CreateUserAppService {
 	return &CreateUserAppService{
 		userRepo:          userRepo,
-		tagRepo:           tagRepo,
 		IsExistByUserName: isExistByUserNameDomainService,
-		IsExistByTagID:    isExistByTagIDDomainService,
+		BuildTags:         buildTags,
 	}
 }
 
@@ -47,8 +44,8 @@ type CreateSkillRequest struct {
 
 type CreateCareerRequest struct {
 	Detail    string
-	StartYear int
-	EndYear   int
+	StartYear uint16
+	EndYear   uint16
 }
 
 type TagParamRequest struct {
@@ -80,37 +77,45 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 		return err
 	}
 
-	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
-	newTagNames := []string{}
-
+	// タグリクエストを作成
+	tagRequests := make([]tagdm.TagRequest, len(req.Skills))
 	for i, reqSkill := range req.Skills {
-		var tagParam userdm.TagParamIfCreate
+		tagID := ""
+		if reqSkill.Tag.ID != nil {
+			tagID = *reqSkill.Tag.ID
+		}
+		tagRequests[i] = tagdm.TagRequest{
+			ID:   tagID,
+			Name: reqSkill.Tag.Name,
+		}
+	}
 
-		if reqSkill.Tag.ID != nil && *reqSkill.Tag.ID != "" {
-			isExist, err := app.IsExistByTagID.Exec(ctx, *reqSkill.Tag.ID)
-			if err != nil {
-				return err
-			}
+	// BuildTagsDomainService でタグを一括取得/作成（新規タグの保存も含む）
+	tags, err := app.BuildTags.Exec(ctx, tagRequests)
+	if err != nil {
+		return err
+	}
 
-			if !isExist {
-				return errors.New("tag with ID " + *reqSkill.Tag.ID + " not found")
-			}
+	// タグ名をキーにしたマップを作成（スキルとタグを紐付けるため）
+	tagMap := make(map[string]tagdm.Tag)
+	for _, tag := range tags {
+		tagMap[tag.Name().String()] = tag
+	}
 
-			tagParam = userdm.TagParamIfCreate{
-				ID:   reqSkill.Tag.ID,
-				Name: reqSkill.Tag.Name,
-			}
-		} else {
-			newTagNames = append(newTagNames, reqSkill.Tag.Name)
-			tagParam = userdm.TagParamIfCreate{
-				ID:   nil,
-				Name: reqSkill.Tag.Name,
-			}
+	skills := make([]userdm.SkillParamIfCreate, len(req.Skills))
+	for i, reqSkill := range req.Skills {
+		tag, ok := tagMap[reqSkill.Tag.Name]
+		if !ok {
+			return errors.New("tag with name " + reqSkill.Tag.Name + " not found")
 		}
 
+		tagID := tag.ID().String()
 		skills[i] = userdm.SkillParamIfCreate{
-			ID:                reqSkill.ID,
-			Tag:               tagParam,
+			ID: reqSkill.ID,
+			Tag: userdm.TagParamIfCreate{
+				ID:   &tagID,
+				Name: reqSkill.Tag.Name,
+			},
 			Evaluation:        reqSkill.Evaluation,
 			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
@@ -131,28 +136,8 @@ func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserReques
 	}
 
 	user, err := userdm.GenIfCreate(*userName, *email, *password, careers, skills, selfIntroduction)
-
 	if err != nil {
 		return err
-	}
-
-	if len(newTagNames) > 0 {
-		newTags := []tagdm.Tag{}
-		for _, skill := range user.Skills() {
-			tag := skill.Tag()
-			for _, name := range newTagNames {
-				if tag.Name().String() == name {
-					newTags = append(newTags, *tag)
-					break
-				}
-			}
-		}
-
-		if len(newTags) > 0 {
-			if err := app.tagRepo.BulkInsert(ctx, newTags); err != nil {
-				return err
-			}
-		}
 	}
 
 	return app.userRepo.Store(ctx, user)

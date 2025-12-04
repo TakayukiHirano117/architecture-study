@@ -10,7 +10,7 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
-type UserRepositoryImpl struct {}
+type UserRepositoryImpl struct{}
 
 func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{}
@@ -79,7 +79,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 			careerModels = append(careerModels, models.CareerModel{
 				CareerID:  row.CareerID.String,
 				Detail:    row.CareerDetail.String,
-				StartYear: int(row.CareerStart.Int64),
+				StartYear: uint16(row.CareerStart.Int64),
 				EndYear:   uint16(row.CareerEnd.Int64),
 			})
 		}
@@ -224,7 +224,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 	}
 
 	if len(userDetailRows) == 0 {
-		return nil, errors.New("user not found")
+		return nil, nil
 	}
 
 	skillModels := []models.SkillModel{}
@@ -245,7 +245,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 			careerModels = append(careerModels, models.CareerModel{
 				CareerID:  row.CareerID.String,
 				Detail:    row.CareerDetail.String,
-				StartYear: int(row.CareerStart.Int64),
+				StartYear: uint16(row.CareerStart.Int64),
 				EndYear:   uint16(row.CareerEnd.Int64),
 			})
 		}
@@ -375,7 +375,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 			_, err = conn.ExecContext(ctx, careerQuery,
 				user.ID().String(),
 				career.Detail().String(),
-				career.StartYear().Int(),
+				career.StartYear().Uint16(),
 				career.EndYear().Uint16(),
 			)
 			if err != nil {
@@ -448,7 +448,7 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 		for _, career := range user.Careers() {
 			_, err := conn.ExecContext(ctx, careerQuery,
 				career.Detail().String(),
-				career.StartYear().Int(),
+				career.StartYear().Uint16(),
 				career.EndYear().Uint16(),
 				career.ID().String(),
 			)

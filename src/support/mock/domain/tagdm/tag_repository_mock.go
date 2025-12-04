@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	tagdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	gomock "go.uber.org/mock/gomock"
+
+	tagdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
 
 // MockTagRepository is a mock of TagRepository interface.
@@ -68,6 +69,21 @@ func (m *MockTagRepository) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 func (mr *MockTagRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockTagRepository)(nil).FindByID), ctx, id)
+}
+
+// FindByIDs mocks base method.
+func (m *MockTagRepository) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([]tagdm.Tag, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByIDs", ctx, ids)
+	ret0, _ := ret[0].([]tagdm.Tag)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByIDs indicates an expected call of FindByIDs.
+func (mr *MockTagRepositoryMockRecorder) FindByIDs(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIDs", reflect.TypeOf((*MockTagRepository)(nil).FindByIDs), ctx, ids)
 }
 
 // FindIdByTagName mocks base method.

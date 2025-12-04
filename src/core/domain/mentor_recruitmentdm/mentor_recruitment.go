@@ -5,6 +5,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/cockroachdb/errors"
+
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
@@ -31,7 +32,6 @@ const (
 	MinBudget uint32 = 1000
 	MaxBudget uint32 = 1000000
 )
-
 
 func NewMentorRecruitment(
 	id MentorRecruitmentID,

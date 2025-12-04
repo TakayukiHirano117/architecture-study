@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 )
 
 func TestApplicationPeriod_NewApplicationPeriod(t *testing.T) {

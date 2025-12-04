@@ -5,7 +5,7 @@ import "github.com/cockroachdb/errors"
 type ConsultationType string
 
 const (
-	Once ConsultationType = "単発"
+	Once       ConsultationType = "単発"
 	Continuous ConsultationType = "継続"
 )
 

@@ -3,9 +3,10 @@ package mentor_recruitmentdm_test
 import (
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 )
 
 func TestConsultationMethod_NewConsultationMethod(t *testing.T) {

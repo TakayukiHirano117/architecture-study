@@ -11,25 +11,19 @@ import (
 
 type UpdateUserAppService struct {
 	userRepo                     userdm.UserRepository
-	tagRepo                      tagdm.TagRepository
 	IsExistByUserNameExcludeSelf userdm.IsExistByUserNameExcludeSelfDomainService
-	IsExistByTagID               tagdm.IsExistByTagIDDomainService
-	FindIDByTagName              tagdm.FindIDByTagNameDomainService
+	BuildTags                    tagdm.BuildTagsDomainService
 }
 
 func NewUpdateUserAppService(
 	userRepo userdm.UserRepository,
-	tagRepo tagdm.TagRepository,
 	IsExistByUserNameExcludeSelf userdm.IsExistByUserNameExcludeSelfDomainService,
-	IsExistByTagID tagdm.IsExistByTagIDDomainService,
-	FindIDByTagName tagdm.FindIDByTagNameDomainService,
+	BuildTags tagdm.BuildTagsDomainService,
 ) *UpdateUserAppService {
 	return &UpdateUserAppService{
 		userRepo:                     userRepo,
-		tagRepo:                      tagRepo,
 		IsExistByUserNameExcludeSelf: IsExistByUserNameExcludeSelf,
-		IsExistByTagID:               IsExistByTagID,
-		FindIDByTagName:              FindIDByTagName,
+		BuildTags:                    BuildTags,
 	}
 }
 
@@ -57,8 +51,8 @@ type UpdateTagRequest struct {
 type UpdateCareerRequest struct {
 	ID        string
 	Detail    string
-	StartYear int
-	EndYear   int
+	StartYear uint16
+	EndYear   uint16
 }
 
 func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserRequest) error {
@@ -102,43 +96,46 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		}
 	}
 
-	skills := make([]userdm.SkillParamIfUpdate, len(req.Skills))
-	newTagNames := []string{}
+	// タグリクエストを作成
+	tagRequests := make([]tagdm.TagRequest, len(req.Skills))
+	for i, reqSkill := range req.Skills {
+		tagRequests[i] = tagdm.TagRequest{
+			ID:   reqSkill.Tag.ID,
+			Name: reqSkill.Tag.Name,
+		}
+	}
 
+	// BuildTagsDomainService でタグを一括取得/作成（新規タグの保存も含む）
+	tags, err := app.BuildTags.Exec(ctx, tagRequests)
+	if err != nil {
+		return err
+	}
+
+	// タグ名をキーにしたマップを作成（スキルとタグを紐付けるため）
+	tagMap := make(map[string]tagdm.Tag)
+	for _, tag := range tags {
+		tagMap[tag.Name().String()] = tag
+	}
+
+	skills := make([]userdm.SkillParamIfUpdate, len(req.Skills))
 	for i, reqSkill := range req.Skills {
 		var skillID *string
-
 		if reqSkill.ID != "" {
 			skillID = &reqSkill.ID
 		}
 
-		var tagParam userdm.TagParamIfUpdate
-
-		if reqSkill.Tag.ID != "" {
-			isExist, err := app.IsExistByTagID.Exec(ctx, reqSkill.Tag.ID)
-			if err != nil {
-				return err
-			}
-
-			if !isExist {
-				return errors.Newf("tag with ID %s not found", reqSkill.Tag.ID)
-			}
-
-			tagParam = userdm.TagParamIfUpdate{
-				ID:   &reqSkill.Tag.ID,
-				Name: reqSkill.Tag.Name,
-			}
-		} else {
-			newTagNames = append(newTagNames, reqSkill.Tag.Name)
-			tagParam = userdm.TagParamIfUpdate{
-				ID:   nil,
-				Name: reqSkill.Tag.Name,
-			}
+		tag, ok := tagMap[reqSkill.Tag.Name]
+		if !ok {
+			return errors.Newf("tag with name %s not found", reqSkill.Tag.Name)
 		}
 
+		tagID := tag.ID().String()
 		skills[i] = userdm.SkillParamIfUpdate{
-			ID:                skillID,
-			Tag:               tagParam,
+			ID: skillID,
+			Tag: userdm.TagParamIfUpdate{
+				ID:   &tagID,
+				Name: reqSkill.Tag.Name,
+			},
 			Evaluation:        reqSkill.Evaluation,
 			YearsOfExperience: reqSkill.YearsOfExperience,
 		}
@@ -152,25 +149,6 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		req.SelfIntroduction,
 	); err != nil {
 		return err
-	}
-
-	if len(newTagNames) > 0 {
-		newTags := []tagdm.Tag{}
-		for _, skill := range user.Skills() {
-			tag := skill.Tag()
-			for _, name := range newTagNames {
-				if tag.Name().String() == name {
-					newTags = append(newTags, *tag)
-					break
-				}
-			}
-		}
-
-		if len(newTags) > 0 {
-			if err := app.tagRepo.BulkInsert(ctx, newTags); err != nil {
-				return err
-			}
-		}
 	}
 
 	return app.userRepo.Update(ctx, user)

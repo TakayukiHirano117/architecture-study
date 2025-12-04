@@ -3,15 +3,16 @@ package userdm_test
 import (
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 func TestCareerStartYear_NewCareerStartYear(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   int
+		input   uint16
 		wantErr bool
 	}{
 		{
@@ -41,7 +42,7 @@ func TestCareerStartYear_NewCareerStartYear(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, tt.input, int(*careerStartYear))
+			assert.Equal(t, tt.input, (*careerStartYear).Uint16())
 		})
 	}
 }
@@ -49,8 +50,8 @@ func TestCareerStartYear_NewCareerStartYear(t *testing.T) {
 func TestCareerStartYear_Equal(t *testing.T) {
 	tests := []struct {
 		name     string
-		year1    int
-		year2    int
+		year1    uint16
+		year2    uint16
 		expected bool
 	}{
 		{
