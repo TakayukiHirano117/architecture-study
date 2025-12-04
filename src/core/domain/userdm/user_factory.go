@@ -4,8 +4,8 @@ import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 
 type CareerParamIfCreate struct {
 	Detail          string
-	CareerStartYear int
-	CareerEndYear   int
+	CareerStartYear uint16
+	CareerEndYear   uint16
 }
 
 type SkillParamIfCreate struct {

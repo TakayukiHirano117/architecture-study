@@ -55,8 +55,8 @@ func NewUserByVal(id UserID, name UserName, password Password, email Email, skil
 type CareerParamIfUpdate struct {
 	ID        *string
 	Detail    string
-	StartYear int
-	EndYear   int
+	StartYear uint16
+	EndYear   uint16
 }
 type SkillParamIfUpdate struct {
 	ID                *string

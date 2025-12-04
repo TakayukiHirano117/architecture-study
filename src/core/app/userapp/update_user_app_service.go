@@ -57,8 +57,8 @@ type UpdateTagRequest struct {
 type UpdateCareerRequest struct {
 	ID        string
 	Detail    string
-	StartYear int
-	EndYear   int
+	StartYear uint16
+	EndYear   uint16
 }
 
 func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserRequest) error {

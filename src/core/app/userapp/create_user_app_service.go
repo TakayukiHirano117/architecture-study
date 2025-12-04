@@ -47,8 +47,8 @@ type CreateSkillRequest struct {
 
 type CreateCareerRequest struct {
 	Detail    string
-	StartYear int
-	EndYear   int
+	StartYear uint16
+	EndYear   uint16
 }
 
 type TagParamRequest struct {

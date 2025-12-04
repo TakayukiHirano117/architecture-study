@@ -4,9 +4,9 @@ import (
 	"github.com/cockroachdb/errors"
 )
 
-type CareerStartYear int
+type CareerStartYear uint16
 
-func NewCareerStartYear(value int) (*CareerStartYear, error) {
+func NewCareerStartYear(value uint16) (*CareerStartYear, error) {
 	if value < 1970 {
 		return nil, errors.New("CareerStartYear is invalid")
 	}
@@ -16,7 +16,7 @@ func NewCareerStartYear(value int) (*CareerStartYear, error) {
 	return &careerStartYear, nil
 }
 
-func NewCareerStartYearByVal(value int) (CareerStartYear, error) {
+func NewCareerStartYearByVal(value uint16) (CareerStartYear, error) {
 	if value == 0 {
 		return 0, errors.New("CareerStartYear must not be empty")
 	}
@@ -24,8 +24,8 @@ func NewCareerStartYearByVal(value int) (CareerStartYear, error) {
 	return CareerStartYear(value), nil
 }
 
-func (c CareerStartYear) Int() int {
-	return int(c)
+func (c CareerStartYear) Uint16() uint16 {
+	return uint16(c)
 }
 
 func (c CareerStartYear) Equal(c2 CareerStartYear) bool {
