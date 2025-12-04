@@ -13,6 +13,10 @@ migrate-force:
 gomock-generate-all:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'go generate ./...'
 
+# test
+test-docker:
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go test ./...'
+
 # Lint
 lint-docker:
 	docker-compose -f ./.docker/compose.yml exec api golangci-lint run ./...

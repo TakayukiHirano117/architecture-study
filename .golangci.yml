@@ -1,7 +1,10 @@
 # yaml-language-server: $schema=https://golangci-lint.run/jsonschema/golangci.jsonschema.json
 run:
   timeout: 5m
-  skip-dirs:
+
+output:
+  # skip-dirs の代替（golangci-lint v1.57.0+）
+  exclude-dirs:
     - vendor
     - tmp
     - .git
@@ -30,4 +33,4 @@ issues:
     - path: mock/
       linters:
         - unused
-  exclude-generated: true
+  exclude-generated: strict
