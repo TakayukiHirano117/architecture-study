@@ -30,6 +30,7 @@ func main() {
 	port := ":8080"
 	fmt.Printf("Server starting on port %s\n", port)
 
-	router.Run(port)
-
+	if err := router.Run(port); err != nil {
+		panic(err)
+	}
 }

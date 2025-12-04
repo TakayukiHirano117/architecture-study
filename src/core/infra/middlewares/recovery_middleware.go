@@ -25,7 +25,7 @@ func RecoveryMiddleware() gin.HandlerFunc {
 
 				appErr := customerr.InternalWrapf(err, "panic occurred")
 
-				ctx.Error(appErr)
+				_ = ctx.Error(appErr)
 
 				ctx.Abort()
 			}

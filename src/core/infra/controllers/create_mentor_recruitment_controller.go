@@ -40,7 +40,7 @@ func (c *CreateMentorRecruitmentController) Exec(ctx *gin.Context) {
 	}
 
 	if err := mentorrecruitmentapp.NewCreateMentorRecruitmentAppService(c.isExistByUserID, c.isExistByCategoryID, c.mentorRecruitmentRepo, c.tagRepo).Exec(ctx.Request.Context(), &in); err != nil {
-		ctx.Error(err)
+		_ = ctx.Error(err)
 		return
 	}
 
