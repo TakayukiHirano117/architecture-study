@@ -10,7 +10,7 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
-type UserRepositoryImpl struct {}
+type UserRepositoryImpl struct{}
 
 func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{}
