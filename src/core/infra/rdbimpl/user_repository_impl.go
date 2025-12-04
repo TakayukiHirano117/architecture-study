@@ -10,8 +10,7 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
 
-type UserRepositoryImpl struct {
-}
+type UserRepositoryImpl struct {}
 
 func NewUserRepositoryImpl() *UserRepositoryImpl {
 	return &UserRepositoryImpl{}
@@ -81,7 +80,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 				CareerID:  row.CareerID.String,
 				Detail:    row.CareerDetail.String,
 				StartYear: int(row.CareerStart.Int64),
-				EndYear:   int(row.CareerEnd.Int64),
+				EndYear:   uint16(row.CareerEnd.Int64),
 			})
 		}
 	}
@@ -236,6 +235,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 			skillModels = append(skillModels, models.SkillModel{
 				SkillID:           row.SkillID.String,
 				TagID:             row.SkillTagID.String,
+				TagName:           row.SkillTagName.String,
 				Evaluation:        uint8(row.SkillEvaluation.Int64),
 				YearsOfExperience: uint8(row.SkillYearsOfExperience.Int64),
 			})
@@ -246,7 +246,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 				CareerID:  row.CareerID.String,
 				Detail:    row.CareerDetail.String,
 				StartYear: int(row.CareerStart.Int64),
-				EndYear:   int(row.CareerEnd.Int64),
+				EndYear:   uint16(row.CareerEnd.Int64),
 			})
 		}
 	}
@@ -281,7 +281,6 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 		return nil, err
 	}
 
-	// Skill / Career を VO に詰め替え
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
 		tagID, err := tagdm.NewTagIDByVal(s.TagID)
@@ -377,7 +376,7 @@ func (r *UserRepositoryImpl) Store(ctx context.Context, user *userdm.User) error
 				user.ID().String(),
 				career.Detail().String(),
 				career.StartYear().Int(),
-				career.EndYear().Int(),
+				career.EndYear().Uint16(),
 			)
 			if err != nil {
 				return err
@@ -450,7 +449,7 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 			_, err := conn.ExecContext(ctx, careerQuery,
 				career.Detail().String(),
 				career.StartYear().Int(),
-				career.EndYear().Int(),
+				career.EndYear().Uint16(),
 				career.ID().String(),
 			)
 			if err != nil {
