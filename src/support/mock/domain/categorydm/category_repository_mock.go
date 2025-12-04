@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	categorydm "github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	gomock "go.uber.org/mock/gomock"
+
+	categorydm "github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 )
 
 // MockCategoryRepository is a mock of CategoryRepository interface.

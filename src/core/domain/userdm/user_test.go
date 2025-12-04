@@ -3,10 +3,11 @@ package userdm_test
 import (
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 func createValidSkill(t *testing.T) *userdm.Skill {

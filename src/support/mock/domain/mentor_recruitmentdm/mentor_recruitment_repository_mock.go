@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	mentor_recruitmentdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	gomock "go.uber.org/mock/gomock"
+
+	mentor_recruitmentdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 )
 
 // MockMentorRecruitmentRepository is a mock of MentorRecruitmentRepository interface.

@@ -4,9 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 func TestSelfIntroduction_NewSelfIntroduction(t *testing.T) {
