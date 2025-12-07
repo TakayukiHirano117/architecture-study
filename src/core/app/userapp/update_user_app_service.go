@@ -28,31 +28,31 @@ func NewUpdateUserAppService(
 }
 
 type UpdateUserRequest struct {
-	ID               string
-	Name             string
-	Email            string
-	SelfIntroduction string
-	Skills           []UpdateSkillRequest
-	Careers          []UpdateCareerRequest
+	ID               string                `json:"id"`
+	Name             string                `json:"name"`
+	Email            string                `json:"email"`
+	SelfIntroduction string                `json:"self_introduction"`
+	Skills           []UpdateSkillRequest  `json:"skills"`
+	Careers          []UpdateCareerRequest `json:"careers"`
 }
 
 type UpdateSkillRequest struct {
-	ID                string
-	Tag               UpdateTagRequest
-	Evaluation        uint8
-	YearsOfExperience uint8
+	ID                string           `json:"id"`
+	Tag               UpdateTagRequest `json:"tag"`
+	Evaluation        uint8            `json:"evaluation"`
+	YearsOfExperience uint8            `json:"years_of_experience"`
 }
 
 type UpdateTagRequest struct {
-	ID   string
-	Name string
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type UpdateCareerRequest struct {
-	ID        string
-	Detail    string
-	StartYear uint16
-	EndYear   uint16
+	ID        string `json:"id"`
+	Detail    string `json:"detail"`
+	StartYear uint16 `json:"start_year"`
+	EndYear   uint16 `json:"end_year"`
 }
 
 func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserRequest) error {
