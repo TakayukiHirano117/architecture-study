@@ -5,6 +5,7 @@ import (
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
@@ -13,7 +14,7 @@ import (
 type CreateMentorRecruitmentAppService struct {
 	isExistByUserIDDomainService     userdm.IsExistByUserIDDomainService
 	mentorRecruitmentRepo            mentor_recruitmentdm.MentorRecruitmentRepository
-	tagRepo                          tagdm.TagRepository
+	buildTags                        tagdm.BuildTagsDomainService
 	isExistByCategoryIDDomainService categorydm.IsExistByCategoryIDDomainService
 }
 
@@ -21,7 +22,7 @@ type CreateMentorRecruitmentRequest struct {
 	UserID             userdm.UserID                           `json:"user_id"`
 	Title              string                                  `json:"title"`
 	CategoryID         categorydm.CategoryID                   `json:"category_id"`
-	ConsultationType   mentor_recruitmentdm.ConsultationType   `json:"consultation_type"`
+	ConsultationType   plandm.ConsultationType                 `json:"consultation_type"`
 	ConsultationMethod mentor_recruitmentdm.ConsultationMethod `json:"consultation_method"`
 	Description        string                                  `json:"description"`
 	BudgetFrom         uint32                                  `json:"budget_from"`
@@ -39,13 +40,13 @@ func NewCreateMentorRecruitmentAppService(
 	isExistByUserIDDomainService userdm.IsExistByUserIDDomainService,
 	isExistByCategoryIDDomainService categorydm.IsExistByCategoryIDDomainService,
 	mentorRecruitmentRepo mentor_recruitmentdm.MentorRecruitmentRepository,
-	tagRepo tagdm.TagRepository,
+	buildTags tagdm.BuildTagsDomainService,
 ) *CreateMentorRecruitmentAppService {
 	return &CreateMentorRecruitmentAppService{
 		isExistByUserIDDomainService:     isExistByUserIDDomainService,
 		isExistByCategoryIDDomainService: isExistByCategoryIDDomainService,
 		mentorRecruitmentRepo:            mentorRecruitmentRepo,
-		tagRepo:                          tagRepo,
+		buildTags:                        buildTags,
 	}
 }
 
@@ -78,14 +79,14 @@ func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *Cre
 		return customerr.NotFound("category not found")
 	}
 
-	status := mentor_recruitmentdm.Published
+	status := plandm.Published
 
 	tagRequests := make([]tagdm.TagRequest, len(req.Tags))
 	for i, t := range req.Tags {
 		tagRequests[i] = tagdm.TagRequest{ID: t.ID, Name: t.Name}
 	}
 
-	tags, err := tagdm.NewBuildTagsDomainService(app.tagRepo).Exec(ctx, tagRequests)
+	tags, err := app.buildTags.Exec(ctx, tagRequests)
 	if err != nil {
 		return customerr.InternalWrapf(err, "failed to build tags: %s", err.Error())
 	}
