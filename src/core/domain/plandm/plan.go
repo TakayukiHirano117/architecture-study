@@ -8,20 +8,22 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type Plan struct {
 	id               shared.UUID
+	mentor_id        userdm.UserID
 	title            string
 	category_id      categorydm.CategoryID
-	tagIDs           []tagdm.TagID
-	content          string
+	tag_ids          []tagdm.TagID
+	description      string
 	status           Status
 	consultationType *ConsultationType
 	price            uint32
 }
 
-func NewPlan(id shared.UUID, title string, category_id categorydm.CategoryID, tagIDs []tagdm.TagID, content string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
+func NewPlan(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []tagdm.TagID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
 	if title == "" {
 		return nil, errors.New("title must not be empty")
 	}
@@ -30,16 +32,16 @@ func NewPlan(id shared.UUID, title string, category_id categorydm.CategoryID, ta
 		return nil, errors.New("title must be less than 50 characters")
 	}
 
-	if len(tagIDs) > 5 {
+	if len(tag_ids) > 5 {
 		return nil, errors.New("tags must be less than 5")
 	}
 
-	if content == "" {
-		return nil, errors.New("content must not be empty")
+	if description == "" {
+		return nil, errors.New("description must not be empty")
 	}
 
-	if utf8.RuneCountInString(content) > 5000 {
-		return nil, errors.New("content must be less than 5000 characters")
+	if utf8.RuneCountInString(description) > 5000 {
+		return nil, errors.New("description must be less than 5000 characters")
 	}
 
 	if price < 3000 {
@@ -50,11 +52,45 @@ func NewPlan(id shared.UUID, title string, category_id categorydm.CategoryID, ta
 		return nil, errors.New("price must be less than 1000000")
 	}
 
-	return &Plan{id: id, title: title, category_id: category_id, tagIDs: tagIDs, content: content, status: status, consultationType: consultationType, price: price}, nil
+	return &Plan{id: id, mentor_id: mentor_id, title: title, category_id: category_id, tag_ids: tag_ids, description: description, status: status, consultationType: consultationType, price: price}, nil
 }
 
-func NewPlanByVal(id shared.UUID, title string, category_id categorydm.CategoryID, tagIDs []tagdm.TagID, content string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
-	return &Plan{id: id, title: title, category_id: category_id, tagIDs: tagIDs, content: content, status: status, consultationType: consultationType, price: price}, nil
+func NewPlanByVal(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []tagdm.TagID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
+	return &Plan{id: id, mentor_id: mentor_id, title: title, category_id: category_id, tag_ids: tag_ids, description: description, status: status, consultationType: consultationType, price: price}, nil
 }
 
-// Getter
+func (p *Plan) ID() shared.UUID {
+	return p.id
+}
+
+func (p *Plan) MentorID() userdm.UserID {
+	return p.mentor_id
+}
+
+func (p *Plan) Title() string {
+	return p.title
+}
+
+func (p *Plan) CategoryID() categorydm.CategoryID {
+	return p.category_id
+}
+
+func (p *Plan) TagIDs() []tagdm.TagID {
+	return p.tag_ids
+}
+
+func (p *Plan) Description() string {
+	return p.description
+}
+
+func (p *Plan) Status() Status {
+	return p.status
+}
+
+func (p *Plan) ConsultationType() *ConsultationType {
+	return p.consultationType
+}
+
+func (p *Plan) Price() uint32 {
+	return p.price
+}
