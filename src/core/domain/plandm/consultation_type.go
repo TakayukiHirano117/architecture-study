@@ -1,4 +1,4 @@
-package mentor_recruitmentdm
+package plandm
 
 import "github.com/cockroachdb/errors"
 

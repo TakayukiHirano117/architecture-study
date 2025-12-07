@@ -1,4 +1,4 @@
-package mentor_recruitmentdm_test
+package plandm_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 )
 
 func TestStatus_NewStatus(t *testing.T) {
@@ -39,7 +39,7 @@ func TestStatus_NewStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			status, err := mentor_recruitmentdm.NewStatus(tt.input)
+			status, err := plandm.NewStatus(tt.input)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -55,7 +55,7 @@ func TestStatus_NewStatus(t *testing.T) {
 }
 
 func TestStatus_NewStatusByVal(t *testing.T) {
-	status, err := mentor_recruitmentdm.NewStatusByVal("公開")
+	status, err := plandm.NewStatusByVal("公開")
 	require.NoError(t, err)
 	str, err := status.String()
 	require.NoError(t, err)
@@ -63,10 +63,10 @@ func TestStatus_NewStatusByVal(t *testing.T) {
 }
 
 func TestStatus_String(t *testing.T) {
-	published, err := mentor_recruitmentdm.NewStatus("公開")
+	published, err := plandm.NewStatus("公開")
 	require.NoError(t, err)
 
-	cancelled, err := mentor_recruitmentdm.NewStatus("中止")
+	cancelled, err := plandm.NewStatus("中止")
 	require.NoError(t, err)
 
 	publishedStr, err := published.String()
@@ -79,18 +79,18 @@ func TestStatus_String(t *testing.T) {
 }
 
 func TestStatus_String_InvalidStatus(t *testing.T) {
-	invalidStatus, err := mentor_recruitmentdm.NewStatusByVal("無効")
+	invalidStatus, err := plandm.NewStatusByVal("無効")
 	require.NoError(t, err)
 	_, err = invalidStatus.String()
 	assert.Error(t, err)
 }
 
 func TestStatus_Equal(t *testing.T) {
-	status1, err := mentor_recruitmentdm.NewStatus("公開")
+	status1, err := plandm.NewStatus("公開")
 	require.NoError(t, err)
-	status2, err := mentor_recruitmentdm.NewStatus("公開")
+	status2, err := plandm.NewStatus("公開")
 	require.NoError(t, err)
-	status3, err := mentor_recruitmentdm.NewStatus("中止")
+	status3, err := plandm.NewStatus("中止")
 	require.NoError(t, err)
 
 	assert.True(t, status1.Equal(status2))
