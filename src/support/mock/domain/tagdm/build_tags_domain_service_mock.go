@@ -13,9 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	tagdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockBuildTagsDomainService is a mock of BuildTagsDomainService interface.

@@ -18,6 +18,7 @@ type CreateMentorRecruitmentAppService struct {
 	isExistByCategoryIDDomainService categorydm.IsExistByCategoryIDDomainService
 }
 
+// TODO: ドメインオブジェクトではなくプリミティブにする
 type CreateMentorRecruitmentRequest struct {
 	UserID             userdm.UserID                           `json:"user_id"`
 	Title              string                                  `json:"title"`
@@ -30,7 +31,6 @@ type CreateMentorRecruitmentRequest struct {
 	Tags               []CreateMentorRecruitmentTagRequest     `json:"tags"`
 }
 
-// TODO: IDのみを受け取り、NameはDBから取得する様に書き換える
 type CreateMentorRecruitmentTagRequest struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
