@@ -15,7 +15,7 @@ import (
 
 type CreateMentorRecruitmentController struct {
 	mentorRecruitmentRepo mentor_recruitmentdm.MentorRecruitmentRepository
-	tagRepo               tagdm.TagRepository
+	buildTags             tagdm.BuildTagsDomainService
 	userRepo              userdm.UserRepository
 	isExistByCategoryID   categorydm.IsExistByCategoryIDDomainService
 	isExistByUserID       userdm.IsExistByUserIDDomainService
@@ -24,7 +24,7 @@ type CreateMentorRecruitmentController struct {
 func NewCreateMentorRecruitmentController() *CreateMentorRecruitmentController {
 	return &CreateMentorRecruitmentController{
 		mentorRecruitmentRepo: rdbimpl.NewMentorRecruitmentRepositoryImpl(),
-		tagRepo:               rdbimpl.NewTagRepositoryImpl(),
+		buildTags:             tagdm.NewBuildTagsDomainService(rdbimpl.NewTagRepositoryImpl()),
 		userRepo:              rdbimpl.NewUserRepositoryImpl(),
 		isExistByCategoryID:   categorydm.NewIsExistByCategoryIDDomainService(rdbimpl.NewCategoryRepositoryImpl()),
 		isExistByUserID:       userdm.NewIsExistByUserIDDomainService(rdbimpl.NewUserRepositoryImpl()),
@@ -39,7 +39,7 @@ func (c *CreateMentorRecruitmentController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	if err := mentorrecruitmentapp.NewCreateMentorRecruitmentAppService(c.isExistByUserID, c.isExistByCategoryID, c.mentorRecruitmentRepo, c.tagRepo).Exec(ctx.Request.Context(), &in); err != nil {
+	if err := mentorrecruitmentapp.NewCreateMentorRecruitmentAppService(c.isExistByUserID, c.isExistByCategoryID, c.mentorRecruitmentRepo, c.buildTags).Exec(ctx.Request.Context(), &in); err != nil {
 		_ = ctx.Error(err)
 		return
 	}

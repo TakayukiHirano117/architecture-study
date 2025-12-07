@@ -26,14 +26,14 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 
 	t.Run("正常系: メンター募集が正常に作成される", func(t *testing.T) {
 		mockMentorRecruitmentRepo := mentor_recruitmentdm_mock.NewMockMentorRecruitmentRepository(ctrl)
-		mockTagRepo := tagdm_mock.NewMockTagRepository(ctrl)
+		mockBuildTags := tagdm_mock.NewMockBuildTagsDomainService(ctrl)
 		mockUserRepo := userdm_mock.NewMockUserRepository(ctrl)
 		mockIsExistByCategoryID := categorydm_mock.NewMockIsExistByCategoryIDDomainService(ctrl)
 		mockIsExistByUserID := userdm_mock.NewMockIsExistByUserIDDomainService(ctrl)
 
 		controller := &CreateMentorRecruitmentController{
 			mentorRecruitmentRepo: mockMentorRecruitmentRepo,
-			tagRepo:               mockTagRepo,
+			buildTags:             mockBuildTags,
 			userRepo:              mockUserRepo,
 			isExistByCategoryID:   mockIsExistByCategoryID,
 			isExistByUserID:       mockIsExistByUserID,
@@ -74,13 +74,9 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 			Exec(gomock.Any(), gomock.Any()).
 			Return(true, nil)
 
-		mockTagRepo.EXPECT().
-			FindByIDs(gomock.Any(), gomock.Any()).
-			Return(nil, nil).AnyTimes()
-
-		mockTagRepo.EXPECT().
-			BulkInsert(gomock.Any(), gomock.Any()).
-			Return(nil).AnyTimes()
+		mockBuildTags.EXPECT().
+			Exec(gomock.Any(), gomock.Any()).
+			Return(nil, nil)
 
 		mockMentorRecruitmentRepo.EXPECT().
 			Store(gomock.Any(), gomock.Any()).
