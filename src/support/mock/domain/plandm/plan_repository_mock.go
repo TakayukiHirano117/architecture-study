@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	plandm "github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	gomock "go.uber.org/mock/gomock"
+
+	plandm "github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 )
 
 // MockPlanRepository is a mock of PlanRepository interface.

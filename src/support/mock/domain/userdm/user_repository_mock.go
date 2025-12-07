@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	userdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	gomock "go.uber.org/mock/gomock"
+
+	userdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 // MockUserRepository is a mock of UserRepository interface.
