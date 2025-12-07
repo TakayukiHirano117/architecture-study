@@ -18,11 +18,10 @@ type CreateUserController struct {
 }
 
 func NewCreateUserController() *CreateUserController {
-	tagRepo := rdbimpl.NewTagRepositoryImpl()
 	return &CreateUserController{
 		userRepo:          rdbimpl.NewUserRepositoryImpl(),
 		IsExistByUserName: userdm.NewIsExistByUserNameDomainService(rdbimpl.NewUserRepositoryImpl()),
-		BuildTags:         tagdm.NewBuildTagsDomainService(tagRepo),
+		BuildTags:         tagdm.NewBuildTagsDomainService(rdbimpl.NewTagRepositoryImpl()),
 	}
 }
 
