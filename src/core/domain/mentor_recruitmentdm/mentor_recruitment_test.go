@@ -10,6 +10,7 @@ import (
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -20,25 +21,25 @@ type mentorRecruitmentParams struct {
 	title              string
 	description        string
 	category_id        categorydm.CategoryID
-	consultationType   mentor_recruitmentdm.ConsultationType
+	consultationType   plandm.ConsultationType
 	consultationMethod mentor_recruitmentdm.ConsultationMethod
 	budgetFrom         uint32
 	budgetTo           uint32
 	applicationPeriod  mentor_recruitmentdm.ApplicationPeriod
-	status             mentor_recruitmentdm.Status
+	status             plandm.Status
 	tags               []tagdm.Tag
 }
 
 func createValidMentorRecruitmentParams(t *testing.T) mentorRecruitmentParams {
 	t.Helper()
 
-	consultationType, err := mentor_recruitmentdm.NewConsultationType("単発")
+	consultationType, err := plandm.NewConsultationType("単発")
 	require.NoError(t, err)
 
 	consultationMethod, err := mentor_recruitmentdm.NewConsultationMethod("チャット")
 	require.NoError(t, err)
 
-	status, err := mentor_recruitmentdm.NewStatus("公開")
+	status, err := plandm.NewStatus("公開")
 	require.NoError(t, err)
 
 	return mentorRecruitmentParams{

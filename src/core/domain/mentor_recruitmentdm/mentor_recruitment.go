@@ -7,6 +7,7 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -19,12 +20,12 @@ type MentorRecruitment struct {
 	title              string
 	description        string
 	category_id        categorydm.CategoryID
-	consultationType   ConsultationType
+	consultationType   plandm.ConsultationType
 	consultationMethod ConsultationMethod
 	budgetFrom         uint32
 	budgetTo           uint32
 	applicationPeriod  ApplicationPeriod
-	status             Status
+	status             plandm.Status
 	tags               []tagdm.Tag
 }
 
@@ -39,12 +40,12 @@ func NewMentorRecruitment(
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
-	consultationType ConsultationType,
+	consultationType plandm.ConsultationType,
 	consultationMethod ConsultationMethod,
 	budgetFrom uint32,
 	budgetTo uint32,
 	applicationPeriod ApplicationPeriod,
-	status Status,
+	status plandm.Status,
 	tags []tagdm.Tag,
 ) (*MentorRecruitment, error) {
 	if title == "" {
@@ -99,12 +100,12 @@ func NewMentorRecruitmentByVal(
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
-	consultationType ConsultationType,
+	consultationType plandm.ConsultationType,
 	consultationMethod ConsultationMethod,
 	budgetFrom uint32,
 	budgetTo uint32,
 	applicationPeriod ApplicationPeriod,
-	status Status,
+	status plandm.Status,
 	tags []tagdm.Tag,
 	createdAt time.Time,
 	updatedAt time.Time,
@@ -127,50 +128,50 @@ func NewMentorRecruitmentByVal(
 	}, nil
 }
 
-func (m *MentorRecruitment) ID() MentorRecruitmentID {
-	return m.id
+func (mr *MentorRecruitment) ID() MentorRecruitmentID {
+	return mr.id
 }
 
-func (m *MentorRecruitment) UserID() userdm.UserID {
-	return m.user_id
+func (mr *MentorRecruitment) UserID() userdm.UserID {
+	return mr.user_id
 }
 
-func (m *MentorRecruitment) Title() string {
-	return m.title
+func (mr *MentorRecruitment) Title() string {
+	return mr.title
 }
 
-func (m *MentorRecruitment) Description() string {
-	return m.description
+func (mr *MentorRecruitment) Description() string {
+	return mr.description
 }
 
-func (m *MentorRecruitment) CategoryID() categorydm.CategoryID {
-	return m.category_id
+func (mr *MentorRecruitment) CategoryID() categorydm.CategoryID {
+	return mr.category_id
 }
 
-func (m *MentorRecruitment) ConsultationType() ConsultationType {
-	return m.consultationType
+func (mr *MentorRecruitment) ConsultationType() plandm.ConsultationType {
+	return mr.consultationType
 }
 
-func (m *MentorRecruitment) ConsultationMethod() ConsultationMethod {
-	return m.consultationMethod
+func (mr *MentorRecruitment) ConsultationMethod() ConsultationMethod {
+	return mr.consultationMethod
 }
 
-func (m *MentorRecruitment) BudgetFrom() uint32 {
-	return m.budgetFrom
+func (mr *MentorRecruitment) BudgetFrom() uint32 {
+	return mr.budgetFrom
 }
 
-func (m *MentorRecruitment) BudgetTo() uint32 {
-	return m.budgetTo
+func (mr *MentorRecruitment) BudgetTo() uint32 {
+	return mr.budgetTo
 }
 
-func (m *MentorRecruitment) ApplicationPeriod() ApplicationPeriod {
-	return m.applicationPeriod
+func (mr *MentorRecruitment) ApplicationPeriod() ApplicationPeriod {
+	return mr.applicationPeriod
 }
 
-func (m *MentorRecruitment) Status() Status {
-	return m.status
+func (mr *MentorRecruitment) Status() plandm.Status {
+	return mr.status
 }
 
-func (m *MentorRecruitment) Tags() []tagdm.Tag {
-	return m.tags
+func (mr *MentorRecruitment) Tags() []tagdm.Tag {
+	return mr.tags
 }

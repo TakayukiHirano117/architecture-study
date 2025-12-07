@@ -6,22 +6,22 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/vo"
 )
 
 type Plan struct {
-	id               vo.UUID
+	id               shared.UUID
 	title            string
 	category_id      categorydm.CategoryID
-	tags             []tagdm.Tag
+	tagIDs           []tagdm.TagID
 	content          string
-	status           vo.Status
-	consultationType *vo.ConsultationType
+	status           Status
+	consultationType *ConsultationType
 	price            uint32
 }
 
-func NewPlan(id vo.UUID, title string, category_id categorydm.CategoryID, tags []tagdm.Tag, content string, status vo.Status, consultationType vo.ConsultationType, price uint32) (*Plan, error) {
+func NewPlan(id shared.UUID, title string, category_id categorydm.CategoryID, tagIDs []tagdm.TagID, content string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
 	if title == "" {
 		return nil, errors.New("title must not be empty")
 	}
@@ -30,7 +30,7 @@ func NewPlan(id vo.UUID, title string, category_id categorydm.CategoryID, tags [
 		return nil, errors.New("title must be less than 50 characters")
 	}
 
-	if len(tags) > 5 {
+	if len(tagIDs) > 5 {
 		return nil, errors.New("tags must be less than 5")
 	}
 
@@ -50,11 +50,11 @@ func NewPlan(id vo.UUID, title string, category_id categorydm.CategoryID, tags [
 		return nil, errors.New("price must be less than 1000000")
 	}
 
-	return &Plan{id: id, title: title, category_id: category_id, tags: tags, content: content, status: status, consultationType: &consultationType, price: price}, nil
+	return &Plan{id: id, title: title, category_id: category_id, tagIDs: tagIDs, content: content, status: status, consultationType: consultationType, price: price}, nil
 }
 
-func NewPlanByVal(id vo.UUID, title string, category_id categorydm.CategoryID, tags []tagdm.Tag, content string, status vo.Status, consultationType vo.ConsultationType, price uint32) (*Plan, error) {
-	return &Plan{id: id, title: title, category_id: category_id, tags: tags, content: content, status: status, consultationType: &consultationType, price: price}, nil
+func NewPlanByVal(id shared.UUID, title string, category_id categorydm.CategoryID, tagIDs []tagdm.TagID, content string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
+	return &Plan{id: id, title: title, category_id: category_id, tagIDs: tagIDs, content: content, status: status, consultationType: consultationType, price: price}, nil
 }
 
 // Getter
