@@ -1,16 +1,18 @@
 package contractdm
 
 import (
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
-	"github.com/cockroachdb/errors"
 	"unicode/utf8"
+
+	"github.com/cockroachdb/errors"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 )
 
 type Contract struct {
-	id shared.UUID
+	id        shared.UUID
 	mentee_id shared.UUID
-	plan_id shared.UUID
-	message string
+	plan_id   shared.UUID
+	message   string
 }
 
 func NewContract(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, message string) (*Contract, error) {
@@ -24,7 +26,6 @@ func NewContract(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, mes
 
 	return &Contract{id: id, mentee_id: mentee_id, plan_id: plan_id, message: message}, nil
 }
-
 
 func NewContractByVal(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, message string) (*Contract, error) {
 	return &Contract{id: id, mentee_id: mentee_id, plan_id: plan_id, message: message}, nil
