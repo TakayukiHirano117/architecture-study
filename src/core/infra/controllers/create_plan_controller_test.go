@@ -13,44 +13,41 @@ import (
 	"go.uber.org/mock/gomock"
 
 	categorydm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/categorydm"
-	mentor_recruitmentdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/mentor_recruitmentdm"
+	plandm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/plandm"
 	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
 	userdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/userdm"
 )
 
-func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
+func TestCreatePlanController_Exec(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	t.Run("正常系: メンター募集が正常に作成される", func(t *testing.T) {
-		mockMentorRecruitmentRepo := mentor_recruitmentdm_mock.NewMockMentorRecruitmentRepository(ctrl)
+	t.Run("正常系: プランが正常に作成される", func(t *testing.T) {
+		mockPlanRepo := plandm_mock.NewMockPlanRepository(ctrl)
 		mockBuildTags := tagdm_mock.NewMockBuildTagsDomainService(ctrl)
-		mockUserRepo := userdm_mock.NewMockUserRepository(ctrl)
 		mockIsExistByCategoryID := categorydm_mock.NewMockIsExistByCategoryIDDomainService(ctrl)
 		mockIsExistByUserID := userdm_mock.NewMockIsExistByUserIDDomainService(ctrl)
 
-		controller := &CreateMentorRecruitmentController{
-			mentorRecruitmentRepo: mockMentorRecruitmentRepo,
-			buildTags:             mockBuildTags,
-			userRepo:              mockUserRepo,
-			isExistByCategoryID:   mockIsExistByCategoryID,
-			isExistByUserID:       mockIsExistByUserID,
+		controller := &CreatePlanController{
+			planRepo:            mockPlanRepo,
+			buildTags:           mockBuildTags,
+			isExistByCategoryID: mockIsExistByCategoryID,
+			isExistByUserID:     mockIsExistByUserID,
 		}
 
 		userID := uuid.New().String()
 		categoryID := uuid.New().String()
 
 		reqBody := map[string]interface{}{
-			"user_id":             userID,
-			"title":               "Go言語メンター募集",
-			"description":         "Go言語を教えてくれるメンターを探しています。バックエンド開発経験のある方を希望します。",
-			"category_id":         categoryID,
-			"consultation_type":   "one_time",
-			"consultation_method": "online",
-			"budget_from":         10000,
-			"budget_to":           50000,
+			"user_id":           userID,
+			"title":             "Goメンタリングプラン",
+			"category_id":       categoryID,
+			"content":           "Go言語の基礎から応用までサポートします。バックエンド開発経験のある方を希望します。",
+			"status":            "公開",
+			"consultation_type": "単発",
+			"price":             10000,
 			"tags": []map[string]interface{}{
 				{
 					"id":   uuid.New().String(),
@@ -62,7 +59,7 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest(http.MethodPost, "/mentor_recruitments", bytes.NewBuffer(body))
+		c.Request = httptest.NewRequest(http.MethodPost, "/plans", bytes.NewBuffer(body))
 		c.Request.Header.Set("Content-Type", "application/json")
 
 		// モックの設定
@@ -78,7 +75,7 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 			Exec(gomock.Any(), gomock.Any()).
 			Return(nil, nil)
 
-		mockMentorRecruitmentRepo.EXPECT().
+		mockPlanRepo.EXPECT().
 			Store(gomock.Any(), gomock.Any()).
 			Return(nil)
 
@@ -93,11 +90,11 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 	})
 
 	t.Run("異常系: 不正なJSONでBadRequest", func(t *testing.T) {
-		controller := &CreateMentorRecruitmentController{}
+		controller := &CreatePlanController{}
 
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
-		c.Request = httptest.NewRequest(http.MethodPost, "/mentor_recruitments", bytes.NewBufferString("invalid json"))
+		c.Request = httptest.NewRequest(http.MethodPost, "/plans", bytes.NewBufferString("invalid json"))
 		c.Request.Header.Set("Content-Type", "application/json")
 
 		controller.Exec(c)

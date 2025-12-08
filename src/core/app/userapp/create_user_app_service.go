@@ -27,30 +27,30 @@ func NewCreateUserAppService(
 }
 
 type CreateUserRequest struct {
-	Name             string
-	Email            string
-	Password         string
-	SelfIntroduction string
-	Skills           []CreateSkillRequest
-	Careers          []CreateCareerRequest
+	Name             string                `json:"name"`
+	Email            string                `json:"email"`
+	Password         string                `json:"password"`
+	SelfIntroduction string                `json:"self_introduction"`
+	Skills           []CreateSkillRequest  `json:"skills"`
+	Careers          []CreateCareerRequest `json:"careers"`
 }
 
 type CreateSkillRequest struct {
-	ID                *string
-	Tag               TagParamRequest
-	Evaluation        uint8
-	YearsOfExperience uint8
+	ID                *string         `json:"id"`
+	Tag               TagParamRequest `json:"tag"`
+	Evaluation        uint8           `json:"evaluation"`
+	YearsOfExperience uint8           `json:"years_of_experience"`
 }
 
 type CreateCareerRequest struct {
-	Detail    string
-	StartYear uint16
-	EndYear   uint16
+	Detail    string `json:"detail"`
+	StartYear uint16 `json:"start_year"`
+	EndYear   uint16 `json:"end_year"`
 }
 
 type TagParamRequest struct {
-	ID   *string
-	Name string
+	ID   *string `json:"id"`
+	Name string  `json:"name"`
 }
 
 func (app *CreateUserAppService) Exec(ctx context.Context, req *CreateUserRequest) error {

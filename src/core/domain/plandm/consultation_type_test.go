@@ -1,4 +1,4 @@
-package mentor_recruitmentdm_test
+package plandm_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 )
 
 func TestConsultationType_NewConsultationType(t *testing.T) {
@@ -39,7 +39,7 @@ func TestConsultationType_NewConsultationType(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			consultationType, err := mentor_recruitmentdm.NewConsultationType(tt.input)
+			consultationType, err := plandm.NewConsultationType(tt.input)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -74,7 +74,7 @@ func TestConsultationType_NewConsultationTypeByVal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			consultationType, err := mentor_recruitmentdm.NewConsultationTypeByVal(tt.input)
+			consultationType, err := plandm.NewConsultationTypeByVal(tt.input)
 
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -109,7 +109,7 @@ func TestConsultationType_String(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			consultationType, err := mentor_recruitmentdm.NewConsultationType(tt.input)
+			consultationType, err := plandm.NewConsultationType(tt.input)
 			require.NoError(t, err)
 
 			str, err := consultationType.String()
@@ -120,7 +120,7 @@ func TestConsultationType_String(t *testing.T) {
 }
 
 func TestConsultationType_String_InvalidType(t *testing.T) {
-	invalidType, err := mentor_recruitmentdm.NewConsultationTypeByVal("無効")
+	invalidType, err := plandm.NewConsultationTypeByVal("無効")
 	require.NoError(t, err)
 	_, err = invalidType.String()
 	assert.Error(t, err)
@@ -149,9 +149,9 @@ func TestConsultationType_Equal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			type1, err := mentor_recruitmentdm.NewConsultationType(tt.input1)
+			type1, err := plandm.NewConsultationType(tt.input1)
 			require.NoError(t, err)
-			type2, err := mentor_recruitmentdm.NewConsultationType(tt.input2)
+			type2, err := plandm.NewConsultationType(tt.input2)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, type1.Equal(type2))
 		})
