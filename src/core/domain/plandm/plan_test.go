@@ -10,16 +10,15 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
-func createValidTagIDs(t *testing.T, count int) []tagdm.TagID {
+func createValidTagIDs(t *testing.T, count int) []shared.UUID {
 	t.Helper()
 
-	tagIDs := make([]tagdm.TagID, count)
+	tagIDs := make([]shared.UUID, count)
 	for i := 0; i < count; i++ {
-		tagIDs[i] = tagdm.NewTagID()
+		tagIDs[i] = shared.NewUUID()
 	}
 	return tagIDs
 }
@@ -32,14 +31,14 @@ func createValidMentorID(t *testing.T) userdm.UserID {
 func TestNewPlan(t *testing.T) {
 	tests := []struct {
 		name       string
-		setupFunc  func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32)
+		setupFunc  func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32)
 		wantErr    bool
 		errMsg     string
 		assertions func(t *testing.T, plan *plandm.Plan)
 	}{
 		{
 			name: "有効な値でPlanを作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -61,7 +60,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "タイトルが50文字でも作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -83,7 +82,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "タグが5個でも作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -105,7 +104,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "説明が5000文字でも作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -127,7 +126,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "価格が最小値3000でも作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -149,7 +148,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "価格が最大値1000000でも作成できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -171,7 +170,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "タイトルが空の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -191,7 +190,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "タイトルが51文字以上の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -211,7 +210,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "タグが6個以上の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -231,7 +230,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "説明が空の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -251,7 +250,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "説明が5001文字以上の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -271,7 +270,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "価格が3000未満の場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -291,7 +290,7 @@ func TestNewPlan(t *testing.T) {
 		},
 		{
 			name: "価格が1000000を超える場合エラー",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 
@@ -334,12 +333,12 @@ func TestNewPlan(t *testing.T) {
 func TestNewPlanByVal(t *testing.T) {
 	tests := []struct {
 		name       string
-		setupFunc  func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32)
+		setupFunc  func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32)
 		assertions func(t *testing.T, plan *plandm.Plan)
 	}{
 		{
 			name: "DBから取得したデータでPlanを再構築できる",
-			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []tagdm.TagID, string, plandm.Status, plandm.ConsultationType, uint32) {
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserID, string, categorydm.CategoryID, []shared.UUID, string, plandm.Status, plandm.ConsultationType, uint32) {
 				id, err := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
 				require.NoError(t, err)
 

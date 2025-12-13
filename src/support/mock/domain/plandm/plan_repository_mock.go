@@ -16,6 +16,7 @@ import (
 	gomock "go.uber.org/mock/gomock"
 
 	plandm "github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
+	shared "github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 )
 
 // MockPlanRepository is a mock of PlanRepository interface.
@@ -40,6 +41,21 @@ func NewMockPlanRepository(ctrl *gomock.Controller) *MockPlanRepository {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockPlanRepository) EXPECT() *MockPlanRepositoryMockRecorder {
 	return m.recorder
+}
+
+// FindByID mocks base method.
+func (m *MockPlanRepository) FindByID(ctx context.Context, planID shared.UUID) (*plandm.Plan, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByID", ctx, planID)
+	ret0, _ := ret[0].(*plandm.Plan)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByID indicates an expected call of FindByID.
+func (mr *MockPlanRepositoryMockRecorder) FindByID(ctx, planID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockPlanRepository)(nil).FindByID), ctx, planID)
 }
 
 // Store mocks base method.

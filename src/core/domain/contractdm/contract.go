@@ -9,13 +9,13 @@ import (
 )
 
 type Contract struct {
-	id        shared.UUID
-	mentee_id shared.UUID
-	plan_id   shared.UUID
-	message   string
+	id       shared.UUID
+	menteeID shared.UUID
+	planID   shared.UUID
+	message  string
 }
 
-func NewContract(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, message string) (*Contract, error) {
+func NewContract(id shared.UUID, menteeID shared.UUID, planID shared.UUID, message string) (*Contract, error) {
 	if message == "" {
 		return nil, errors.New("message must not be empty")
 	}
@@ -24,11 +24,11 @@ func NewContract(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, mes
 		return nil, errors.New("message must be less than 500 characters")
 	}
 
-	return &Contract{id: id, mentee_id: mentee_id, plan_id: plan_id, message: message}, nil
+	return &Contract{id: id, menteeID: menteeID, planID: planID, message: message}, nil
 }
 
-func NewContractByVal(id shared.UUID, mentee_id shared.UUID, plan_id shared.UUID, message string) (*Contract, error) {
-	return &Contract{id: id, mentee_id: mentee_id, plan_id: plan_id, message: message}, nil
+func NewContractByVal(id shared.UUID, menteeID shared.UUID, planID shared.UUID, message string) (*Contract, error) {
+	return &Contract{id: id, menteeID: menteeID, planID: planID, message: message}, nil
 }
 
 func (c *Contract) ID() shared.UUID {
@@ -36,11 +36,11 @@ func (c *Contract) ID() shared.UUID {
 }
 
 func (c *Contract) MenteeID() shared.UUID {
-	return c.mentee_id
+	return c.menteeID
 }
 
 func (c *Contract) PlanID() shared.UUID {
-	return c.plan_id
+	return c.planID
 }
 
 func (c *Contract) Message() string {

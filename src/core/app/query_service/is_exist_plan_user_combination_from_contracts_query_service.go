@@ -3,8 +3,8 @@ package query_service
 import (
 	"context"
 
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/contractdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 )
 
 type IsExistPlanUserCombinationFromContractsQueryService interface {

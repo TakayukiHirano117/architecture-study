@@ -12,6 +12,7 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	categorydm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/categorydm"
@@ -546,7 +547,7 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 func createTestTag(t *testing.T, tagIDStr string, name string) *tagdm.Tag {
 	t.Helper()
 
-	tagID, err := tagdm.NewTagIDByVal(tagIDStr)
+	tagID, err := shared.NewUUIDByVal(tagIDStr)
 	if err != nil {
 		t.Fatalf("failed to create tag id: %v", err)
 	}

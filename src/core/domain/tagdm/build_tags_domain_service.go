@@ -4,6 +4,8 @@ package tagdm
 import (
 	"context"
 	"errors"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 )
 
 type TagRequest struct {
@@ -26,7 +28,7 @@ func NewBuildTagsDomainService(tr TagRepository) BuildTagsDomainService {
 }
 
 func (btds *buildTagsDomainService) Exec(ctx context.Context, reqTags []TagRequest) ([]Tag, error) {
-	var existingTagIDs []TagID
+	var existingTagIDs []shared.UUID
 	newTags := make([]Tag, len(reqTags))
 
 	for i, reqTag := range reqTags {
@@ -35,13 +37,13 @@ func (btds *buildTagsDomainService) Exec(ctx context.Context, reqTags []TagReque
 			if err != nil {
 				return nil, err
 			}
-			newTag, err := NewTag(NewTagID(), tagName)
+			newTag, err := NewTag(shared.NewUUID(), tagName)
 			if err != nil {
 				return nil, err
 			}
 			newTags[i] = *newTag
 		} else {
-			tagID, err := NewTagIDByVal(reqTag.ID)
+			tagID, err := shared.NewUUIDByVal(reqTag.ID)
 			if err != nil {
 				return nil, err
 			}
