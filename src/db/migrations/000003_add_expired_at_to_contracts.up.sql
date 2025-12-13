@@ -1,0 +1,3 @@
+ALTER TABLE contracts ADD COLUMN expired_at TIMESTAMP;
+
+
