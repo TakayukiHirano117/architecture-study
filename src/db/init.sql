@@ -71,6 +71,7 @@ CREATE INDEX idx_careers_user_id ON careers (user_id);
 -- メンタープランテーブル
 CREATE TABLE plans (
     id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
+    mentor_id UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
     category_id UUID NOT NULL REFERENCES categories(id),
     description TEXT NOT NULL,

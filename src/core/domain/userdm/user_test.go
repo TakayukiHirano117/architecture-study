@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -13,7 +14,7 @@ import (
 func createValidSkill(t *testing.T) *userdm.Skill {
 	t.Helper()
 
-	tagId := tagdm.NewTagID()
+	tagId := shared.NewUUID()
 	tagName, err := tagdm.NewTagName("test-tag-name")
 	require.NoError(t, err)
 
@@ -52,14 +53,14 @@ func createValidCareer(t *testing.T) *userdm.Career {
 func TestUser_NewUser(t *testing.T) {
 	tests := []struct {
 		name       string
-		setupFunc  func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction)
+		setupFunc  func(t *testing.T) (shared.UUID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction)
 		wantErr    bool
 		assertions func(t *testing.T, user *userdm.User)
 	}{
 		{
 			name: "有効なパラメータでUserを作成できる",
-			setupFunc: func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
-				userId := userdm.NewUserID()
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
+				userId := shared.NewUUID()
 
 				userName, err := userdm.NewUserName("Test User")
 				require.NoError(t, err)
@@ -90,8 +91,8 @@ func TestUser_NewUser(t *testing.T) {
 		},
 		{
 			name: "空のスキルリストはエラー",
-			setupFunc: func(t *testing.T) (userdm.UserID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
-				userId := userdm.NewUserID()
+			setupFunc: func(t *testing.T) (shared.UUID, userdm.UserName, userdm.Password, userdm.Email, []userdm.Skill, []userdm.Career, *userdm.SelfIntroduction) {
+				userId := shared.NewUUID()
 
 				userName, err := userdm.NewUserName("Test User")
 				require.NoError(t, err)

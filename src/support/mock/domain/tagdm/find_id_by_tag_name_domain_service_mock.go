@@ -15,6 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
+	shared "github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	tagdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
 
@@ -43,10 +44,10 @@ func (m *MockFindIDByTagNameDomainService) EXPECT() *MockFindIDByTagNameDomainSe
 }
 
 // Exec mocks base method.
-func (m *MockFindIDByTagNameDomainService) Exec(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
+func (m *MockFindIDByTagNameDomainService) Exec(ctx context.Context, tagName tagdm.TagName) (*shared.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Exec", ctx, tagName)
-	ret0, _ := ret[0].(*tagdm.TagID)
+	ret0, _ := ret[0].(*shared.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

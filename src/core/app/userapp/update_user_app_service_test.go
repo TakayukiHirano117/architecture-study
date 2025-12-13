@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
@@ -150,7 +151,7 @@ func TestUpdateUserAppService_Exec(t *testing.T) {
 func createTestTag(t *testing.T, tagIDStr string, name string) *tagdm.Tag {
 	t.Helper()
 
-	tagID, err := tagdm.NewTagIDByVal(tagIDStr)
+	tagID, err := shared.NewUUIDByVal(tagIDStr)
 	if err != nil {
 		t.Fatalf("failed to create tag id: %v", err)
 	}
@@ -172,7 +173,7 @@ func createTestTag(t *testing.T, tagIDStr string, name string) *tagdm.Tag {
 func createTestUser(t *testing.T, userIDStr string) *userdm.User {
 	t.Helper()
 
-	userID, err := userdm.NewUserIDByVal(userIDStr)
+	userID, err := shared.NewUUIDByVal(userIDStr)
 	if err != nil {
 		t.Fatalf("failed to create user id: %v", err)
 	}
@@ -192,7 +193,7 @@ func createTestUser(t *testing.T, userIDStr string) *userdm.User {
 		t.Fatalf("failed to create email: %v", err)
 	}
 
-	tagID := tagdm.NewTagID()
+	tagID := shared.NewUUID()
 	tagName, err := tagdm.NewTagNameByVal("Go")
 	if err != nil {
 		t.Fatalf("failed to create tag name: %v", err)

@@ -7,7 +7,6 @@ import (
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
@@ -16,14 +15,14 @@ type Plan struct {
 	mentor_id        userdm.UserID
 	title            string
 	category_id      categorydm.CategoryID
-	tag_ids          []tagdm.TagID
+	tag_ids          []shared.UUID
 	description      string
 	status           Status
 	consultationType *ConsultationType
 	price            uint32
 }
 
-func NewPlan(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []tagdm.TagID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
+func NewPlan(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []shared.UUID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
 	if title == "" {
 		return nil, errors.New("title must not be empty")
 	}
@@ -55,7 +54,7 @@ func NewPlan(id shared.UUID, mentor_id userdm.UserID, title string, category_id 
 	return &Plan{id: id, mentor_id: mentor_id, title: title, category_id: category_id, tag_ids: tag_ids, description: description, status: status, consultationType: consultationType, price: price}, nil
 }
 
-func NewPlanByVal(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []tagdm.TagID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
+func NewPlanByVal(id shared.UUID, mentor_id userdm.UserID, title string, category_id categorydm.CategoryID, tag_ids []shared.UUID, description string, status Status, consultationType *ConsultationType, price uint32) (*Plan, error) {
 	return &Plan{id: id, mentor_id: mentor_id, title: title, category_id: category_id, tag_ids: tag_ids, description: description, status: status, consultationType: consultationType, price: price}, nil
 }
 
@@ -75,7 +74,7 @@ func (p *Plan) CategoryID() categorydm.CategoryID {
 	return p.category_id
 }
 
-func (p *Plan) TagIDs() []tagdm.TagID {
+func (p *Plan) TagIDs() []shared.UUID {
 	return p.tag_ids
 }
 

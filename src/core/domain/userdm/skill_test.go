@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -14,7 +15,7 @@ func TestSkill_NewSkill(t *testing.T) {
 	t.Run("有効なパラメータでSkillを作成できる", func(t *testing.T) {
 		skillId := userdm.NewSkillID()
 
-		tagId := tagdm.NewTagID()
+		tagId := shared.NewUUID()
 		tagName, err := tagdm.NewTagName("test-tag-name")
 		require.NoError(t, err)
 

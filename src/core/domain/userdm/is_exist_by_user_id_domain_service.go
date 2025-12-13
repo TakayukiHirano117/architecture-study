@@ -1,10 +1,14 @@
 //go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/userdm/is_exist_by_user_id_domain_service_mock.go -package=userdm_mock
 package userdm
 
-import "context"
+import (
+	"context"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
+)
 
 type IsExistByUserIDDomainService interface {
-	Exec(ctx context.Context, userID UserID) (bool, error)
+	Exec(ctx context.Context, userID shared.UUID) (bool, error)
 }
 
 type isExistByUserIDDomainService struct {
@@ -17,7 +21,7 @@ func NewIsExistByUserIDDomainService(ur UserRepository) IsExistByUserIDDomainSer
 	}
 }
 
-func (iebids *isExistByUserIDDomainService) Exec(ctx context.Context, userID UserID) (bool, error) {
+func (iebids *isExistByUserIDDomainService) Exec(ctx context.Context, userID shared.UUID) (bool, error) {
 	user, err := iebids.userRepo.FindByID(ctx, userID)
 	if err != nil {
 		return false, err

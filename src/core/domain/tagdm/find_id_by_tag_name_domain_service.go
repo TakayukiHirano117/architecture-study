@@ -1,10 +1,14 @@
 //go:generate mockgen -source=$GOFILE -destination=../../../support/mock/domain/tagdm/find_id_by_tag_name_domain_service_mock.go -package=tagdm_mock
 package tagdm
 
-import "context"
+import (
+	"context"
+
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
+)
 
 type FindIDByTagNameDomainService interface {
-	Exec(ctx context.Context, tagName TagName) (*TagID, error)
+	Exec(ctx context.Context, tagName TagName) (*shared.UUID, error)
 }
 
 type findIDByTagNameDomainService struct {
@@ -17,7 +21,7 @@ func NewFindIDByTagNameDomainService(tr TagRepository) FindIDByTagNameDomainServ
 	}
 }
 
-func (ftds *findIDByTagNameDomainService) Exec(ctx context.Context, tagName TagName) (*TagID, error) {
+func (ftds *findIDByTagNameDomainService) Exec(ctx context.Context, tagName TagName) (*shared.UUID, error) {
 	tagID, err := ftds.tagRepo.FindIdByTagName(ctx, tagName)
 
 	if err != nil {

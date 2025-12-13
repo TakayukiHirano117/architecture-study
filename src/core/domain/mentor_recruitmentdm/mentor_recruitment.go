@@ -8,15 +8,15 @@ import (
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type MentorRecruitment struct {
 	createdAt          time.Time
 	updatedAt          time.Time
 	id                 MentorRecruitmentID
-	user_id            userdm.UserID
+	user_id            shared.UUID
 	title              string
 	description        string
 	category_id        categorydm.CategoryID
@@ -36,7 +36,7 @@ const (
 
 func NewMentorRecruitment(
 	id MentorRecruitmentID,
-	user_id userdm.UserID,
+	user_id shared.UUID,
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
@@ -96,7 +96,7 @@ func NewMentorRecruitment(
 
 func NewMentorRecruitmentByVal(
 	id MentorRecruitmentID,
-	user_id userdm.UserID,
+	user_id shared.UUID,
 	title string,
 	description string,
 	category_id categorydm.CategoryID,
@@ -132,7 +132,7 @@ func (mr *MentorRecruitment) ID() MentorRecruitmentID {
 	return mr.id
 }
 
-func (mr *MentorRecruitment) UserID() userdm.UserID {
+func (mr *MentorRecruitment) UserID() shared.UUID {
 	return mr.user_id
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/models"
@@ -87,7 +88,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 
 	u := userDetailRows[0]
 
-	userID, err := userdm.NewUserIDByVal(u.UserID)
+	userID, err := shared.NewUUIDByVal(u.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +118,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 
 	skills := []userdm.Skill{}
 	for _, s := range skillModels {
-		tagID, err := tagdm.NewTagIDByVal(s.TagID)
+		tagID, err := shared.NewUUIDByVal(s.TagID)
 		if err != nil {
 			return nil, err
 		}
@@ -179,7 +180,7 @@ func (r *UserRepositoryImpl) FindByName(ctx context.Context, name userdm.UserNam
 	)
 }
 
-func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*userdm.User, error) {
+func (r *UserRepositoryImpl) FindByID(ctx context.Context, id shared.UUID) (*userdm.User, error) {
 	conn, err := rdb.ExecFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -253,7 +254,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 
 	u := userDetailRows[0]
 
-	userID, err := userdm.NewUserIDByVal(u.UserID)
+	userID, err := shared.NewUUIDByVal(u.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -281,9 +282,9 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 		return nil, err
 	}
 
-	skills := []userdm.Skill{}
+	skills2 := []userdm.Skill{}
 	for _, s := range skillModels {
-		tagID, err := tagdm.NewTagIDByVal(s.TagID)
+		tagID, err := shared.NewUUIDByVal(s.TagID)
 		if err != nil {
 			return nil, err
 		}
@@ -307,10 +308,10 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 		if err != nil {
 			return nil, err
 		}
-		skills = append(skills, *skill)
+		skills2 = append(skills2, *skill)
 	}
 
-	careers := []userdm.Career{}
+	careers2 := []userdm.Career{}
 	for _, c := range careerModels {
 		idVo, err := userdm.NewCareerIDByVal(c.CareerID)
 		if err != nil {
@@ -332,15 +333,15 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id userdm.UserID) (*u
 		if err != nil {
 			return nil, err
 		}
-		careers = append(careers, *career)
+		careers2 = append(careers2, *career)
 	}
 	return userdm.NewUserByVal(
 		userID,
 		userName,
 		password,
 		email,
-		skills,
-		careers,
+		skills2,
+		careers2,
 		&selfIntroduction,
 	)
 }

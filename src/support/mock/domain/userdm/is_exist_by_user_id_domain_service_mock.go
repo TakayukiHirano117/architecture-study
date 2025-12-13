@@ -15,7 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
-	userdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
+	shared "github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 )
 
 // MockIsExistByUserIDDomainService is a mock of IsExistByUserIDDomainService interface.
@@ -43,7 +43,7 @@ func (m *MockIsExistByUserIDDomainService) EXPECT() *MockIsExistByUserIDDomainSe
 }
 
 // Exec mocks base method.
-func (m *MockIsExistByUserIDDomainService) Exec(ctx context.Context, userID userdm.UserID) (bool, error) {
+func (m *MockIsExistByUserIDDomainService) Exec(ctx context.Context, userID shared.UUID) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Exec", ctx, userID)
 	ret0, _ := ret[0].(bool)

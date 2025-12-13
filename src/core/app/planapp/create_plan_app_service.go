@@ -49,7 +49,7 @@ func NewCreatePlanAppService(
 }
 
 func (app *CreatePlanAppService) Exec(ctx context.Context, req *CreatePlanRequest) error {
-	userID, err := userdm.NewUserIDByVal(req.UserID)
+	userID, err := shared.NewUUIDByVal(req.UserID)
 	if err != nil {
 		return customerr.BadRequestWrapf(err, "%s", err.Error())
 	}
@@ -87,7 +87,7 @@ func (app *CreatePlanAppService) Exec(ctx context.Context, req *CreatePlanReques
 		return customerr.InternalWrapf(err, "failed to build tags: %s", err.Error())
 	}
 
-	tagIDs := make([]tagdm.TagID, len(tags))
+	tagIDs := make([]shared.UUID, len(tags))
 	for i, t := range tags {
 		tagIDs[i] = t.ID()
 	}
@@ -102,9 +102,14 @@ func (app *CreatePlanAppService) Exec(ctx context.Context, req *CreatePlanReques
 		return customerr.BadRequestWrapf(err, "%s", err.Error())
 	}
 
+	mentorID, err := userdm.NewUserIDByVal(req.UserID)
+	if err != nil {
+		return customerr.BadRequestWrapf(err, "%s", err.Error())
+	}
+
 	plan, err := plandm.NewPlan(
 		shared.NewUUID(),
-		userID,
+		mentorID,
 		req.Title,
 		categoryID,
 		tagIDs,

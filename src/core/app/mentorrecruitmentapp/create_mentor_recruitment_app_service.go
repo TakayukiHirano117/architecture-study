@@ -6,6 +6,7 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 	"github.com/TakayukiHirano117/architecture-study/src/support/customerr"
@@ -51,7 +52,7 @@ func NewCreateMentorRecruitmentAppService(
 }
 
 func (app *CreateMentorRecruitmentAppService) Exec(ctx context.Context, req *CreateMentorRecruitmentRequest) error {
-	userID, err := userdm.NewUserIDByVal(req.UserID.String())
+	userID, err := shared.NewUUIDByVal(req.UserID.String())
 	if err != nil {
 		return customerr.BadRequestWrapf(err, "%s", err.Error())
 	}

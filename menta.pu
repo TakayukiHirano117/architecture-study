@@ -93,7 +93,7 @@ package メンター募集提案集約 {
 package 契約集約 {
     object 契約 {
         ID
-        メンターID
+        メンティーID(ユーザーID)
         プランID
     }
 

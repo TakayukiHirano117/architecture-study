@@ -102,37 +102,206 @@
     - 例えば1ヶ月目に1万円で契約したが2ヶ月目はプランが2万円の金額に変わっていた場合、引き続き1万円で契約は続行する
     - 2万円に変わってから契約した人は2万円の月額契約となる
 
-# 起動コマンド
-docker compose -f ./.docker/compose.yml up
+## テストを書くもの
+- Domain
+  - Entity
+  - vo
+- Infra
+  - QueryService
+  - DomainService
+  - Repository
+- Usecase
+ControllerはFW依存になるので作らない。
 
-# テスト実行コマンド
+## このアプリの設計・アーキテクチャについて
+DDD, オニオンアーキテクチャを使用しています。
+
+DomainServiceはinterfaceと実装をいずれもDomain層に、
+
+ControllerはInfra層に配置しています。
+
+テストはテーブル駆動テスト方式を採用しています。
+
+使用しているパッケージはgo.modを見てください。
+
+CI/CDにGitHub Actionsを使用しています。
+
+開発環境はDockerを用いています。
+
+トランザクションの処理は少し特殊で、
+
+HTTPメソッドにより自動的にDB接続かトランザクションを張ったDB接続を生成し、
+
+自動でcommit, rollbackまで行ってくれる様にしています。
+
+## プロジェクト詳細
+
+### 使用技術
+
+| カテゴリ | 技術 | バージョン/備考 |
+|---------|------|----------------|
+| 言語 | Go | 1.24+ |
+| Webフレームワーク | Gin | gin-gonic/gin |
+| データベース | PostgreSQL | 17.1-alpine (Docker) |
+| DB接続 | sqlx | jmoiron/sqlx |
+| パスワードハッシュ | bcrypt | golang.org/x/crypto |
+| UUID | google/uuid | - |
+| エラーハンドリング | cockroachdb/errors | スタックトレース付きエラー |
+| テスト | testify, gomock | go.uber.org/mock |
+| Lint | golangci-lint | - |
+| ホットリロード | Air | air-verse/air |
+| マイグレーション | golang-migrate | - |
+| コンテナ | Docker, Docker Compose | - |
+| CI/CD | GitHub Actions | format → lint → test |
+
+### ディレクトリ構成
+
 ```
-docker compose -f ./.docker/compose.yml exec api go test テスト対象ファイルのパス
+.
+├── .docker/                    # Docker関連ファイル
+│   ├── Dockerfile
+│   └── compose.yml
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions CI設定
+├── config/
+│   └── db.go                   # DB設定・環境変数読み込み
+├── src/
+│   ├── core/                   # コアロジック（オニオンアーキテクチャ）
+│   │   ├── app/                # アプリケーション層（ユースケース）
+│   │   │   ├── contractapp/
+│   │   │   ├── mentorrecruitmentapp/
+│   │   │   ├── planapp/
+│   │   │   ├── query_service/
+│   │   │   └── userapp/
+│   │   ├── cmd/
+│   │   │   └── main.go         # エントリーポイント
+│   │   ├── domain/             # ドメイン層（ビジネスロジック）
+│   │   │   ├── categorydm/     # カテゴリ集約
+│   │   │   ├── contractdm/     # 契約集約
+│   │   │   ├── mentor_recruitmentdm/  # メンター募集集約
+│   │   │   ├── plandm/         # プラン集約
+│   │   │   ├── shared/         # 共通値オブジェクト（UUID等）
+│   │   │   ├── tagdm/          # タグ集約
+│   │   │   └── userdm/         # ユーザー集約
+│   │   └── infra/              # インフラ層（外部依存）
+│   │       ├── controllers/    # HTTPコントローラー
+│   │       ├── middlewares/    # Ginミドルウェア
+│   │       ├── models/         # DBモデル（DTO）
+│   │       ├── rdb/            # RDBハンドラーインターフェース
+│   │       └── rdbimpl/        # リポジトリ実装
+│   ├── db/
+│   │   ├── init.sql            # 初期スキーマ
+│   │   ├── migrations/         # マイグレーションファイル
+│   │   └── rdb_handler.go      # RDBHandlerインターフェース
+│   └── support/
+│       ├── customerr/          # カスタムエラー定義
+│       ├── mock/               # gomock生成ファイル
+│       └── testhelper/         # テストヘルパー
+├── go.mod
+├── go.sum
+├── Makefile                    # 開発用コマンド
+└── README.md
 ```
 
-// 詳細に出力
-```
-docker compose -f ./.docker/compose.yml exec api go test -v テスト対象ファイルのパス
-```
+### アーキテクチャ詳細
 
-// 再帰的にすべてのテストを実行
-```
-docker compose exec api go test ./...
+#### レイヤー構成（オニオンアーキテクチャ）
 
 ```
-
-// ユーザーのユースケーステスト実行
-docker compose -f ./.docker/compose.yml exec api sh -c 'cd /app && go test -v ./src/core/app/userapp/...'
-
-# gomock生成コマンド
-サンプル
+┌─────────────────────────────────────────────────────────┐
+│                    Infra層（外側）                        │
+│  Controllers, Middlewares, RDBImpl, Models              │
+├─────────────────────────────────────────────────────────┤
+│                 Application層（中間）                     │
+│  AppService（ユースケース）, QueryService                 │
+├─────────────────────────────────────────────────────────┤
+│                   Domain層（内側）                        │
+│  Entity, ValueObject, Repository(interface),            │
+│  DomainService(interface + impl)                        │
+└─────────────────────────────────────────────────────────┘
 ```
-mockgen -source=src/core/domain/userdm/is_exist_by_user_name.go 
-				-destination=src/core/domain/userdm/is_exist_by_user_name_mock.go 
-				-package=userdm
+
+#### 依存の方向
+
+- 外側 → 内側 への依存のみ許可
+- Domain層は他の層に依存しない
+- Repository/DomainServiceはDomain層でインターフェース定義、Infra層で実装
+
+#### ドメイン層の構成
+
+各集約（Aggregate）は以下の構成を持つ：
+
+| ファイル | 役割 |
+|---------|------|
+| `{entity}.go` | エンティティ（集約ルート） |
+| `{value_object}.go` | 値オブジェクト |
+| `{entity}_repository.go` | リポジトリインターフェース |
+| `is_exist_by_{field}_domain_service.go` | ドメインサービス |
+| `*_test.go` | テスト |
+
+### トランザクション管理
+
+HTTPメソッドに応じて自動的にトランザクション制御を行う：
+
+```go
+// db_middleware.go
+if method == POST || PUT || DELETE || PATCH {
+    tx, _ := conn.BeginTxx(ctx, nil)  // トランザクション開始
+    defer func() {
+        if len(c.Errors) > 0 {
+            tx.Rollback()  // エラー時はロールバック
+        } else {
+            tx.Commit()    // 成功時はコミット
+        }
+    }()
+    ctx = context.WithValue(ctx, config.DBKey, tx)
+} else {
+    ctx = context.WithValue(ctx, config.DBKey, conn)  // 読み取り専用
+}
 ```
 
-# マイグレーション実行コマンド
-make migrate-up
+### エラーハンドリング
 
-docker compose -f ./.docker/compose.yml exec api go generate ./src/core/domain/userdm/... 
+`customerr`パッケージで型付きエラーを定義：
+
+| エラー型 | HTTPステータス |
+|---------|---------------|
+| `BadRequestErr` | 400 |
+| `UnauthorizedErr` | 401 |
+| `ForbiddenErr` | 403 |
+| `NotFoundErr` | 404 |
+| `ConflictErr` | 409 |
+| `InternalErr` | 500 |
+
+`ErrorHandlingMiddleware`でエラー型に応じたレスポンスを返却。
+
+### データベーススキーマ
+
+```
+users ─────┬──< skills >──── tags
+           │
+           ├──< careers
+           │
+           ├──< plans ────────┬──< plan_tags >──── tags
+           │                  │
+           │                  └──< contracts
+           │                  │
+           │                  └──< contract_requests
+           │
+           └──< mentor_recruitments ──< mentor_recruitment_tags >──── tags
+                              │
+                              └──< mentor_recruitment_proposals
+
+categories ──< plans
+           └──< mentor_recruitments
+```
+
+### 環境構築
+
+1. `.env`ファイルを作成（`.env.example`を参照）
+2. `docker-compose -f .docker/compose.yml up -d`
+3. `make test-db-setup`
+4. `make migrate-up`
+
+開発用コマンドは`Makefile`を参照。
