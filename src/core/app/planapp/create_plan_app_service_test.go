@@ -128,7 +128,7 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 		err := service.Exec(ctx, req)
 
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "UserID is empty")
+		assert.Contains(t, err.Error(), "UUID is empty")
 	})
 
 	t.Run("異常系: ユーザー存在チェックでエラーが発生", func(t *testing.T) {
