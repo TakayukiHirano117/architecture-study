@@ -11,13 +11,13 @@ import (
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/mentor_recruitmentdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
-	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
 type mentorRecruitmentParams struct {
 	id                 mentor_recruitmentdm.MentorRecruitmentID
-	user_id            userdm.UserID
+	user_id            shared.UUID
 	title              string
 	description        string
 	category_id        categorydm.CategoryID
@@ -44,7 +44,7 @@ func createValidMentorRecruitmentParams(t *testing.T) mentorRecruitmentParams {
 
 	return mentorRecruitmentParams{
 		id:                 mentor_recruitmentdm.NewMentorRecruitmentID(),
-		user_id:            userdm.NewUserID(),
+		user_id:            shared.NewUUID(),
 		title:              "Goのメンターを募集します",
 		description:        "Go言語の学習をサポートしてくれるメンターを探しています。",
 		category_id:        createValidCategoryID(t),
@@ -67,7 +67,7 @@ func createValidCategoryID(t *testing.T) categorydm.CategoryID {
 func createValidTag(t *testing.T) tagdm.Tag {
 	t.Helper()
 
-	tagId := tagdm.NewTagID()
+	tagId := shared.NewUUID()
 	tagName, err := tagdm.NewTagName("Go")
 	require.NoError(t, err)
 

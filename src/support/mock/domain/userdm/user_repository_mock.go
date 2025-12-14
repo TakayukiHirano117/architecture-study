@@ -15,6 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
+	shared "github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	userdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
 
@@ -43,7 +44,7 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // FindByID mocks base method.
-func (m *MockUserRepository) FindByID(ctx context.Context, id userdm.UserID) (*userdm.User, error) {
+func (m *MockUserRepository) FindByID(ctx context.Context, id shared.UUID) (*userdm.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(*userdm.User)

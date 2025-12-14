@@ -5,6 +5,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
 
@@ -12,7 +13,7 @@ type User struct {
 	createdAt        time.Time
 	updatedAt        time.Time
 	selfIntroduction *SelfIntroduction
-	id               UserID
+	id               shared.UUID
 	name             UserName
 	password         Password
 	email            Email
@@ -20,7 +21,7 @@ type User struct {
 	careers          []Career
 }
 
-func NewUser(id UserID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUser(id shared.UUID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	if len(skills) <= 0 {
 		return nil, errors.New("skills must be at least 1")
 	}
@@ -38,7 +39,7 @@ func NewUser(id UserID, name UserName, password Password, email Email, skills []
 	}, nil
 }
 
-func NewUserByVal(id UserID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func NewUserByVal(id shared.UUID, name UserName, password Password, email Email, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return &User{
 		id:               id,
 		name:             name,
@@ -154,15 +155,15 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 			skillID = NewSkillID()
 		}
 
-		var tagID tagdm.TagID
+		var tagID shared.UUID
 		if rs.Tag.ID != nil {
-			id, err := tagdm.NewTagIDByVal(*rs.Tag.ID)
+			id, err := shared.NewUUIDByVal(*rs.Tag.ID)
 			if err != nil {
 				return err
 			}
 			tagID = id
 		} else {
-			tagID = tagdm.NewTagID()
+			tagID = shared.NewUUID()
 		}
 
 		tagName, err := tagdm.NewTagNameByVal(rs.Tag.Name)
@@ -201,7 +202,7 @@ func (u *User) UpdateProfile(reqUserName string, reqEmail string, reqSkills []Sk
 	return nil
 }
 
-func (u *User) ID() UserID {
+func (u *User) ID() shared.UUID {
 	return u.id
 }
 

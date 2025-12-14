@@ -5,6 +5,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/userdm"
 )
@@ -61,7 +62,7 @@ func (app *UpdateUserAppService) Exec(ctx context.Context, req *UpdateUserReques
 		return err
 	}
 
-	userID, err := userdm.NewUserIDByVal(req.ID)
+	userID, err := shared.NewUUIDByVal(req.ID)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,9 @@
 package userdm
 
-import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+import (
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+)
 
 type Skill struct {
 	// TODO: tag_idのみを持つ様に改修する
@@ -36,7 +39,7 @@ func (s *Skill) Tag() *tagdm.Tag {
 	return s.tag
 }
 
-func (s *Skill) TagID() tagdm.TagID {
+func (s *Skill) TagID() shared.UUID {
 	return s.tag.ID()
 }
 

@@ -1,6 +1,9 @@
 package userdm
 
-import "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+import (
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
+)
 
 type CareerParamIfCreate struct {
 	Detail          string
@@ -55,15 +58,15 @@ func GenIfCreate(
 
 	skills := make([]Skill, len(reqSkills))
 	for i, rs := range reqSkills {
-		var tagID tagdm.TagID
+		var tagID shared.UUID
 		if rs.Tag.ID != nil {
-			id, err := tagdm.NewTagIDByVal(*rs.Tag.ID)
+			id, err := shared.NewUUIDByVal(*rs.Tag.ID)
 			if err != nil {
 				return nil, err
 			}
 			tagID = id
 		} else {
-			tagID = tagdm.NewTagID()
+			tagID = shared.NewUUID()
 		}
 
 		tagName, err := tagdm.NewTagNameByVal(rs.Tag.Name)
@@ -93,9 +96,9 @@ func GenIfCreate(
 		skills[i] = *s
 	}
 
-	return NewUser(NewUserID(), userName, password, email, skills, careers, selfIntroduction)
+	return NewUser(shared.NewUUID(), userName, password, email, skills, careers, selfIntroduction)
 }
 
-func GenForTest(id UserID, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
+func GenForTest(id shared.UUID, name UserName, email Email, password Password, skills []Skill, careers []Career, selfIntroduction *SelfIntroduction) (*User, error) {
 	return NewUser(id, name, password, email, skills, careers, selfIntroduction)
 }

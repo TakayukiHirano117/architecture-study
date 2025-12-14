@@ -7,6 +7,7 @@ import (
 
 	"github.com/lib/pq"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdb"
 )
@@ -18,7 +19,7 @@ func NewTagRepositoryImpl() *TagRepositoryImpl {
 	return &TagRepositoryImpl{}
 }
 
-func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagdm.Tag, error) {
+func (r *TagRepositoryImpl) FindByID(ctx context.Context, id shared.UUID) (*tagdm.Tag, error) {
 	conn, err := rdb.ExecFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -46,7 +47,7 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 		return nil, err
 	}
 
-	tagID, err := tagdm.NewTagIDByVal(tagIdStr)
+	tagID, err := shared.NewUUIDByVal(tagIdStr)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +60,7 @@ func (r *TagRepositoryImpl) FindByID(ctx context.Context, id tagdm.TagID) (*tagd
 	return tagdm.NewTagByVal(tagID, tagName)
 }
 
-func (r *TagRepositoryImpl) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([]tagdm.Tag, error) {
+func (r *TagRepositoryImpl) FindByIDs(ctx context.Context, ids []shared.UUID) ([]tagdm.Tag, error) {
 	if len(ids) == 0 {
 		return []tagdm.Tag{}, nil
 	}
@@ -93,7 +94,7 @@ func (r *TagRepositoryImpl) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([
 			return nil, err
 		}
 
-		tagID, err := tagdm.NewTagIDByVal(tagIdStr)
+		tagID, err := shared.NewUUIDByVal(tagIdStr)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +115,7 @@ func (r *TagRepositoryImpl) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([
 	return tags, nil
 }
 
-func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
+func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*shared.UUID, error) {
 	conn, err := rdb.ExecFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -139,7 +140,7 @@ func (r *TagRepositoryImpl) FindIdByTagName(ctx context.Context, tagName tagdm.T
 		return nil, err
 	}
 
-	tagID, err := tagdm.NewTagIDByVal(idStr)
+	tagID, err := shared.NewUUIDByVal(idStr)
 	if err != nil {
 		return nil, err
 	}

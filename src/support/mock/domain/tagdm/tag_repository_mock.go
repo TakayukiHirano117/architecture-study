@@ -15,6 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
+	shared "github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	tagdm "github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 )
 
@@ -57,7 +58,7 @@ func (mr *MockTagRepositoryMockRecorder) BulkInsert(ctx, tags any) *gomock.Call 
 }
 
 // FindByID mocks base method.
-func (m *MockTagRepository) FindByID(ctx context.Context, id tagdm.TagID) (*tagdm.Tag, error) {
+func (m *MockTagRepository) FindByID(ctx context.Context, id shared.UUID) (*tagdm.Tag, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(*tagdm.Tag)
@@ -72,7 +73,7 @@ func (mr *MockTagRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 }
 
 // FindByIDs mocks base method.
-func (m *MockTagRepository) FindByIDs(ctx context.Context, ids []tagdm.TagID) ([]tagdm.Tag, error) {
+func (m *MockTagRepository) FindByIDs(ctx context.Context, ids []shared.UUID) ([]tagdm.Tag, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByIDs", ctx, ids)
 	ret0, _ := ret[0].([]tagdm.Tag)
@@ -87,10 +88,10 @@ func (mr *MockTagRepositoryMockRecorder) FindByIDs(ctx, ids any) *gomock.Call {
 }
 
 // FindIdByTagName mocks base method.
-func (m *MockTagRepository) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*tagdm.TagID, error) {
+func (m *MockTagRepository) FindIdByTagName(ctx context.Context, tagName tagdm.TagName) (*shared.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindIdByTagName", ctx, tagName)
-	ret0, _ := ret[0].(*tagdm.TagID)
+	ret0, _ := ret[0].(*shared.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

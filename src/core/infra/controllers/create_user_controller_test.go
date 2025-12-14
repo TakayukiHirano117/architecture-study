@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/tagdm"
 	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
 	userdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/userdm"
@@ -108,7 +109,7 @@ func TestCreateUserController_Exec(t *testing.T) {
 func createControllerTestTag(t *testing.T, tagIDStr string, name string) *tagdm.Tag {
 	t.Helper()
 
-	tagID, err := tagdm.NewTagIDByVal(tagIDStr)
+	tagID, err := shared.NewUUIDByVal(tagIDStr)
 	if err != nil {
 		t.Fatalf("failed to create tag id: %v", err)
 	}
