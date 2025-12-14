@@ -282,7 +282,7 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id shared.UUID) (*use
 		return nil, err
 	}
 
-	skills2 := []userdm.Skill{}
+	skills := []userdm.Skill{}
 	for _, s := range skillModels {
 		tagID, err := shared.NewUUIDByVal(s.TagID)
 		if err != nil {
@@ -308,10 +308,10 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id shared.UUID) (*use
 		if err != nil {
 			return nil, err
 		}
-		skills2 = append(skills2, *skill)
+		skills = append(skills, *skill)
 	}
 
-	careers2 := []userdm.Career{}
+	careers := []userdm.Career{}
 	for _, c := range careerModels {
 		idVo, err := userdm.NewCareerIDByVal(c.CareerID)
 		if err != nil {
@@ -333,15 +333,15 @@ func (r *UserRepositoryImpl) FindByID(ctx context.Context, id shared.UUID) (*use
 		if err != nil {
 			return nil, err
 		}
-		careers2 = append(careers2, *career)
+		careers = append(careers, *career)
 	}
 	return userdm.NewUserByVal(
 		userID,
 		userName,
 		password,
 		email,
-		skills2,
-		careers2,
+		skills,
+		careers,
 		&selfIntroduction,
 	)
 }
@@ -460,4 +460,170 @@ func (r *UserRepositoryImpl) Update(ctx context.Context, user *userdm.User) erro
 	}
 
 	return nil
+}
+
+func (r *UserRepositoryImpl) FindByEmail(ctx context.Context, email userdm.Email) (*userdm.User, error) {
+	conn, err := rdb.ExecFromCtx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `
+		SELECT
+				u.id AS user_id,
+				u.name,
+				u.email,
+				u.password,
+				u.self_introduction,
+				s.id AS skill_id,
+				s.tag_id AS skill_tag_id,
+				t.name AS skill_tag_name,
+				s.evaluation AS skill_evaluation,
+				s.years_of_experience AS skill_years_of_experience,
+				c.id AS career_id,
+				c.detail AS career_detail,
+				c.start_year AS career_start_year,
+				c.end_year AS career_end_year
+		FROM users u
+		LEFT JOIN skills s ON s.user_id = u.id
+		LEFT JOIN careers c ON c.user_id = u.id
+		LEFT JOIN tags t ON t.id = s.tag_id
+		WHERE u.email = $1;
+		`
+
+	rows, err := conn.QueryxContext(ctx, query, email.String())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	userDetailRows := []models.UserDetailModel{}
+	for rows.Next() {
+		var r models.UserDetailModel
+		if err := rows.StructScan(&r); err != nil {
+			return nil, err
+		}
+		userDetailRows = append(userDetailRows, r)
+	}
+
+	if len(userDetailRows) == 0 {
+		return nil, nil
+	}
+
+	skillModels := []models.SkillModel{}
+	careerModels := []models.CareerModel{}
+
+	for _, row := range userDetailRows {
+		if row.SkillID.Valid {
+			skillModels = append(skillModels, models.SkillModel{
+				SkillID:           row.SkillID.String,
+				TagID:             row.SkillTagID.String,
+				TagName:           row.SkillTagName.String,
+				Evaluation:        uint8(row.SkillEvaluation.Int64),
+				YearsOfExperience: uint8(row.SkillYearsOfExperience.Int64),
+			})
+		}
+
+		if row.CareerID.Valid {
+			careerModels = append(careerModels, models.CareerModel{
+				CareerID:  row.CareerID.String,
+				Detail:    row.CareerDetail.String,
+				StartYear: uint16(row.CareerStart.Int64),
+				EndYear:   uint16(row.CareerEnd.Int64),
+			})
+		}
+	}
+
+	u := userDetailRows[0]
+
+	userID, err := shared.NewUUIDByVal(u.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	userName, err := userdm.NewUserNameByVal(u.UserName)
+	if err != nil {
+		return nil, err
+	}
+
+	emailVO, err := userdm.NewEmailByVal(u.Email)
+	if err != nil {
+		return nil, err
+	}
+	password, err := userdm.NewPasswordByVal(u.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	selfIntroductionStr := ""
+	if u.SelfIntroduction.Valid {
+		selfIntroductionStr = u.SelfIntroduction.String
+	}
+	selfIntroduction, err := userdm.NewSelfIntroductionByVal(selfIntroductionStr)
+	if err != nil {
+		return nil, err
+	}
+
+	skills := []userdm.Skill{}
+	for _, s := range skillModels {
+		tagID, err := shared.NewUUIDByVal(s.TagID)
+		if err != nil {
+			return nil, err
+		}
+		tagName, err := tagdm.NewTagNameByVal(s.TagName)
+		if err != nil {
+			return nil, err
+		}
+		tag, err := tagdm.NewTagByVal(tagID, tagName)
+		if err != nil {
+			return nil, err
+		}
+		ev, err := userdm.NewEvaluationByVal(s.Evaluation)
+		if err != nil {
+			return nil, err
+		}
+		yoe, err := userdm.NewYearsOfExperienceByVal(s.YearsOfExperience)
+		if err != nil {
+			return nil, err
+		}
+		skill, err := userdm.NewSkillByVal(userdm.NewSkillID(), tag, ev, yoe)
+		if err != nil {
+			return nil, err
+		}
+		skills = append(skills, *skill)
+	}
+
+	careers := []userdm.Career{}
+	for _, c := range careerModels {
+		idVo, err := userdm.NewCareerIDByVal(c.CareerID)
+		if err != nil {
+			return nil, err
+		}
+		detailVo, err := userdm.NewCareerDetailByVal(c.Detail)
+		if err != nil {
+			return nil, err
+		}
+		startVo, err := userdm.NewCareerStartYearByVal(c.StartYear)
+		if err != nil {
+			return nil, err
+		}
+		endVo, err := userdm.NewCareerEndYearByVal(c.EndYear)
+		if err != nil {
+			return nil, err
+		}
+		career, err := userdm.NewCareerByVal(idVo, detailVo, startVo, endVo)
+		if err != nil {
+			return nil, err
+		}
+		careers = append(careers, *career)
+	}
+	return userdm.NewUserByVal(
+		userID,
+		userName,
+		password,
+		emailVO,
+		skills,
+		careers,
+		&selfIntroduction,
+	)
 }
