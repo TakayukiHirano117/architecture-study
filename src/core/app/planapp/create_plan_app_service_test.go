@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -35,9 +34,9 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: タグ付きでプランが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
-		tagID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
+		tagID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -75,8 +74,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: タグなしでプランが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -112,7 +111,7 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なUserID", func(t *testing.T) {
 		ctx := context.Background()
-		categoryID := uuid.New().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           "",
@@ -133,8 +132,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: ユーザー存在チェックでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -161,8 +160,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: ユーザーが存在しない", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -187,7 +186,7 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なCategoryID", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
+		userID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -212,8 +211,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: カテゴリ存在チェックでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -244,8 +243,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: カテゴリが存在しない", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -274,9 +273,9 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タグのビルドでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
-		tagID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
+		tagID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -311,8 +310,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なStatus", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -345,8 +344,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なConsultationType", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -379,8 +378,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タイトルが空でプラン作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -413,8 +412,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 説明が空でプラン作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -447,8 +446,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 価格が最小値未満でプラン作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -481,8 +480,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 価格が最大値超過でプラン作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,
@@ -515,14 +514,14 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タグが5個を超えてプラン作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		tagIDs := make([]string, 6)
 		tags := make([]CreatePlanTagRequest, 6)
 		tagObjects := make([]tagdm.Tag, 6)
 		for i := 0; i < 6; i++ {
-			tagIDs[i] = uuid.New().String()
+			tagIDs[i] = shared.NewUUID().String()
 			tags[i] = CreatePlanTagRequest{ID: tagIDs[i], Name: "Tag"}
 			tagObjects[i] = *createPlanTestTag(t, tagIDs[i], "Tag")
 		}
@@ -558,8 +557,8 @@ func TestCreatePlanAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: リポジトリのStoreでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		req := &CreatePlanRequest{
 			UserID:           userID,

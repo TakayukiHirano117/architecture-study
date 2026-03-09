@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -36,10 +35,10 @@ func TestUpdateUserController_Exec(t *testing.T) {
 			BuildTags:         mockBuildTags,
 		}
 
-		userID := uuid.New().String()
-		tagID := uuid.New().String()
-		skillID := uuid.New().String()
-		careerID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		tagID := shared.NewUUID().String()
+		skillID := shared.NewUUID().String()
+		careerID := shared.NewUUID().String()
 
 		reqBody := map[string]interface{}{
 			"name":              "updated_user",

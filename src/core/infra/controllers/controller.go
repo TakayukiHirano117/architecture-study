@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	contractcontroller "github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers/contract"
+	contractrequest_controllers "github.com/TakayukiHirano117/architecture-study/src/core/infra/controllers/contract_request"
 )
 
 type Controller struct {
@@ -12,6 +13,7 @@ type Controller struct {
 	mentorRecruitmentController *MentorRecruitmentController
 	planController              *PlanController
 	contractController          *contractcontroller.ContractController
+	contractRequestController   *contractrequest_controllers.ContractRequestController
 }
 
 func NewController() *Controller {
@@ -20,6 +22,7 @@ func NewController() *Controller {
 	mentorRecruitmentController := NewMentorRecruitmentController()
 	planController := NewPlanController()
 	contractController := contractcontroller.NewContractController()
+	contractRequestController := contractrequest_controllers.NewContractRequestController()
 
 	return &Controller{
 		healthController:            healthController,
@@ -27,6 +30,7 @@ func NewController() *Controller {
 		mentorRecruitmentController: mentorRecruitmentController,
 		planController:              planController,
 		contractController:          contractController,
+		contractRequestController:   contractRequestController,
 	}
 }
 
@@ -36,4 +40,5 @@ func (c *Controller) SetupRoutes(router *gin.Engine) {
 	c.mentorRecruitmentController.SetupRoutes(router)
 	c.planController.SetupRoutes(router)
 	c.contractController.SetupRoutes(router)
+	c.contractRequestController.SetupRoutes(router)
 }

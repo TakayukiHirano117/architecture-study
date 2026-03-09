@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	categorydm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/categorydm"
 	plandm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/plandm"
 	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
@@ -37,8 +37,8 @@ func TestCreatePlanController_Exec(t *testing.T) {
 			isExistByUserID:     mockIsExistByUserID,
 		}
 
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		reqBody := map[string]interface{}{
 			"user_id":           userID,
@@ -50,7 +50,7 @@ func TestCreatePlanController_Exec(t *testing.T) {
 			"price":             10000,
 			"tags": []map[string]interface{}{
 				{
-					"id":   uuid.New().String(),
+					"id":   shared.NewUUID().String(),
 					"name": "Go",
 				},
 			},

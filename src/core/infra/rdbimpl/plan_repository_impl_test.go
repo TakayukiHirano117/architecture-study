@@ -3,7 +3,6 @@ package rdbimpl
 import (
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/TakayukiHirano117/architecture-study/src/core/domain/categorydm"
@@ -20,8 +19,8 @@ func TestPlanRepositoryImpl_Store(t *testing.T) {
 		defer testDB.Cleanup(t)
 
 		// テストデータの準備
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		// 依存データの挿入
 		testDB.InsertTestUser(t, userID, "testuser", "test@example.com", "password123456")
@@ -72,10 +71,10 @@ func TestPlanRepositoryImpl_Store(t *testing.T) {
 		defer testDB.Cleanup(t)
 
 		// テストデータの準備
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
-		tagID1 := uuid.New().String()
-		tagID2 := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
+		tagID1 := shared.NewUUID().String()
+		tagID2 := shared.NewUUID().String()
 
 		// 依存データの挿入（タグ名はユニークにするためUUIDを含める）
 		testDB.InsertTestUser(t, userID, "testuser", "test@example.com", "password123456")
@@ -134,8 +133,8 @@ func TestPlanRepositoryImpl_Store(t *testing.T) {
 		defer testDB.Cleanup(t)
 
 		// テストデータの準備（ユーザーは挿入しない）
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		// カテゴリのみ挿入
 		testDB.InsertTestCategory(t, categoryID, "テストカテゴリ")
@@ -174,8 +173,8 @@ func TestPlanRepositoryImpl_Store(t *testing.T) {
 		defer testDB.Cleanup(t)
 
 		// テストデータの準備（カテゴリは挿入しない）
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		// ユーザーのみ挿入
 		testDB.InsertTestUser(t, userID, "testuser", "test@example.com", "password123456")
@@ -214,9 +213,9 @@ func TestPlanRepositoryImpl_Store(t *testing.T) {
 		defer testDB.Cleanup(t)
 
 		// テストデータの準備
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
-		tagID := uuid.New().String() // 存在しないタグID
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
+		tagID := shared.NewUUID().String() // 存在しないタグID
 
 		// ユーザーとカテゴリを挿入（タグは挿入しない）
 		testDB.InsertTestUser(t, userID, "testuser", "test@example.com", "password123456")
