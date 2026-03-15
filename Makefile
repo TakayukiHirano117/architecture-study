@@ -1,4 +1,4 @@
-.PHONY: migrate-up migrate-down migrate-force gomock-generate-all lint-docker lint-fix-docker format-docker goimports-docker
+.PHONY: migrate-up migrate-down migrate-force gomock-generate-all lint-docker lint-fix-docker format-docker goimports-docker docs install-docs
 
 migrate-up:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'migrate -path src/db/migrations -database "postgres://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:$$DB_PORT/$$DB_NAME?sslmode=disable" up'
@@ -15,7 +15,7 @@ gomock-generate-all:
 
 # test
 test-docker:
-	docker-compose -f ./.docker/compose.yml exec api sh -c 'go test $$(go list ./... | grep -v -E "(/mock/|/infra/|/db$$|/customerr)")'
+	docker-compose -f ./.docker/compose.yml exec api sh -c 'go test $$(go list ./... | grep -v -E "(/mock/|/infra/|/db$$|/customerr|/config$$|/cmd$$|/testhelper$$)")'
 
 # Lint
 lint-docker:
@@ -36,3 +36,6 @@ goimports-docker:
 # tidy
 tidy-docker:
 	docker-compose -f ./.docker/compose.yml exec api sh -c 'go mod tidy'
+
+docs:
+	pkgsite -http localhost:8081 -open .

@@ -93,3 +93,8 @@ func (p *Plan) ConsultationType() *ConsultationType {
 func (p *Plan) Price() uint32 {
 	return p.price
 }
+
+// IsPublished はプランが公開状態かどうかを返す。契約リクエストは公開プランのみ受け付ける。
+func (p *Plan) IsPublished() bool {
+	return p.status == Published
+}

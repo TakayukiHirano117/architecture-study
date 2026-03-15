@@ -372,3 +372,45 @@ func TestNewPlanByVal(t *testing.T) {
 		})
 	}
 }
+
+func TestPlan_IsPublished(t *testing.T) {
+	tests := []struct {
+		name       string
+		setupFunc  func(t *testing.T) *plandm.Plan
+		wantResult bool
+	}{
+		{
+			name: "正常系: 公開ステータスのプランはtrueを返す",
+			setupFunc: func(t *testing.T) *plandm.Plan {
+				id, _ := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
+				categoryID, _ := categorydm.NewCategoryIDByVal("550e8400-e29b-41d4-a716-446655440001")
+				status, _ := plandm.NewStatus("公開")
+				consultationType, _ := plandm.NewConsultationType("単発")
+				plan, err := plandm.NewPlanByVal(id, createValidMentorID(t), "タイトル", categoryID, createValidTagIDs(t, 0), "説明", status, &consultationType, 5000)
+				require.NoError(t, err)
+				return plan
+			},
+			wantResult: true,
+		},
+		{
+			name: "異常系: 中止ステータスのプランはfalseを返す",
+			setupFunc: func(t *testing.T) *plandm.Plan {
+				id, _ := shared.NewUUIDByVal("550e8400-e29b-41d4-a716-446655440000")
+				categoryID, _ := categorydm.NewCategoryIDByVal("550e8400-e29b-41d4-a716-446655440001")
+				status, _ := plandm.NewStatus("中止")
+				consultationType, _ := plandm.NewConsultationType("単発")
+				plan, err := plandm.NewPlanByVal(id, createValidMentorID(t), "タイトル", categoryID, createValidTagIDs(t, 0), "説明", status, &consultationType, 5000)
+				require.NoError(t, err)
+				return plan
+			},
+			wantResult: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			plan := tt.setupFunc(t)
+			assert.Equal(t, tt.wantResult, plan.IsPublished())
+		})
+	}
+}

@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -35,7 +34,7 @@ func TestCreateUserController_Exec(t *testing.T) {
 			BuildTags:         mockBuildTags,
 		}
 
-		tagID := uuid.New().String()
+		tagID := shared.NewUUID().String()
 		reqBody := map[string]interface{}{
 			"name":              "test_user",
 			"email":             "test@example.com",

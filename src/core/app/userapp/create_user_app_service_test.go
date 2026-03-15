@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -27,8 +26,8 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: 既存タグIDを使用してユーザーが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		goTagID := uuid.New().String()
-		pythonTagID := uuid.New().String()
+		goTagID := shared.NewUUID().String()
+		pythonTagID := shared.NewUUID().String()
 
 		req := &CreateUserRequest{
 			Name:     "test_user",
@@ -85,7 +84,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: 新規タグを使用してユーザーが正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		newTagID := uuid.New().String()
+		newTagID := shared.NewUUID().String()
 
 		req := &CreateUserRequest{
 			Name:     "test_user",
@@ -154,7 +153,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タグIDが存在しない（BuildTags がエラーを返す）", func(t *testing.T) {
 		ctx := context.Background()
-		nonExistentTagID := uuid.New().String()
+		nonExistentTagID := shared.NewUUID().String()
 
 		req := &CreateUserRequest{
 			Name:     "test_user",
@@ -213,7 +212,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: BuildTags でエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		tagID := uuid.New().String()
+		tagID := shared.NewUUID().String()
 
 		req := &CreateUserRequest{
 			Name:     "test_user",
@@ -251,7 +250,7 @@ func TestCreateUserAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: ユーザー保存でエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		tagID := uuid.New().String()
+		tagID := shared.NewUUID().String()
 
 		req := &CreateUserRequest{
 			Name:     "test_user",

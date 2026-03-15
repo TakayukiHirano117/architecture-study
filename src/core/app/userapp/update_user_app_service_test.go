@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -31,10 +30,10 @@ func TestUpdateUserAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: 既存タグIDを使用してユーザーが正常に更新される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		goTagID := uuid.New().String()
-		skillID := uuid.New().String()
-		careerID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		goTagID := shared.NewUUID().String()
+		skillID := shared.NewUUID().String()
+		careerID := shared.NewUUID().String()
 
 		req := &UpdateUserRequest{
 			ID:               userID,
@@ -91,8 +90,8 @@ func TestUpdateUserAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: 新規タグを使用してユーザーが正常に更新される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := uuid.New().String()
-		newTagID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		newTagID := shared.NewUUID().String()
 
 		req := &UpdateUserRequest{
 			ID:               userID,

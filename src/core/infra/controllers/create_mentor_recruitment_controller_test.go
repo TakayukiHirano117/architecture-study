@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/shared"
 	categorydm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/categorydm"
 	mentor_recruitmentdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/mentor_recruitmentdm"
 	tagdm_mock "github.com/TakayukiHirano117/architecture-study/src/support/mock/domain/tagdm"
@@ -39,8 +39,8 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 			isExistByUserID:       mockIsExistByUserID,
 		}
 
-		userID := uuid.New().String()
-		categoryID := uuid.New().String()
+		userID := shared.NewUUID().String()
+		categoryID := shared.NewUUID().String()
 
 		reqBody := map[string]interface{}{
 			"user_id":             userID,
@@ -53,7 +53,7 @@ func TestCreateMentorRecruitmentController_Exec(t *testing.T) {
 			"budget_to":           50000,
 			"tags": []map[string]interface{}{
 				{
-					"id":   uuid.New().String(),
+					"id":   shared.NewUUID().String(),
 					"name": "Go",
 				},
 			},

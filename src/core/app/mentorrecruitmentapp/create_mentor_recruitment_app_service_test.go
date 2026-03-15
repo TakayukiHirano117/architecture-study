@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -39,9 +38,9 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: タグ付きでメンター募集が正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
-		tagID := uuid.New().String()
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
+		tagID := shared.NewUUID().String()
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -82,8 +81,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("正常系: タグなしでメンター募集が正常に作成される", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -120,7 +119,7 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なUserID", func(t *testing.T) {
 		ctx := context.Background()
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userdm.UserID(""),
@@ -142,8 +141,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: ユーザー存在チェックでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -171,8 +170,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: ユーザーが存在しない", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -198,7 +197,7 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 無効なCategoryID", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -224,8 +223,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: カテゴリ存在チェックでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -257,8 +256,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: カテゴリが存在しない", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -288,9 +287,9 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タグのビルドでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
-		tagID := uuid.New().String()
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
+		tagID := shared.NewUUID().String()
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -328,8 +327,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: タイトルが空でメンター募集作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -363,8 +362,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 説明が空でメンター募集作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -398,8 +397,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 予算下限が最小値未満でメンター募集作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -433,8 +432,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 予算上限が最大値超過でメンター募集作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -468,8 +467,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: 予算下限が上限を超えている場合にメンター募集作成に失敗", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
@@ -503,8 +502,8 @@ func TestCreateMentorRecruitmentAppService_Exec(t *testing.T) {
 
 	t.Run("異常系: リポジトリのStoreでエラーが発生", func(t *testing.T) {
 		ctx := context.Background()
-		userID := userdm.UserID(uuid.New().String())
-		categoryID := categorydm.CategoryID(uuid.New().String())
+		userID := userdm.UserID(shared.NewUUID().String())
+		categoryID := categorydm.CategoryID(shared.NewUUID().String())
 
 		req := &CreateMentorRecruitmentRequest{
 			UserID:             userID,
