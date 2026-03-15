@@ -11,7 +11,7 @@ import (
 type ContractRequest struct {
 	id             shared.UUID
 	message        string
-	menteeID         shared.UUID
+	menteeID       shared.UUID
 	priceAtRequest uint32
 	planID         shared.UUID
 	isAccepted     IsAccepted

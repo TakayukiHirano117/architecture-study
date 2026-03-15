@@ -6,5 +6,5 @@ import (
 )
 
 type ContractRequestRepository interface {
-	Store(ctx context.Context, contractRequest *ContractRequest)	error
+	Store(ctx context.Context, contractRequest *ContractRequest) error
 }

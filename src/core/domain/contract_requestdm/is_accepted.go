@@ -6,7 +6,7 @@ type IsAccepted string
 
 const (
 	Accepted IsAccepted = "承認"
-	Pending IsAccepted = "未確認"
+	Pending  IsAccepted = "未確認"
 	Rejected IsAccepted = "拒否"
 )
 
