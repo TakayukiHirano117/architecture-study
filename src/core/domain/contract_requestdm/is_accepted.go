@@ -1,4 +1,4 @@
-package contractrequestdm
+package contract_requestdm
 
 import "github.com/cockroachdb/errors"
 

@@ -1,9 +1,9 @@
 package contractrequestapp
 
-import "github.com/TakayukiHirano117/architecture-study/src/core/domain/contractrequestdm"
+import "github.com/TakayukiHirano117/architecture-study/src/core/domain/contract_requestdm"
 
 type CreateContractRequestAppService struct {
-	contractRequestRepo contractrequestdm.ContractRequestRepository
+	contractRequestRepo contract_requestdm.ContractRequestRepository
 }
 
 type CreateContractRequestRequest struct {
@@ -14,6 +14,13 @@ type CreateContractRequestRequest struct {
 }
 
 // isAcceptedは未確認で作成する
-func NewCreateContractRequestAppService(contractRequestRepo contractrequestdm.ContractRequestRepository) *CreateContractRequestAppService {
+func NewCreateContractRequestAppService(contractRequestRepo contract_requestdm.ContractRequestRepository) *CreateContractRequestAppService {
 	return &CreateContractRequestAppService{contractRequestRepo: contractRequestRepo}
+}
+
+func (app *CreateContractRequestAppService) Exec(ctx context.Context, req *CreateContractRequestRequest) error {
+	menteeID, err := shared.NewUUIDByVal(req.MenteeID)
+	if err != nil {
+		return customerr.BadRequestWrapf(err, "%s", err.Error())
+	}
 }

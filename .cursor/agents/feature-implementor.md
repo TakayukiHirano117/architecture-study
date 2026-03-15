@@ -1,6 +1,6 @@
 ---
 name: feature-implementor
-description: 新機能をDDD + オニオンアーキテクチャに従って実装するサブエージェント。Domain層→App層→Infra層→Controllerの順に実装する。
+description: 新機能をDDD + オニオンアーキテクチャに従って実装するサブエージェント。Domain層→Infra層→App層→Controllerの順に実装する。App層はInfra層に依存する。
 model: inherit
 ---
 
@@ -22,11 +22,14 @@ model: inherit
 
 ```
 1. Domain層（Entity, ValueObject, Repository Interface, DomainService）
-2. App層（AppService, QueryService）
-3. Infra層（Repository実装, Model）
+2. Infra層（Repository実装, Model）
+3. App層（AppService, QueryService）※Infraに依存
 4. Controller
 5. ルーティング登録
 ```
+
+**レイヤー構成（外側→内側）**: Controller → App → Infra → Domain  
+App層はInfra層より外側にあり、Usecase（AppService）はInfra層のRepository実装に依存する。
 
 ---
 
@@ -55,18 +58,7 @@ src/core/domain/<xxxdm>/
 - DomainService はインターフェースと実装を同一ファイルに定義する
 - **実装後にモックを生成する**: `make gomock-generate-all`
 
-### Step 3: App層の実装
-
-```
-src/core/app/<xxxapp>/
-└── <action>_<entity>_app_service.go    # AppService
-```
-
-- 処理フロー: VO生成 → DomainService → Entity生成 → Repository保存
-- エラーは `customerr` パッケージのカスタムエラーを使う
-- Infra層には一切依存しない（Repository Interfaceのみ使う）
-
-### Step 4: Infra層の実装
+### Step 3: Infra層の実装
 
 ```
 src/core/infra/rdbimpl/
@@ -79,6 +71,17 @@ src/core/infra/models/
 - `rdb.ExecFromCtx(ctx)` でDB接続を取得する
 - 複雑なJOINはモデル（DTO）経由でEntityに変換する
 - マイグレーションが必要な場合は `src/db/migrations/` に追加する
+
+### Step 4: App層の実装
+
+```
+src/core/app/<xxxapp>/
+└── <action>_<entity>_app_service.go    # AppService
+```
+
+- 処理フロー: VO生成 → DomainService → Entity生成 → Repository保存
+- エラーは `customerr` パッケージのカスタムエラーを使う
+- Infra層のRepository実装に依存する（Repository InterfaceはDomain層で定義、実装はInfra層）
 
 ### Step 5: Controllerの実装
 
@@ -117,7 +120,7 @@ src/core/infra/controllers/
 
 - [ ] Domain層のRepository InterfaceにGo generateコメントがあるか
 - [ ] `make gomock-generate-all` でモックを再生成したか
-- [ ] 依存の方向が守られているか（App層がInfra層に依存していないか）
+- [ ] 依存の方向が守られているか（Controller → App → Infra → Domain）
 - [ ] カスタムエラー（`customerr`）を適切に使っているか
 - [ ] `make test-docker` が通るか
 - [ ] `make lint-docker` が通るか

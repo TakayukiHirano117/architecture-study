@@ -5,13 +5,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/TakayukiHirano117/architecture-study/src/core/app/contractrequestapp"
+	"github.com/TakayukiHirano117/architecture-study/src/core/domain/contract_requestdm"
+	"github.com/TakayukiHirano117/architecture-study/src/core/infra/rdbimpl"
 )
 
 type CreateContractRequestController struct {
+	contractRequestRepo contract_requestdm.ContractRequestRepository
 }
 
 func NewCreateContractRequestController() *CreateContractRequestController {
-	return &CreateContractRequestController{}
+	return &CreateContractRequestController{
+		contractRequestRepo: rdbimpl.NewContractRequestRepositoryImpl(),
+	}
 }
 
 func (c *CreateContractRequestController) Exec(ctx *gin.Context) {
@@ -22,7 +27,7 @@ func (c *CreateContractRequestController) Exec(ctx *gin.Context) {
 		return
 	}
 
-	if err := contractrequestapp.NewCreateContractRequestAppService(c.contractRequestRepo).Exec(ctx.Request.Context(), &in); err != nil {
+	if err := contractrequestapp.NewCreateContractRequestAppService(NewContractRequestRepositoryImpl()).Exec(ctx.Request.Context(), &in); err != nil {
 		_ = ctx.Error(err)
 		return
 	}
