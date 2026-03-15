@@ -18,4 +18,10 @@ model: inherit
 
 **実装順序**: Domain → Infra → App → Controller → ルーティング
 
+**実装完了後**: 以下のコマンドを順に実行し、全て通ることを確認する。
+1. `make gomock-generate-all`
+2. `make format-docker`
+3. `make lint-fix-docker`
+4. `make test-docker`
+
 詳細は各 skill を参照すること。アーキテクチャ原則は `.cursor/rules/ddd-and-onion-architecture.md` を参照。

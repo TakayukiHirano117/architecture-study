@@ -58,3 +58,12 @@ App層はInfra層より外側にあり、Usecase（AppService）はInfra層のRe
 - [ ] カスタムエラー（`customerr`）を適切に使っているか
 - [ ] `make test-docker` が通るか
 - [ ] `make lint-docker` が通るか
+
+## 実装完了後の必須実行
+
+**実装完了後、以下のコマンドを順に実行し、全て通ることを確認する：**
+
+1. `make gomock-generate-all`
+2. `make format-docker`
+3. `make lint-fix-docker`
+4. `make test-docker`
