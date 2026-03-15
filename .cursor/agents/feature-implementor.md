@@ -115,7 +115,7 @@ src/core/infra/controllers/
 ---
 
 ## チェックリスト
-
+****
 実装完了前に以下を確認する：
 
 - [ ] Domain層のRepository InterfaceにGo generateコメントがあるか
