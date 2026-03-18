@@ -13,8 +13,6 @@ import (
 )
 
 type MentorRecruitment struct {
-	createdAt          time.Time
-	updatedAt          time.Time
 	id                 MentorRecruitmentID
 	user_id            shared.UUID
 	title              string
@@ -27,6 +25,8 @@ type MentorRecruitment struct {
 	applicationPeriod  ApplicationPeriod
 	status             plandm.Status
 	tags               []tagdm.Tag
+	createdAt          time.Time
+	updatedAt          time.Time
 }
 
 const (
@@ -174,4 +174,12 @@ func (mr *MentorRecruitment) Status() plandm.Status {
 
 func (mr *MentorRecruitment) Tags() []tagdm.Tag {
 	return mr.tags
+}
+
+func (mr *MentorRecruitment) CreatedAt() time.Time {
+	return mr.createdAt
+}
+
+func (mr *MentorRecruitment) UpdatedAt() time.Time {
+	return mr.updatedAt
 }
