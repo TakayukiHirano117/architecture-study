@@ -13,8 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	plandm "github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 	gomock "go.uber.org/mock/gomock"
+
+	plandm "github.com/TakayukiHirano117/architecture-study/src/core/domain/plandm"
 )
 
 // MockGetPlansAppService is a mock of GetPlansAppService interface.
