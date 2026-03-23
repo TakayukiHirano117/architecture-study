@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm build:*)",
+      "Bash(pnpm --dir /Users/takayukihirano117/Desktop/dev/architecture-study/frontend build)"
+    ]
+  }
+}

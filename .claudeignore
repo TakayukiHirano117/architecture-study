@@ -1,0 +1,15 @@
+# 機密情報
+.env
+.env.*
+*.env
+
+# 自動生成ファイル（読む必要なし）
+go.sum
+src/support/mock/**
+
+# コンテナ・一時ファイル
+tmp/
+.DS_Store
+
+# 関係のないサブプロジェクト
+insta-video-automation/

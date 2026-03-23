@@ -1,0 +1,2 @@
+ALTER TABLE skills ADD COLUMN evaluation INT NOT NULL DEFAULT 0;
+ALTER TABLE skills ADD COLUMN years_of_experience INT NOT NULL DEFAULT 0;

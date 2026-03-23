@@ -1,0 +1,153 @@
+%% DBトランザクションの流れ - Mermaidダイアグラム集
+%% =====================================================
+
+%% =====================================================
+%% 1. 全体像
+%% =====================================================
+
+flowchart TB
+    subgraph Startup["🚀 アプリケーション起動"]
+        A[main.go] --> B[rdb.NewConnection]
+        B --> C[sqlx.DB 接続確立]
+        C --> D[DBMiddleware 登録]
+    end
+    
+    subgraph Request["📥 リクエスト処理"]
+        E[HTTPリクエスト] --> F{HTTPメソッド判定}
+        F -->|POST/PUT/DELETE/PATCH| G[トランザクション開始]
+        F -->|GET| H[通常接続を使用]
+        G --> I[Contextにセット]
+        H --> I
+        I --> J[ハンドラー処理]
+        J --> K{エラー発生?}
+        K -->|Yes| L[Rollback]
+        K -->|No| M[Commit]
+    end
+    
+    subgraph Repository["💾 Repository層"]
+        N[ExecFromCtx] --> O[Contextから取得]
+        O --> P[RDBHandler]
+    end
+    
+    J --> N
+
+---
+
+%% =====================================================
+%% 2. ファイル構成
+%% =====================================================
+
+graph LR
+    subgraph Files["📁 関連ファイル"]
+        A[main.go] 
+        B[rdb_connection.go]
+        C[db_middleware.go]
+        D[rdb_handler.go]
+        E[config/db.go]
+    end
+    
+    A -->|"NewConnection()"| B
+    A -->|"DBMiddleware()"| C
+    C -->|"config.DBKey"| E
+    B -->|"ExecFromCtx()"| D
+
+---
+
+%% =====================================================
+%% 3. DBMiddleware の動作
+%% =====================================================
+
+flowchart TD
+    A[リクエスト受信] --> B{HTTPメソッド?}
+    
+    B -->|"POST / PUT / DELETE / PATCH"| C["🔒 トランザクション開始<br/>tx = conn.BeginTxx()"]
+    B -->|"GET"| D["📖 通常接続を使用<br/>conn をそのまま"]
+    
+    C --> E["Context に tx をセット"]
+    D --> F["Context に conn をセット"]
+    
+    E --> G[c.Next<br/>ハンドラー実行]
+    F --> G
+    
+    G --> H{c.Errors > 0 ?}
+    
+    H -->|"Yes"| I["❌ tx.Rollback()"]
+    H -->|"No"| J["✅ tx.Commit()"]
+    
+    style C fill:#ff9999
+    style D fill:#99ccff
+    style I fill:#ff6666
+    style J fill:#66cc66
+
+---
+
+%% =====================================================
+%% 4. RDBHandler インターフェース（クラス図）
+%% =====================================================
+
+classDiagram
+    class RDBHandler {
+        <<interface>>
+        sqlx.ExtContext
+    }
+    
+    class sqlx_DB {
+        +BeginTxx()
+        +QueryContext()
+        +ExecContext()
+    }
+    
+    class sqlx_Tx {
+        +Commit()
+        +Rollback()
+        +QueryContext()
+        +ExecContext()
+    }
+    
+    RDBHandler <|.. sqlx_DB : implements
+    RDBHandler <|.. sqlx_Tx : implements
+
+---
+
+%% =====================================================
+%% 5. 処理フロー図（シーケンス図）
+%% =====================================================
+
+sequenceDiagram
+    participant Client as 🌐 Client
+    participant Router as 🔀 Gin Router
+    participant MW as 🛡️ DBMiddleware
+    participant Handler as 📋 Handler
+    participant Repo as 💾 Repository
+    participant DB as 🗄️ PostgreSQL
+
+    Client->>Router: POST /api/users
+    Router->>MW: Request
+    
+    Note over MW: HTTPメソッド判定<br/>POST → トランザクション開始
+    
+    MW->>DB: BeginTxx()
+    DB-->>MW: *sqlx.Tx
+    
+    Note over MW: Context に Tx をセット
+    
+    MW->>Handler: c.Next()
+    Handler->>Repo: CreateUser(ctx, user)
+    
+    Repo->>Repo: rdb.ExecFromCtx(ctx)
+    Note over Repo: Context から<br/>RDBHandler 取得
+    
+    Repo->>DB: INSERT INTO users...
+    DB-->>Repo: Result
+    Repo-->>Handler: User
+    Handler-->>MW: Response
+    
+    alt エラーなし
+        MW->>DB: tx.Commit()
+    else エラーあり
+        MW->>DB: tx.Rollback()
+    end
+    
+    MW-->>Router: Response
+    Router-->>Client: JSON Response
+

@@ -1,0 +1,1 @@
+ALTER TABLE plans ADD COLUMN mentor_id UUID NOT NULL REFERENCES users(id);
