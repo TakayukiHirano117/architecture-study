@@ -43,4 +43,5 @@ jobs:
             - 修正はできるだけ最小限にとどめてください
             - 既存のコードスタイルに合わせてください
             - テストファイルがある場合は、テストも更新してください
+          claude_args: --allowedTools Edit,Write,Bash,Read,Glob,Grep
           show_full_output: true
