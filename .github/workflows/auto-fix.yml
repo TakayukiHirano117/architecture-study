@@ -17,9 +17,12 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'bug')
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: anthropics/claude-code-action@v1
         with:
+          base_branch: main
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             以下のGitHub Issueに記載された不具合を修正してください。
