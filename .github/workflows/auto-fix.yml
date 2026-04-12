@@ -2,7 +2,8 @@ name: Claude Auto Fix
 
 on:
   issues:
-    types: [opened, labeled]  # Issue作成時 or ラベル付与時に起動
+    # opened と labeled の両方にすると、作成時に bug を付けると2回走る（opened + labeled）
+    types: [labeled]
 
 permissions:
   contents: write        # コードを書き換える権限
@@ -13,8 +14,8 @@ permissions:
 jobs:
   fix:
     runs-on: ubuntu-latest
-    # bugラベルが付いたIssueのみ実行する
-    if: contains(github.event.issue.labels.*.name, 'bug')
+    # 今回付与されたラベルが bug のときだけ実行（他ラベル付与では起動しない）
+    if: github.event.label.name == 'bug'
     steps:
       - uses: actions/checkout@v4
         with:
