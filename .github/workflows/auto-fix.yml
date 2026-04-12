@@ -2,7 +2,7 @@ name: Claude Auto Fix
 
 on:
   issues:
-    types: [opened]  # GitHub Issueが作成されたときに自動起動
+    types: [opened, labeled]  # Issue作成時 or ラベル付与時に起動
 
 permissions:
   contents: write        # コードを書き換える権限
