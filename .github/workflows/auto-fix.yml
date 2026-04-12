@@ -1,0 +1,33 @@
+name: Claude Auto Fix
+
+on:
+  issues:
+    types: [opened]  # GitHub Issueが作成されたときに自動起動
+
+permissions:
+  contents: write        # コードを書き換える権限
+  pull-requests: write   # PRを作成する権限
+  issues: write          # Issueにコメントする権限
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            このGitHub Issueに記載された不具合を修正してください。
+
+            修正の手順：
+            1. Issueの内容を読んで、どのファイルのどの処理が原因か特定してください
+            2. 該当箇所のコードを修正してください
+            3. 修正内容を説明するPRを作成してください
+
+            注意事項：
+            - 修正はできるだけ最小限にとどめてください
+            - 既存のコードスタイルに合わせてください
+            - テストファイルがある場合は、テストも更新してください
+          claude_args: "--max-turns 10"
