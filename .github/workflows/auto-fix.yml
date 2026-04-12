@@ -13,14 +13,23 @@ permissions:
 jobs:
   fix:
     runs-on: ubuntu-latest
+    # bugラベルが付いたIssueのみ実行する
+    if: contains(github.event.issue.labels.*.name, 'bug')
     steps:
       - uses: actions/checkout@v4
 
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt: |
-            このGitHub Issueに記載された不具合を修正してください。
+            以下のGitHub Issueに記載された不具合を修正してください。
+
+            ## Issue タイトル
+            ${{ github.event.issue.title }}
+
+            ## Issue 内容
+            ${{ github.event.issue.body }}
 
             修正の手順：
             1. Issueの内容を読んで、どのファイルのどの処理が原因か特定してください
@@ -31,4 +40,4 @@ jobs:
             - 修正はできるだけ最小限にとどめてください
             - 既存のコードスタイルに合わせてください
             - テストファイルがある場合は、テストも更新してください
-          claude_args: "--max-turns 10"
+          max_turns: "10"
