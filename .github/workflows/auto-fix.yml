@@ -40,4 +40,5 @@ jobs:
             - 修正はできるだけ最小限にとどめてください
             - 既存のコードスタイルに合わせてください
             - テストファイルがある場合は、テストも更新してください
-          max_turns: "10"
+          claude_args: "--max-turns 10"
+          show_full_output: true
