@@ -1,5 +1,9 @@
 name: Claude Auto Fix
 
+# コスト更に削減する場合（参考・未実装）:
+# Job1 で低い --max-turns と Read/Glob/Grep 中心でトリアージし、--json-schema 等で structured_output を取得、
+# FIX_OK のときだけ Job2 で修正する。一次情報: anthropics/claude-code-action action.yml の outputs.structured_output
+
 on:
   issues:
     # opened と labeled の両方にすると、作成時に bug を付けると2回走る（opened + labeled）
@@ -26,7 +30,8 @@ jobs:
           base_branch: main
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            以下のGitHub Issueに記載された不具合を修正してください。
+            あなたはこのリポジトリ上で、次の GitHub Issue について **調査し、修正要否を判定してから** 行動します。
+            ターンとコストを節約するため、**必ず下記の順序**に従ってください。
 
             ## Issue タイトル
             ${{ github.event.issue.title }}
@@ -34,14 +39,46 @@ jobs:
             ## Issue 内容
             ${{ github.event.issue.body }}
 
-            修正の手順：
-            1. Issueの内容を読んで、どのファイルのどの処理が原因か特定してください
-            2. 該当箇所のコードを修正してください
-            3. 修正内容を説明するPRを作成してください
+            ---
 
-            注意事項：
-            - 修正はできるだけ最小限にとどめてください
-            - 既存のコードスタイルに合わせてください
-            - テストファイルがある場合は、テストも更新してください
-          claude_args: --allowedTools Edit,Write,Bash,Read,Glob,Grep
-          show_full_output: true
+            ### Phase 1（調査・必ず最初に実施）
+            - Read / Glob / Grep のみで、Issue とコードの対応を **最小限** 調べてください。
+            - 広範な読み込みや推測での大規模探索は避けてください。
+            - 調査の直後、**必ず次の形式で**結論を出力してください（このブロックを会話の早い段階に出すこと）:
+
+            ```
+            ## 判定
+            VERDICT: NO_FIX | FIX_OK | NEED_PLAN
+            理由: （1〜5文）
+            ```
+
+            VERDICT の意味:
+            - **NO_FIX**: 不具合ではない、仕様、情報不足でコード修正不能、重複、既に修正済みなど **コード変更の必要がない**。
+            - **FIX_OK**: 原因が特定でき、**このリポジトリ内の小さな変更で安全に直せる**。
+            - **NEED_PLAN**: 原因は分かるが、**変更が大きい・設計判断が必要・時間/ターン内に実装しきれない** など、まず計画が必要。
+
+            ### Phase 2（VERDICT に応じた行動。Phase 1 の出力の後にのみ実行）
+
+            #### NO_FIX のとき
+            - **コード・設定・ドキュメントへの変更は禁止**（新規ファイルも含む）。
+            - **git commit / push、ブランチ作成、Pull Request 作成は一切しない**。
+            - このセッションを終了してください。
+
+            #### FIX_OK のとき
+            - 最小限の差分で修正してください。
+            - 既存のコードスタイルに合わせる。
+            - テストがある場合は可能な範囲で更新する。
+            - 修正内容を説明する Pull Request を作成する。
+
+            #### NEED_PLAN のとき
+            - **アプリの実装コードは変更しない**（バグ修正のコミットを作らない）。
+            - 次のファイルを **新規作成** し、調査結果・想定修正方針・タスク分解・リスクを Markdown で書く:
+              `docs/auto-fix-plans/issue-${{ github.event.issue.number }}.md`
+            - 原則として **この計画ファイル（とメタデータに必要な最小限）のみ** をコミットし、実装計画を共有するための Pull Request を作成する。
+
+            ### 共通
+            - 修正が必要ないと判断したら、無理に PR や変更を作らないこと。
+          # --max-budget-usd は CLI 上は print モード向けの記載がある。効かない場合は max-turns のみに寄せて調整する。
+          claude_args: --max-turns 25 --max-budget-usd 0.30 --model sonnet --allowedTools Edit,Write,Bash,Read,Glob,Grep
+          # デバッグ時は true（ログに機密が出る可能性あり）
+          show_full_output: false
