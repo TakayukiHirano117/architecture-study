@@ -102,7 +102,12 @@ function FeaturesSection() {
 function Footer() {
   return (
     <footer className="border-t py-8 px-6 text-center text-sm text-muted-foreground">
-      © 2026 Menta Clone. All rights reserved.
+      <p>© 2026 Menta Clone. All rights reserved.</p>
+      <p className="mt-2">
+        <a href="/terms" className="hover:text-foreground transition-colors">
+          利用規約
+        </a>
+      </p>
     </footer>
   );
 }
